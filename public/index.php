@@ -16,6 +16,7 @@ use Src\Core\ErrorReporter;
 use Src\Core\ErrorTracker;
 use Src\Exceptions\NotFoundException;
 use Src\Exceptions\HttpException;
+use Src\Config\ConfigurationManager;
 use \Rollbar\Rollbar;
 use \Rollbar\Payload\Level;
 
@@ -23,28 +24,18 @@ use \Rollbar\Payload\Level;
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
-$config = require __DIR__ . '/../src/Config/Application.php';
-
-// Initialize Rollbar
-Rollbar::init(
-    array(
-        'access_token' => $config['rollbar']['access_token'],
-        'environment' => $config['app']['environment']
-    )
-);
-
 $containerBuilder = new ContainerBuilder();
 $dependencies = require __DIR__ . '/../src/Config/Dependencies.php';
-$dependencies($containerBuilder, $config);
+$dependencies($containerBuilder);
 $containerBuilder->compile();
 
-$routeCollection = RouteCollection::getInstance();
-$routeDefinitions = require __DIR__ . '/../src/Config/Routes.php';
-$routeDefinitions($routeCollection);
+$configManager = $containerBuilder->get(ConfigurationManager::class);
 
-$webSocketRouteCollection = new WebSocketRouteCollection();
-$webSocketRouteDefinitions = require __DIR__ . '/../src/Config/WebSocketRoutes.php';
-$webSocketRouteDefinitions($webSocketRouteCollection);
+// Initialize Rollbar
+Rollbar::init([
+    'access_token' => $configManager->get('rollbar.access_token'),
+    'environment' => $configManager->get('app.environment')
+]);
 
 $router = new Router(
     $containerBuilder,

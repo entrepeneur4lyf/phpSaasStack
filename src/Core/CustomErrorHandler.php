@@ -6,23 +6,23 @@ namespace Src\Core;
 
 use Symfony\Component\ErrorHandler\ErrorHandler;
 use Twig\Environment;
-use Src\Services\ErrorReportingService;
+use Src\Interfaces\ErrorReporterInterface;
 
 class CustomErrorHandler extends ErrorHandler
 {
     private Environment $twig;
     private bool $debug;
-    private ErrorReportingService $errorReportingService;
+    private ErrorReporterInterface $errorReporter;
 
     public function __construct(
         Environment $twig,
-        ErrorReportingService $errorReportingService,
+        ErrorReporterInterface $errorReporter,
         bool $debug = false
     ) {
         parent::__construct();
         $this->twig = $twig;
         $this->debug = $debug;
-        $this->errorReportingService = $errorReportingService;
+        $this->errorReporter = $errorReporter;
     }
 
     public function render(\Throwable $exception): string

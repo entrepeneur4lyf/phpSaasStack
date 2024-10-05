@@ -1,0 +1,171 @@
+{% extends "layouts/seller.twig" %}
+
+{% block title %}Manage Product{% endblock %}
+
+{% block content %}
+<div x-data="productManager()" class="product-manager">
+    <h1>Manage Product</h1>
+
+    <sl-form @submit.prevent="saveProduct">
+        <sl-input name="name" label="Product Name" x-model="product.name" required></sl-input>
+        <sl-textarea name="description" label="Description" x-model="product.description" required></sl-textarea>
+        <sl-input type="number" name="price" label="Price" x-model="product.price" required></sl-input>
+        <sl-select name="category_id" label="Category" x-model="product.category_id" required>
+            <template x-for="category in categories" :key="category.id">
+                <sl-menu-item :value="category.id" x-text="category.name"></sl-menu-item>
+            </template>
+        </sl-select>
+        <sl-input type="file" name="image" label="Product Image" @change="handleImageUpload" accept="image/*"></sl-input>
+        <sl-button type="submit">Save Product</sl-button>
+    </sl-form>
+
+    <h3>Manage Related Products</h3>
+    <sl-select multiple name="related_products" x-model="relatedProducts">
+        <template x-for="relatedProduct in allProducts" :key="relatedProduct.id">
+            <sl-menu-item :value="relatedProduct.id" x-text="relatedProduct.name" x-if="relatedProduct.id != product.id"></sl-menu-item>
+        </template>
+    </sl-select>
+    <sl-button @click="updateRelatedProducts">Update Related Products</sl-button>
+
+    <h3>Manage FAQs</h3>
+    <div class="faq-manager">
+        <sl-form @submit.prevent="addFAQ">
+            <sl-input name="question" label="Question" x-model="newQuestion" required></sl-input>
+            <sl-textarea name="answer" label="Answer" x-model="newAnswer" required></sl-textarea>
+            <sl-button type="submit">Add FAQ</sl-button>
+        </sl-form>
+
+        <div class="faq-list">
+            <template x-for="(faq, index) in faqs" :key="faq.id">
+                <sl-card class="faq-item">
+                    <sl-input name="question" label="Question" x-model="faq.question"></sl-input>
+                    <sl-textarea name="answer" label="Answer" x-model="faq.answer"></sl-textarea>
+                    <sl-button-group>
+                        <sl-button @click="updateFAQ(index)">Update</sl-button>
+                        <sl-button @click="deleteFAQ(index)" variant="danger">Delete</sl-button>
+                    </sl-button-group>
+                </sl-card>
+            </template>
+        </div>
+    </div>
+</div>
+
+<script>
+function productManager() {
+    return {
+        product: {{ product|json_encode|raw }},
+        categories: {{ categories|json_encode|raw }},
+        allProducts: {{ all_products|json_encode|raw }},
+        relatedProducts: {{ related_product_ids|json_encode|raw }},
+        faqs: {{ faqs|json_encode|raw }},
+        newQuestion: '',
+        newAnswer: '',
+
+        saveProduct() {
+            const formData = new FormData();
+            for (const key in this.product) {
+                if (key !== 'image') {
+                    formData.append(key, this.product[key]);
+                }
+            }
+            if (this.product.image instanceof File) {
+                formData.append('image', this.product.image);
+            }
+
+            fetch('{{ path('seller_save_product', {'id': product.id}) }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Product saved successfully');
+                } else {
+                    alert('Failed to save product: ' + data.message);
+                }
+            });
+        },
+
+        handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.product.image = file;
+            }
+        },
+
+        updateRelatedProducts() {
+            fetch('{{ path('seller_update_related_products', {'id': product.id}) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ related_products: this.relatedProducts })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Related products updated successfully');
+                } else {
+                    alert('Failed to update related products: ' + data.message);
+                }
+            });
+        },
+
+        addFAQ() {
+            fetch('{{ path('seller_add_faq', {'id': product.id}) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ question: this.newQuestion, answer: this.newAnswer })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.faqs.push(data.faq);
+                    this.newQuestion = '';
+                    this.newAnswer = '';
+                } else {
+                    alert('Failed to add FAQ: ' + data.message);
+                }
+            });
+        },
+        updateFAQ(index) {
+            const faq = this.faqs[index];
+            fetch('{{ path('seller_update_faq', {'id': 'FAQ_ID'}) }}'.replace('FAQ_ID', faq.id), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ question: faq.question, answer: faq.answer })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('FAQ updated successfully');
+                } else {
+                    alert('Failed to update FAQ: ' + data.message);
+                }
+            });
+        },
+
+        deleteFAQ(index) {
+            const faq = this.faqs[index];
+            if (confirm('Are you sure you want to delete this FAQ?')) {
+                fetch('{{ path('seller_delete_faq', {'id': 'FAQ_ID'}) }}'.replace('FAQ_ID', faq.id), {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.faqs.splice(index, 1);
+                    } else {
+                        alert('Failed to delete FAQ: ' + data.message);
+                    }
+                });
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

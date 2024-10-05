@@ -1,10 +1,15 @@
+{% extends "layouts/seller.twig" %}
+
+{% block title %}Manage Services{% endblock %}
+
+{% block content %}
 <div x-data="serviceManager()" class="service-manager">
     <h1>Manage Services</h1>
     
     <sl-form @submit.prevent="addService">
         <h2>Add New Service</h2>
         <sl-select name="category_id" label="Category" required>
-            <template x-for="category in categories">
+            <template x-for="category in categories" :key="category.id">
                 <sl-menu-item :value="category.id" x-text="category.name"></sl-menu-item>
             </template>
         </sl-select>
@@ -34,29 +39,32 @@
 <script>
 function serviceManager() {
     return {
-        services: <?= json_encode($services) ?>,
-        categories: <?= json_encode($categories) ?>,
+        services: {{ services|json_encode|raw }},
+        categories: {{ categories|json_encode|raw }},
 
         addService(event) {
             const form = event.target;
             const formData = new FormData(form);
 
-            fetch('/seller/manage-services', {
+            fetch('{{ path('seller_manage_services') }}', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => {
-                if (response.ok) {
-                    window.location.reload();
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.services.push(data.service);
+                    form.reset();
                 } else {
-                    alert('Failed to add service');
+                    alert('Failed to add service: ' + data.message);
                 }
             });
         },
 
         editService(serviceId) {
-            window.location.href = `/seller/edit-service/${serviceId}`;
+            window.location.href = '{{ path('seller_edit_service', {'id': 'SERVICE_ID'}) }}'.replace('SERVICE_ID', serviceId);
         }
     }
 }
 </script>
+{% endblock %}

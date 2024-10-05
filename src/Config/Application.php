@@ -4,10 +4,22 @@ declare(strict_types=1);
 
 return [
     'app' => [
-        'env' => env('APP_ENV', 'production'),
-        'debug' => env('APP_DEBUG', false),
+        'env' => env('APP_ENV', 'development'),
+        'debug' => [
+            'enabled' => env('APP_DEBUG', true),
+            'rollbar' => [
+                'access_token' => env('ROLLBAR_ACCESS_TOKEN'),
+            ],
+        ],
         'key' => env('APP_KEY'),
         'url' => env('APP_URL', 'http://localhost'),
+        'error_reporting' => [
+            'service' => env('ERROR_REPORTING_SERVICE', 'local'), // 'local' or 'rollbar'
+            'rollbar' => [
+                'access_token' => env('ROLLBAR_ACCESS_TOKEN'),
+                'environment' => env('APP_ENV', 'production'),
+            ],
+        ],
     ],
     'jwt' => [
         'secret' => env('JWT_SECRET'),
