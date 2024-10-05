@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__.'/vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use Src\Commands\PublishScheduledPosts;
+use Src\Commands\ProcessAIRequests;
+use Src\Config\Dependencies;
+
+$container = Dependencies::getContainer();
+
+$application = new Application();
+
+// Add commands
+$application->add($container->get(PublishScheduledPosts::class));
+$application->add($container->get(ProcessAIRequests::class));
+
+// Add more commands here as needed
+
+$application->run();

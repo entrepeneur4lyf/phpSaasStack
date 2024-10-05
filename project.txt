@@ -1,0 +1,1259 @@
+.
+├── @src
+│   ├── Commands
+│   │   └── PublishScheduledPosts.php
+│   ├── Config
+│   │   └── Routes.php
+│   ├── Controllers
+│   │   └── PostController.php
+│   └── Models
+│       └── PostModel.php
+├── app
+│   ├── Commands
+│   │   └── PublishScheduledPosts.php
+│   ├── Config
+│   │   └── Routes.php
+│   ├── Controllers
+│   │   ├── AdminController.php
+│   │   ├── CommentController.php
+│   │   ├── MarkdownController.php
+│   │   ├── ModerationController.php
+│   │   ├── PostController.php
+│   │   └── ProfileController.php
+│   ├── Models
+│   │   ├── CommentModel.php
+│   │   ├── PostModel.php
+│   │   ├── Product.php
+│   │   └── User.php
+│   ├── Views
+│   │   ├── admin
+│   │   │   └── message_categories.php
+│   │   ├── dashboard.php
+│   │   ├── layouts
+│   │   │   └── main.php
+│   │   ├── messages
+│   │   │   └── index.php
+│   │   ├── moderation
+│   │   │   └── dashboard.php
+│   │   ├── offers
+│   │   │   └── index.php
+│   │   ├── posts
+│   │   │   ├── featured.php
+│   │   │   ├── index.php
+│   │   │   ├── search_results.php
+│   │   │   └── view.php
+│   │   └── profile
+│   │       ├── edit.php
+│   │       └── show.php
+│   ├── routes.php
+│   ├── structure.txt
+│   └── views
+│       └── partials
+│           └── header.php
+├── bin
+│   └── start_ai_server.php
+├── composer.json
+├── composer.lock
+├── config
+│   └── api_keys.php
+├── css
+│   └── styles.css
+├── database
+│   └── schema.sql
+├── docs
+│   └── ssl_setup_guide.md
+├── index.html
+├── js
+│   └── app.js
+├── project.txt
+├── public
+│   ├── ai_interface.php
+│   ├── cron_publish_scheduled_posts.php
+│   ├── css
+│   │   └── styles.css
+│   ├── edit_profile.php
+│   ├── follow_user.php
+│   ├── index.html
+│   ├── index.php
+│   ├── js
+│   │   ├── asset-library.js
+│   │   ├── markdown-editor.js
+│   │   └── message-composer.js
+│   ├── manage_portfolio.php
+│   ├── manage_post.php
+│   ├── messages.php
+│   ├── product.php
+│   ├── profile.php
+│   └── seller
+│       ├── manage_faq.php
+│       ├── manage_product.php
+│       ├── manage_services.php
+│       └── update_related_products.php
+├── roadmap.md
+├── src
+│   ├── AIService
+│   │   ├── AIServer.php
+│   │   ├── OpenAIWrapper.php
+│   │   └── RequestQueue.php
+│   ├── Commands
+│   │   └── PublishScheduledPosts.php
+│   ├── Config
+│   │   ├── AssetConfig.php
+│   │   ├── Database.php
+│   │   ├── DatabaseConnection.php
+│   │   ├── DatabaseMigrations.php
+│   │   ├── Logger.php
+│   │   ├── MarketplaceSchema.php
+│   │   ├── RateLimiter.php
+│   │   ├── Router.php
+│   │   ├── Routes.php
+│   │   └── Security.php
+│   ├── Controllers
+│   │   ├── AIInferenceController.php
+│   │   ├── AccountSettingsController.php
+│   │   ├── ActivityController.php
+│   │   ├── AdminController.php
+│   │   ├── AssetController.php
+│   │   ├── AuthController.php
+│   │   ├── DashboardController.php
+│   │   ├── FileDeliveryController.php
+│   │   ├── FollowController.php
+│   │   ├── HomeController.php
+│   │   ├── LicenseController.php
+│   │   ├── MessageController.php
+│   │   ├── NotificationController.php
+│   │   ├── PortfolioController.php
+│   │   ├── PostController.php
+│   │   ├── ProductController.php
+│   │   ├── ProfileController.php
+│   │   ├── SellerDashboardController.php
+│   │   ├── SubscriptionController.php
+│   │   └── UserPanelController.php
+│   ├── Middleware
+│   │   ├── FileUploadMiddleware.php
+│   │   ├── HttpsRedirectMiddleware.php
+│   │   ├── JwtMiddleware.php
+│   │   ├── LoginRateLimitMiddleware.php
+│   │   ├── RateLimitMiddleware.php
+│   │   ├── RoleMiddleware.php
+│   │   ├── SanitizationMiddleware.php
+│   │   ├── SecurityHeadersMiddleware.php
+│   │   ├── SecurityLoggingMiddleware.php
+│   │   ├── SecurityMiddleware.php
+│   │   ├── SessionMiddleware.php
+│   │   └── ValidationSanitizationMiddleware.php
+│   ├── Models
+│   │   ├── Asset.php
+│   │   ├── BaseModel.php
+│   │   ├── Category.php
+│   │   ├── CommentModel.php
+│   │   ├── License.php
+│   │   ├── Message.php
+│   │   ├── Notification.php
+│   │   ├── Order.php
+│   │   ├── PostModel.php
+│   │   ├── Product.php
+│   │   ├── Subscription.php
+│   │   ├── Tag.php
+│   │   ├── User.php
+│   │   ├── UserActivity.php
+│   │   └── UserStatistics.php
+│   ├── Services
+│   │   └── PiAPIClient.php
+│   ├── Utils
+│   │   ├── CSRF.php
+│   │   ├── FileUploadHandler.php
+│   │   ├── InputSanitizer.php
+│   │   ├── Logger.php
+│   │   ├── RateLimiter.php
+│   │   ├── SessionManager.php
+│   │   └── Validator.php
+│   └── Views
+│       ├── account_settings.php
+│       ├── activity_log.php
+│       ├── add_product.php
+│       ├── dashboard.php
+│       ├── home.php
+│       ├── login.php
+│       ├── messages.php
+│       ├── product_detail.php
+│       ├── product_listing.php
+│       ├── register.php
+│       ├── seller_dashboard.php
+│       ├── seller_product_list.php
+│       ├── subscription_management.php
+│       └── user_purchases.php
+└── vendor
+    ├── autoload.php
+    ├── composer
+    │   ├── ClassLoader.php
+    │   ├── InstalledVersions.php
+    │   ├── LICENSE
+    │   ├── autoload_classmap.php
+    │   ├── autoload_files.php
+    │   ├── autoload_namespaces.php
+    │   ├── autoload_psr4.php
+    │   ├── autoload_real.php
+    │   ├── autoload_static.php
+    │   ├── installed.json
+    │   ├── installed.php
+    │   └── platform_check.php
+    ├── dflydev
+    │   └── dot-access-data
+    │       ├── CHANGELOG.md
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── composer.json
+    │       └── src
+    │           ├── Data.php
+    │           ├── DataInterface.php
+    │           ├── Exception
+    │           │   ├── DataException.php
+    │           │   ├── InvalidPathException.php
+    │           │   └── MissingPathException.php
+    │           └── Util.php
+    ├── firebase
+    │   └── php-jwt
+    │       ├── CHANGELOG.md
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── composer.json
+    │       └── src
+    │           ├── BeforeValidException.php
+    │           ├── CachedKeySet.php
+    │           ├── ExpiredException.php
+    │           ├── JWK.php
+    │           ├── JWT.php
+    │           ├── JWTExceptionWithPayloadInterface.php
+    │           ├── Key.php
+    │           └── SignatureInvalidException.php
+    ├── intervention
+    │   ├── gif
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   ├── phpunit.xml.dist
+    │   │   └── src
+    │   │       ├── AbstractEntity.php
+    │   │       ├── AbstractExtension.php
+    │   │       ├── Blocks
+    │   │       │   ├── ApplicationExtension.php
+    │   │       │   ├── Color.php
+    │   │       │   ├── ColorTable.php
+    │   │       │   ├── CommentExtension.php
+    │   │       │   ├── DataSubBlock.php
+    │   │       │   ├── FrameBlock.php
+    │   │       │   ├── GraphicControlExtension.php
+    │   │       │   ├── Header.php
+    │   │       │   ├── ImageData.php
+    │   │       │   ├── ImageDescriptor.php
+    │   │       │   ├── LogicalScreenDescriptor.php
+    │   │       │   ├── NetscapeApplicationExtension.php
+    │   │       │   ├── PlainTextExtension.php
+    │   │       │   ├── TableBasedImage.php
+    │   │       │   └── Trailer.php
+    │   │       ├── Builder.php
+    │   │       ├── Decoder.php
+    │   │       ├── Decoders
+    │   │       │   ├── AbstractDecoder.php
+    │   │       │   ├── AbstractPackedBitDecoder.php
+    │   │       │   ├── ApplicationExtensionDecoder.php
+    │   │       │   ├── ColorDecoder.php
+    │   │       │   ├── ColorTableDecoder.php
+    │   │       │   ├── CommentExtensionDecoder.php
+    │   │       │   ├── DataSubBlockDecoder.php
+    │   │       │   ├── FrameBlockDecoder.php
+    │   │       │   ├── GifDataStreamDecoder.php
+    │   │       │   ├── GraphicControlExtensionDecoder.php
+    │   │       │   ├── HeaderDecoder.php
+    │   │       │   ├── ImageDataDecoder.php
+    │   │       │   ├── ImageDescriptorDecoder.php
+    │   │       │   ├── LogicalScreenDescriptorDecoder.php
+    │   │       │   ├── NetscapeApplicationExtensionDecoder.php
+    │   │       │   ├── PlainTextExtensionDecoder.php
+    │   │       │   └── TableBasedImageDecoder.php
+    │   │       ├── DisposalMethod.php
+    │   │       ├── Encoders
+    │   │       │   ├── AbstractEncoder.php
+    │   │       │   ├── ApplicationExtensionEncoder.php
+    │   │       │   ├── ColorEncoder.php
+    │   │       │   ├── ColorTableEncoder.php
+    │   │       │   ├── CommentExtensionEncoder.php
+    │   │       │   ├── DataSubBlockEncoder.php
+    │   │       │   ├── FrameBlockEncoder.php
+    │   │       │   ├── GifDataStreamEncoder.php
+    │   │       │   ├── GraphicControlExtensionEncoder.php
+    │   │       │   ├── HeaderEncoder.php
+    │   │       │   ├── ImageDataEncoder.php
+    │   │       │   ├── ImageDescriptorEncoder.php
+    │   │       │   ├── LogicalScreenDescriptorEncoder.php
+    │   │       │   ├── NetscapeApplicationExtensionEncoder.php
+    │   │       │   ├── PlainTextExtensionEncoder.php
+    │   │       │   ├── TableBasedImageEncoder.php
+    │   │       │   └── TrailerEncoder.php
+    │   │       ├── Exceptions
+    │   │       │   ├── DecoderException.php
+    │   │       │   ├── EncoderException.php
+    │   │       │   ├── FormatException.php
+    │   │       │   └── NotReadableException.php
+    │   │       ├── GifDataStream.php
+    │   │       ├── Splitter.php
+    │   │       └── Traits
+    │   │           ├── CanDecode.php
+    │   │           ├── CanEncode.php
+    │   │           └── CanHandleFiles.php
+    │   └── image
+    │       ├── LICENSE
+    │       ├── composer.json
+    │       ├── readme.md
+    │       └── src
+    │           ├── Analyzers
+    │           │   ├── ColorspaceAnalyzer.php
+    │           │   ├── HeightAnalyzer.php
+    │           │   ├── PixelColorAnalyzer.php
+    │           │   ├── PixelColorsAnalyzer.php
+    │           │   ├── ProfileAnalyzer.php
+    │           │   ├── ResolutionAnalyzer.php
+    │           │   └── WidthAnalyzer.php
+    │           ├── Collection.php
+    │           ├── Colors
+    │           │   ├── AbstractColor.php
+    │           │   ├── AbstractColorChannel.php
+    │           │   ├── Cmyk
+    │           │   │   ├── Channels
+    │           │   │   │   ├── Cyan.php
+    │           │   │   │   ├── Key.php
+    │           │   │   │   ├── Magenta.php
+    │           │   │   │   └── Yellow.php
+    │           │   │   ├── Color.php
+    │           │   │   ├── Colorspace.php
+    │           │   │   └── Decoders
+    │           │   │       └── StringColorDecoder.php
+    │           │   ├── Hsl
+    │           │   │   ├── Channels
+    │           │   │   │   ├── Hue.php
+    │           │   │   │   ├── Luminance.php
+    │           │   │   │   └── Saturation.php
+    │           │   │   ├── Color.php
+    │           │   │   ├── Colorspace.php
+    │           │   │   └── Decoders
+    │           │   │       └── StringColorDecoder.php
+    │           │   ├── Hsv
+    │           │   │   ├── Channels
+    │           │   │   │   ├── Hue.php
+    │           │   │   │   ├── Saturation.php
+    │           │   │   │   └── Value.php
+    │           │   │   ├── Color.php
+    │           │   │   ├── Colorspace.php
+    │           │   │   └── Decoders
+    │           │   │       └── StringColorDecoder.php
+    │           │   ├── Profile.php
+    │           │   └── Rgb
+    │           │       ├── Channels
+    │           │       │   ├── Alpha.php
+    │           │       │   ├── Blue.php
+    │           │       │   ├── Green.php
+    │           │       │   └── Red.php
+    │           │       ├── Color.php
+    │           │       ├── Colorspace.php
+    │           │       └── Decoders
+    │           │           ├── HexColorDecoder.php
+    │           │           ├── HtmlColornameDecoder.php
+    │           │           ├── StringColorDecoder.php
+    │           │           └── TransparentColorDecoder.php
+    │           ├── Config.php
+    │           ├── Decoders
+    │           │   ├── Base64ImageDecoder.php
+    │           │   ├── BinaryImageDecoder.php
+    │           │   ├── ColorObjectDecoder.php
+    │           │   ├── DataUriImageDecoder.php
+    │           │   ├── EncodedImageObjectDecoder.php
+    │           │   ├── FilePathImageDecoder.php
+    │           │   ├── FilePointerImageDecoder.php
+    │           │   ├── ImageObjectDecoder.php
+    │           │   ├── NativeObjectDecoder.php
+    │           │   └── SplFileInfoImageDecoder.php
+    │           ├── Drivers
+    │           │   ├── AbstractDecoder.php
+    │           │   ├── AbstractDriver.php
+    │           │   ├── AbstractEncoder.php
+    │           │   ├── AbstractFontProcessor.php
+    │           │   ├── Gd
+    │           │   │   ├── Analyzers
+    │           │   │   │   ├── ColorspaceAnalyzer.php
+    │           │   │   │   ├── HeightAnalyzer.php
+    │           │   │   │   ├── PixelColorAnalyzer.php
+    │           │   │   │   ├── PixelColorsAnalyzer.php
+    │           │   │   │   ├── ResolutionAnalyzer.php
+    │           │   │   │   └── WidthAnalyzer.php
+    │           │   │   ├── Cloner.php
+    │           │   │   ├── ColorProcessor.php
+    │           │   │   ├── Core.php
+    │           │   │   ├── Decoders
+    │           │   │   │   ├── AbstractDecoder.php
+    │           │   │   │   ├── Base64ImageDecoder.php
+    │           │   │   │   ├── BinaryImageDecoder.php
+    │           │   │   │   ├── DataUriImageDecoder.php
+    │           │   │   │   ├── EncodedImageObjectDecoder.php
+    │           │   │   │   ├── FilePathImageDecoder.php
+    │           │   │   │   ├── FilePointerImageDecoder.php
+    │           │   │   │   ├── NativeObjectDecoder.php
+    │           │   │   │   └── SplFileInfoImageDecoder.php
+    │           │   │   ├── Driver.php
+    │           │   │   ├── Encoders
+    │           │   │   │   ├── AvifEncoder.php
+    │           │   │   │   ├── BmpEncoder.php
+    │           │   │   │   ├── GifEncoder.php
+    │           │   │   │   ├── JpegEncoder.php
+    │           │   │   │   ├── PngEncoder.php
+    │           │   │   │   └── WebpEncoder.php
+    │           │   │   ├── FontProcessor.php
+    │           │   │   ├── Frame.php
+    │           │   │   └── Modifiers
+    │           │   │       ├── AlignRotationModifier.php
+    │           │   │       ├── BlendTransparencyModifier.php
+    │           │   │       ├── BlurModifier.php
+    │           │   │       ├── BrightnessModifier.php
+    │           │   │       ├── ColorizeModifier.php
+    │           │   │       ├── ColorspaceModifier.php
+    │           │   │       ├── ContainModifier.php
+    │           │   │       ├── ContrastModifier.php
+    │           │   │       ├── CoverDownModifier.php
+    │           │   │       ├── CoverModifier.php
+    │           │   │       ├── CropModifier.php
+    │           │   │       ├── DrawBezierModifier.php
+    │           │   │       ├── DrawEllipseModifier.php
+    │           │   │       ├── DrawLineModifier.php
+    │           │   │       ├── DrawPixelModifier.php
+    │           │   │       ├── DrawPolygonModifier.php
+    │           │   │       ├── DrawRectangleModifier.php
+    │           │   │       ├── FillModifier.php
+    │           │   │       ├── FlipModifier.php
+    │           │   │       ├── FlopModifier.php
+    │           │   │       ├── GammaModifier.php
+    │           │   │       ├── GreyscaleModifier.php
+    │           │   │       ├── InvertModifier.php
+    │           │   │       ├── PadModifier.php
+    │           │   │       ├── PixelateModifier.php
+    │           │   │       ├── PlaceModifier.php
+    │           │   │       ├── ProfileModifier.php
+    │           │   │       ├── ProfileRemovalModifier.php
+    │           │   │       ├── QuantizeColorsModifier.php
+    │           │   │       ├── RemoveAnimationModifier.php
+    │           │   │       ├── ResizeCanvasModifier.php
+    │           │   │       ├── ResizeCanvasRelativeModifier.php
+    │           │   │       ├── ResizeDownModifier.php
+    │           │   │       ├── ResizeModifier.php
+    │           │   │       ├── ResolutionModifier.php
+    │           │   │       ├── RotateModifier.php
+    │           │   │       ├── ScaleDownModifier.php
+    │           │   │       ├── ScaleModifier.php
+    │           │   │       ├── SharpenModifier.php
+    │           │   │       ├── SliceAnimationModifier.php
+    │           │   │       ├── TextModifier.php
+    │           │   │       └── TrimModifier.php
+    │           │   ├── Imagick
+    │           │   │   ├── Analyzers
+    │           │   │   │   ├── ColorspaceAnalyzer.php
+    │           │   │   │   ├── HeightAnalyzer.php
+    │           │   │   │   ├── PixelColorAnalyzer.php
+    │           │   │   │   ├── PixelColorsAnalyzer.php
+    │           │   │   │   ├── ProfileAnalyzer.php
+    │           │   │   │   ├── ResolutionAnalyzer.php
+    │           │   │   │   └── WidthAnalyzer.php
+    │           │   │   ├── ColorProcessor.php
+    │           │   │   ├── Core.php
+    │           │   │   ├── Decoders
+    │           │   │   │   ├── Base64ImageDecoder.php
+    │           │   │   │   ├── BinaryImageDecoder.php
+    │           │   │   │   ├── DataUriImageDecoder.php
+    │           │   │   │   ├── EncodedImageObjectDecoder.php
+    │           │   │   │   ├── FilePathImageDecoder.php
+    │           │   │   │   ├── FilePointerImageDecoder.php
+    │           │   │   │   ├── NativeObjectDecoder.php
+    │           │   │   │   └── SplFileInfoImageDecoder.php
+    │           │   │   ├── Driver.php
+    │           │   │   ├── Encoders
+    │           │   │   │   ├── AvifEncoder.php
+    │           │   │   │   ├── BmpEncoder.php
+    │           │   │   │   ├── GifEncoder.php
+    │           │   │   │   ├── HeicEncoder.php
+    │           │   │   │   ├── Jpeg2000Encoder.php
+    │           │   │   │   ├── JpegEncoder.php
+    │           │   │   │   ├── PngEncoder.php
+    │           │   │   │   ├── TiffEncoder.php
+    │           │   │   │   └── WebpEncoder.php
+    │           │   │   ├── FontProcessor.php
+    │           │   │   ├── Frame.php
+    │           │   │   └── Modifiers
+    │           │   │       ├── AlignRotationModifier.php
+    │           │   │       ├── BlendTransparencyModifier.php
+    │           │   │       ├── BlurModifier.php
+    │           │   │       ├── BrightnessModifier.php
+    │           │   │       ├── ColorizeModifier.php
+    │           │   │       ├── ColorspaceModifier.php
+    │           │   │       ├── ContainModifier.php
+    │           │   │       ├── ContrastModifier.php
+    │           │   │       ├── CoverDownModifier.php
+    │           │   │       ├── CoverModifier.php
+    │           │   │       ├── CropModifier.php
+    │           │   │       ├── DrawBezierModifier.php
+    │           │   │       ├── DrawEllipseModifier.php
+    │           │   │       ├── DrawLineModifier.php
+    │           │   │       ├── DrawPixelModifier.php
+    │           │   │       ├── DrawPolygonModifier.php
+    │           │   │       ├── DrawRectangleModifier.php
+    │           │   │       ├── FillModifier.php
+    │           │   │       ├── FlipModifier.php
+    │           │   │       ├── FlopModifier.php
+    │           │   │       ├── GammaModifier.php
+    │           │   │       ├── GreyscaleModifier.php
+    │           │   │       ├── InvertModifier.php
+    │           │   │       ├── PadModifier.php
+    │           │   │       ├── PixelateModifier.php
+    │           │   │       ├── PlaceModifier.php
+    │           │   │       ├── ProfileModifier.php
+    │           │   │       ├── ProfileRemovalModifier.php
+    │           │   │       ├── QuantizeColorsModifier.php
+    │           │   │       ├── RemoveAnimationModifier.php
+    │           │   │       ├── ResizeCanvasModifier.php
+    │           │   │       ├── ResizeCanvasRelativeModifier.php
+    │           │   │       ├── ResizeDownModifier.php
+    │           │   │       ├── ResizeModifier.php
+    │           │   │       ├── ResolutionModifier.php
+    │           │   │       ├── RotateModifier.php
+    │           │   │       ├── ScaleDownModifier.php
+    │           │   │       ├── ScaleModifier.php
+    │           │   │       ├── SharpenModifier.php
+    │           │   │       ├── SliceAnimationModifier.php
+    │           │   │       ├── TextModifier.php
+    │           │   │       └── TrimModifier.php
+    │           │   ├── Specializable.php
+    │           │   ├── SpecializableAnalyzer.php
+    │           │   ├── SpecializableDecoder.php
+    │           │   ├── SpecializableEncoder.php
+    │           │   └── SpecializableModifier.php
+    │           ├── EncodedImage.php
+    │           ├── Encoders
+    │           │   ├── AutoEncoder.php
+    │           │   ├── AvifEncoder.php
+    │           │   ├── BmpEncoder.php
+    │           │   ├── FileExtensionEncoder.php
+    │           │   ├── FilePathEncoder.php
+    │           │   ├── GifEncoder.php
+    │           │   ├── HeicEncoder.php
+    │           │   ├── Jpeg2000Encoder.php
+    │           │   ├── JpegEncoder.php
+    │           │   ├── MediaTypeEncoder.php
+    │           │   ├── PngEncoder.php
+    │           │   ├── TiffEncoder.php
+    │           │   └── WebpEncoder.php
+    │           ├── Exceptions
+    │           │   ├── AnimationException.php
+    │           │   ├── ColorException.php
+    │           │   ├── DecoderException.php
+    │           │   ├── DriverException.php
+    │           │   ├── EncoderException.php
+    │           │   ├── FontException.php
+    │           │   ├── GeometryException.php
+    │           │   ├── InputException.php
+    │           │   ├── NotSupportedException.php
+    │           │   ├── NotWritableException.php
+    │           │   └── RuntimeException.php
+    │           ├── File.php
+    │           ├── FileExtension.php
+    │           ├── Format.php
+    │           ├── Geometry
+    │           │   ├── Bezier.php
+    │           │   ├── Circle.php
+    │           │   ├── Ellipse.php
+    │           │   ├── Factories
+    │           │   │   ├── BezierFactory.php
+    │           │   │   ├── CircleFactory.php
+    │           │   │   ├── Drawable.php
+    │           │   │   ├── EllipseFactory.php
+    │           │   │   ├── LineFactory.php
+    │           │   │   ├── PolygonFactory.php
+    │           │   │   └── RectangleFactory.php
+    │           │   ├── Line.php
+    │           │   ├── Pixel.php
+    │           │   ├── Point.php
+    │           │   ├── Polygon.php
+    │           │   ├── Rectangle.php
+    │           │   ├── Tools
+    │           │   │   └── RectangleResizer.php
+    │           │   └── Traits
+    │           │       ├── HasBackgroundColor.php
+    │           │       └── HasBorder.php
+    │           ├── Image.php
+    │           ├── ImageManager.php
+    │           ├── InputHandler.php
+    │           ├── Interfaces
+    │           │   ├── AnalyzerInterface.php
+    │           │   ├── CollectionInterface.php
+    │           │   ├── ColorChannelInterface.php
+    │           │   ├── ColorInterface.php
+    │           │   ├── ColorProcessorInterface.php
+    │           │   ├── ColorspaceInterface.php
+    │           │   ├── CoreInterface.php
+    │           │   ├── DecoderInterface.php
+    │           │   ├── DrawableFactoryInterface.php
+    │           │   ├── DrawableInterface.php
+    │           │   ├── DriverInterface.php
+    │           │   ├── EncodedImageInterface.php
+    │           │   ├── EncoderInterface.php
+    │           │   ├── FileInterface.php
+    │           │   ├── FontInterface.php
+    │           │   ├── FontProcessorInterface.php
+    │           │   ├── FrameInterface.php
+    │           │   ├── ImageInterface.php
+    │           │   ├── ImageManagerInterface.php
+    │           │   ├── InputHandlerInterface.php
+    │           │   ├── ModifierInterface.php
+    │           │   ├── PointInterface.php
+    │           │   ├── ProfileInterface.php
+    │           │   ├── ResolutionInterface.php
+    │           │   ├── SizeInterface.php
+    │           │   ├── SpecializableInterface.php
+    │           │   └── SpecializedInterface.php
+    │           ├── MediaType.php
+    │           ├── ModifierStack.php
+    │           ├── Modifiers
+    │           │   ├── AbstractDrawModifier.php
+    │           │   ├── AlignRotationModifier.php
+    │           │   ├── BlendTransparencyModifier.php
+    │           │   ├── BlurModifier.php
+    │           │   ├── BrightnessModifier.php
+    │           │   ├── ColorizeModifier.php
+    │           │   ├── ColorspaceModifier.php
+    │           │   ├── ContainModifier.php
+    │           │   ├── ContrastModifier.php
+    │           │   ├── CoverDownModifier.php
+    │           │   ├── CoverModifier.php
+    │           │   ├── CropModifier.php
+    │           │   ├── DrawBezierModifier.php
+    │           │   ├── DrawEllipseModifier.php
+    │           │   ├── DrawLineModifier.php
+    │           │   ├── DrawPixelModifier.php
+    │           │   ├── DrawPolygonModifier.php
+    │           │   ├── DrawRectangleModifier.php
+    │           │   ├── FillModifier.php
+    │           │   ├── FlipModifier.php
+    │           │   ├── FlopModifier.php
+    │           │   ├── GammaModifier.php
+    │           │   ├── GreyscaleModifier.php
+    │           │   ├── InvertModifier.php
+    │           │   ├── PadModifier.php
+    │           │   ├── PixelateModifier.php
+    │           │   ├── PlaceModifier.php
+    │           │   ├── ProfileModifier.php
+    │           │   ├── ProfileRemovalModifier.php
+    │           │   ├── QuantizeColorsModifier.php
+    │           │   ├── RemoveAnimationModifier.php
+    │           │   ├── ResizeCanvasModifier.php
+    │           │   ├── ResizeCanvasRelativeModifier.php
+    │           │   ├── ResizeDownModifier.php
+    │           │   ├── ResizeModifier.php
+    │           │   ├── ResolutionModifier.php
+    │           │   ├── RotateModifier.php
+    │           │   ├── ScaleDownModifier.php
+    │           │   ├── ScaleModifier.php
+    │           │   ├── SharpenModifier.php
+    │           │   ├── SliceAnimationModifier.php
+    │           │   ├── TextModifier.php
+    │           │   └── TrimModifier.php
+    │           ├── Origin.php
+    │           ├── Resolution.php
+    │           ├── Traits
+    │           │   ├── CanBeDriverSpecialized.php
+    │           │   └── CanBuildFilePointer.php
+    │           └── Typography
+    │               ├── Font.php
+    │               ├── FontFactory.php
+    │               ├── Line.php
+    │               └── TextBlock.php
+    ├── league
+    │   ├── commonmark
+    │   │   ├── CHANGELOG.md
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── CommonMarkConverter.php
+    │   │       ├── ConverterInterface.php
+    │   │       ├── Delimiter
+    │   │       │   ├── Delimiter.php
+    │   │       │   ├── DelimiterInterface.php
+    │   │       │   ├── DelimiterParser.php
+    │   │       │   ├── DelimiterStack.php
+    │   │       │   └── Processor
+    │   │       │       ├── DelimiterProcessorCollection.php
+    │   │       │       ├── DelimiterProcessorCollectionInterface.php
+    │   │       │       ├── DelimiterProcessorInterface.php
+    │   │       │       └── StaggeredDelimiterProcessor.php
+    │   │       ├── Environment
+    │   │       │   ├── Environment.php
+    │   │       │   ├── EnvironmentAwareInterface.php
+    │   │       │   ├── EnvironmentBuilderInterface.php
+    │   │       │   └── EnvironmentInterface.php
+    │   │       ├── Event
+    │   │       │   ├── AbstractEvent.php
+    │   │       │   ├── DocumentParsedEvent.php
+    │   │       │   ├── DocumentPreParsedEvent.php
+    │   │       │   ├── DocumentPreRenderEvent.php
+    │   │       │   ├── DocumentRenderedEvent.php
+    │   │       │   └── ListenerData.php
+    │   │       ├── Exception
+    │   │       │   ├── AlreadyInitializedException.php
+    │   │       │   ├── CommonMarkException.php
+    │   │       │   ├── IOException.php
+    │   │       │   ├── InvalidArgumentException.php
+    │   │       │   ├── LogicException.php
+    │   │       │   ├── MissingDependencyException.php
+    │   │       │   └── UnexpectedEncodingException.php
+    │   │       ├── Extension
+    │   │       │   ├── Attributes
+    │   │       │   │   ├── AttributesExtension.php
+    │   │       │   │   ├── Event
+    │   │       │   │   │   └── AttributesListener.php
+    │   │       │   │   ├── Node
+    │   │       │   │   │   ├── Attributes.php
+    │   │       │   │   │   └── AttributesInline.php
+    │   │       │   │   ├── Parser
+    │   │       │   │   │   ├── AttributesBlockContinueParser.php
+    │   │       │   │   │   ├── AttributesBlockStartParser.php
+    │   │       │   │   │   └── AttributesInlineParser.php
+    │   │       │   │   └── Util
+    │   │       │   │       └── AttributesHelper.php
+    │   │       │   ├── Autolink
+    │   │       │   │   ├── AutolinkExtension.php
+    │   │       │   │   ├── EmailAutolinkParser.php
+    │   │       │   │   └── UrlAutolinkParser.php
+    │   │       │   ├── CommonMark
+    │   │       │   │   ├── CommonMarkCoreExtension.php
+    │   │       │   │   ├── Delimiter
+    │   │       │   │   │   └── Processor
+    │   │       │   │   │       └── EmphasisDelimiterProcessor.php
+    │   │       │   │   ├── Node
+    │   │       │   │   │   ├── Block
+    │   │       │   │   │   │   ├── BlockQuote.php
+    │   │       │   │   │   │   ├── FencedCode.php
+    │   │       │   │   │   │   ├── Heading.php
+    │   │       │   │   │   │   ├── HtmlBlock.php
+    │   │       │   │   │   │   ├── IndentedCode.php
+    │   │       │   │   │   │   ├── ListBlock.php
+    │   │       │   │   │   │   ├── ListData.php
+    │   │       │   │   │   │   ├── ListItem.php
+    │   │       │   │   │   │   └── ThematicBreak.php
+    │   │       │   │   │   └── Inline
+    │   │       │   │   │       ├── AbstractWebResource.php
+    │   │       │   │   │       ├── Code.php
+    │   │       │   │   │       ├── Emphasis.php
+    │   │       │   │   │       ├── HtmlInline.php
+    │   │       │   │   │       ├── Image.php
+    │   │       │   │   │       ├── Link.php
+    │   │       │   │   │       └── Strong.php
+    │   │       │   │   ├── Parser
+    │   │       │   │   │   ├── Block
+    │   │       │   │   │   │   ├── BlockQuoteParser.php
+    │   │       │   │   │   │   ├── BlockQuoteStartParser.php
+    │   │       │   │   │   │   ├── FencedCodeParser.php
+    │   │       │   │   │   │   ├── FencedCodeStartParser.php
+    │   │       │   │   │   │   ├── HeadingParser.php
+    │   │       │   │   │   │   ├── HeadingStartParser.php
+    │   │       │   │   │   │   ├── HtmlBlockParser.php
+    │   │       │   │   │   │   ├── HtmlBlockStartParser.php
+    │   │       │   │   │   │   ├── IndentedCodeParser.php
+    │   │       │   │   │   │   ├── IndentedCodeStartParser.php
+    │   │       │   │   │   │   ├── ListBlockParser.php
+    │   │       │   │   │   │   ├── ListBlockStartParser.php
+    │   │       │   │   │   │   ├── ListItemParser.php
+    │   │       │   │   │   │   ├── ThematicBreakParser.php
+    │   │       │   │   │   │   └── ThematicBreakStartParser.php
+    │   │       │   │   │   └── Inline
+    │   │       │   │   │       ├── AutolinkParser.php
+    │   │       │   │   │       ├── BacktickParser.php
+    │   │       │   │   │       ├── BangParser.php
+    │   │       │   │   │       ├── CloseBracketParser.php
+    │   │       │   │   │       ├── EntityParser.php
+    │   │       │   │   │       ├── EscapableParser.php
+    │   │       │   │   │       ├── HtmlInlineParser.php
+    │   │       │   │   │       └── OpenBracketParser.php
+    │   │       │   │   └── Renderer
+    │   │       │   │       ├── Block
+    │   │       │   │       │   ├── BlockQuoteRenderer.php
+    │   │       │   │       │   ├── FencedCodeRenderer.php
+    │   │       │   │       │   ├── HeadingRenderer.php
+    │   │       │   │       │   ├── HtmlBlockRenderer.php
+    │   │       │   │       │   ├── IndentedCodeRenderer.php
+    │   │       │   │       │   ├── ListBlockRenderer.php
+    │   │       │   │       │   ├── ListItemRenderer.php
+    │   │       │   │       │   └── ThematicBreakRenderer.php
+    │   │       │   │       └── Inline
+    │   │       │   │           ├── CodeRenderer.php
+    │   │       │   │           ├── EmphasisRenderer.php
+    │   │       │   │           ├── HtmlInlineRenderer.php
+    │   │       │   │           ├── ImageRenderer.php
+    │   │       │   │           ├── LinkRenderer.php
+    │   │       │   │           └── StrongRenderer.php
+    │   │       │   ├── ConfigurableExtensionInterface.php
+    │   │       │   ├── DefaultAttributes
+    │   │       │   │   ├── ApplyDefaultAttributesProcessor.php
+    │   │       │   │   └── DefaultAttributesExtension.php
+    │   │       │   ├── DescriptionList
+    │   │       │   │   ├── DescriptionListExtension.php
+    │   │       │   │   ├── Event
+    │   │       │   │   │   ├── ConsecutiveDescriptionListMerger.php
+    │   │       │   │   │   └── LooseDescriptionHandler.php
+    │   │       │   │   ├── Node
+    │   │       │   │   │   ├── Description.php
+    │   │       │   │   │   ├── DescriptionList.php
+    │   │       │   │   │   └── DescriptionTerm.php
+    │   │       │   │   ├── Parser
+    │   │       │   │   │   ├── DescriptionContinueParser.php
+    │   │       │   │   │   ├── DescriptionListContinueParser.php
+    │   │       │   │   │   ├── DescriptionStartParser.php
+    │   │       │   │   │   └── DescriptionTermContinueParser.php
+    │   │       │   │   └── Renderer
+    │   │       │   │       ├── DescriptionListRenderer.php
+    │   │       │   │       ├── DescriptionRenderer.php
+    │   │       │   │       └── DescriptionTermRenderer.php
+    │   │       │   ├── DisallowedRawHtml
+    │   │       │   │   ├── DisallowedRawHtmlExtension.php
+    │   │       │   │   └── DisallowedRawHtmlRenderer.php
+    │   │       │   ├── Embed
+    │   │       │   │   ├── Bridge
+    │   │       │   │   │   └── OscaroteroEmbedAdapter.php
+    │   │       │   │   ├── DomainFilteringAdapter.php
+    │   │       │   │   ├── Embed.php
+    │   │       │   │   ├── EmbedAdapterInterface.php
+    │   │       │   │   ├── EmbedExtension.php
+    │   │       │   │   ├── EmbedParser.php
+    │   │       │   │   ├── EmbedProcessor.php
+    │   │       │   │   ├── EmbedRenderer.php
+    │   │       │   │   └── EmbedStartParser.php
+    │   │       │   ├── ExtensionInterface.php
+    │   │       │   ├── ExternalLink
+    │   │       │   │   ├── ExternalLinkExtension.php
+    │   │       │   │   └── ExternalLinkProcessor.php
+    │   │       │   ├── Footnote
+    │   │       │   │   ├── Event
+    │   │       │   │   │   ├── AnonymousFootnotesListener.php
+    │   │       │   │   │   ├── FixOrphanedFootnotesAndRefsListener.php
+    │   │       │   │   │   ├── GatherFootnotesListener.php
+    │   │       │   │   │   └── NumberFootnotesListener.php
+    │   │       │   │   ├── FootnoteExtension.php
+    │   │       │   │   ├── Node
+    │   │       │   │   │   ├── Footnote.php
+    │   │       │   │   │   ├── FootnoteBackref.php
+    │   │       │   │   │   ├── FootnoteContainer.php
+    │   │       │   │   │   └── FootnoteRef.php
+    │   │       │   │   ├── Parser
+    │   │       │   │   │   ├── AnonymousFootnoteRefParser.php
+    │   │       │   │   │   ├── FootnoteParser.php
+    │   │       │   │   │   ├── FootnoteRefParser.php
+    │   │       │   │   │   └── FootnoteStartParser.php
+    │   │       │   │   └── Renderer
+    │   │       │   │       ├── FootnoteBackrefRenderer.php
+    │   │       │   │       ├── FootnoteContainerRenderer.php
+    │   │       │   │       ├── FootnoteRefRenderer.php
+    │   │       │   │       └── FootnoteRenderer.php
+    │   │       │   ├── FrontMatter
+    │   │       │   │   ├── Data
+    │   │       │   │   │   ├── FrontMatterDataParserInterface.php
+    │   │       │   │   │   ├── LibYamlFrontMatterParser.php
+    │   │       │   │   │   └── SymfonyYamlFrontMatterParser.php
+    │   │       │   │   ├── Exception
+    │   │       │   │   │   └── InvalidFrontMatterException.php
+    │   │       │   │   ├── FrontMatterExtension.php
+    │   │       │   │   ├── FrontMatterParser.php
+    │   │       │   │   ├── FrontMatterParserInterface.php
+    │   │       │   │   ├── FrontMatterProviderInterface.php
+    │   │       │   │   ├── Input
+    │   │       │   │   │   └── MarkdownInputWithFrontMatter.php
+    │   │       │   │   ├── Listener
+    │   │       │   │   │   ├── FrontMatterPostRenderListener.php
+    │   │       │   │   │   └── FrontMatterPreParser.php
+    │   │       │   │   └── Output
+    │   │       │   │       └── RenderedContentWithFrontMatter.php
+    │   │       │   ├── GithubFlavoredMarkdownExtension.php
+    │   │       │   ├── HeadingPermalink
+    │   │       │   │   ├── HeadingPermalink.php
+    │   │       │   │   ├── HeadingPermalinkExtension.php
+    │   │       │   │   ├── HeadingPermalinkProcessor.php
+    │   │       │   │   └── HeadingPermalinkRenderer.php
+    │   │       │   ├── InlinesOnly
+    │   │       │   │   ├── ChildRenderer.php
+    │   │       │   │   └── InlinesOnlyExtension.php
+    │   │       │   ├── Mention
+    │   │       │   │   ├── Generator
+    │   │       │   │   │   ├── CallbackGenerator.php
+    │   │       │   │   │   ├── MentionGeneratorInterface.php
+    │   │       │   │   │   └── StringTemplateLinkGenerator.php
+    │   │       │   │   ├── Mention.php
+    │   │       │   │   ├── MentionExtension.php
+    │   │       │   │   └── MentionParser.php
+    │   │       │   ├── SmartPunct
+    │   │       │   │   ├── DashParser.php
+    │   │       │   │   ├── EllipsesParser.php
+    │   │       │   │   ├── Quote.php
+    │   │       │   │   ├── QuoteParser.php
+    │   │       │   │   ├── QuoteProcessor.php
+    │   │       │   │   ├── ReplaceUnpairedQuotesListener.php
+    │   │       │   │   └── SmartPunctExtension.php
+    │   │       │   ├── Strikethrough
+    │   │       │   │   ├── Strikethrough.php
+    │   │       │   │   ├── StrikethroughDelimiterProcessor.php
+    │   │       │   │   ├── StrikethroughExtension.php
+    │   │       │   │   └── StrikethroughRenderer.php
+    │   │       │   ├── Table
+    │   │       │   │   ├── Table.php
+    │   │       │   │   ├── TableCell.php
+    │   │       │   │   ├── TableCellRenderer.php
+    │   │       │   │   ├── TableExtension.php
+    │   │       │   │   ├── TableParser.php
+    │   │       │   │   ├── TableRenderer.php
+    │   │       │   │   ├── TableRow.php
+    │   │       │   │   ├── TableRowRenderer.php
+    │   │       │   │   ├── TableSection.php
+    │   │       │   │   ├── TableSectionRenderer.php
+    │   │       │   │   └── TableStartParser.php
+    │   │       │   ├── TableOfContents
+    │   │       │   │   ├── Node
+    │   │       │   │   │   ├── TableOfContents.php
+    │   │       │   │   │   └── TableOfContentsPlaceholder.php
+    │   │       │   │   ├── Normalizer
+    │   │       │   │   │   ├── AsIsNormalizerStrategy.php
+    │   │       │   │   │   ├── FlatNormalizerStrategy.php
+    │   │       │   │   │   ├── NormalizerStrategyInterface.php
+    │   │       │   │   │   └── RelativeNormalizerStrategy.php
+    │   │       │   │   ├── TableOfContentsBuilder.php
+    │   │       │   │   ├── TableOfContentsExtension.php
+    │   │       │   │   ├── TableOfContentsGenerator.php
+    │   │       │   │   ├── TableOfContentsGeneratorInterface.php
+    │   │       │   │   ├── TableOfContentsPlaceholderParser.php
+    │   │       │   │   ├── TableOfContentsPlaceholderRenderer.php
+    │   │       │   │   └── TableOfContentsRenderer.php
+    │   │       │   └── TaskList
+    │   │       │       ├── TaskListExtension.php
+    │   │       │       ├── TaskListItemMarker.php
+    │   │       │       ├── TaskListItemMarkerParser.php
+    │   │       │       └── TaskListItemMarkerRenderer.php
+    │   │       ├── GithubFlavoredMarkdownConverter.php
+    │   │       ├── Input
+    │   │       │   ├── MarkdownInput.php
+    │   │       │   └── MarkdownInputInterface.php
+    │   │       ├── MarkdownConverter.php
+    │   │       ├── MarkdownConverterInterface.php
+    │   │       ├── Node
+    │   │       │   ├── Block
+    │   │       │   │   ├── AbstractBlock.php
+    │   │       │   │   ├── Document.php
+    │   │       │   │   ├── Paragraph.php
+    │   │       │   │   └── TightBlockInterface.php
+    │   │       │   ├── Inline
+    │   │       │   │   ├── AbstractInline.php
+    │   │       │   │   ├── AbstractStringContainer.php
+    │   │       │   │   ├── AdjacentTextMerger.php
+    │   │       │   │   ├── DelimitedInterface.php
+    │   │       │   │   ├── Newline.php
+    │   │       │   │   └── Text.php
+    │   │       │   ├── Node.php
+    │   │       │   ├── NodeIterator.php
+    │   │       │   ├── NodeWalker.php
+    │   │       │   ├── NodeWalkerEvent.php
+    │   │       │   ├── Query
+    │   │       │   │   ├── AndExpr.php
+    │   │       │   │   ├── ExpressionInterface.php
+    │   │       │   │   └── OrExpr.php
+    │   │       │   ├── Query.php
+    │   │       │   ├── RawMarkupContainerInterface.php
+    │   │       │   ├── StringContainerHelper.php
+    │   │       │   └── StringContainerInterface.php
+    │   │       ├── Normalizer
+    │   │       │   ├── SlugNormalizer.php
+    │   │       │   ├── TextNormalizer.php
+    │   │       │   ├── TextNormalizerInterface.php
+    │   │       │   ├── UniqueSlugNormalizer.php
+    │   │       │   └── UniqueSlugNormalizerInterface.php
+    │   │       ├── Output
+    │   │       │   ├── RenderedContent.php
+    │   │       │   └── RenderedContentInterface.php
+    │   │       ├── Parser
+    │   │       │   ├── Block
+    │   │       │   │   ├── AbstractBlockContinueParser.php
+    │   │       │   │   ├── BlockContinue.php
+    │   │       │   │   ├── BlockContinueParserInterface.php
+    │   │       │   │   ├── BlockContinueParserWithInlinesInterface.php
+    │   │       │   │   ├── BlockStart.php
+    │   │       │   │   ├── BlockStartParserInterface.php
+    │   │       │   │   ├── DocumentBlockParser.php
+    │   │       │   │   ├── ParagraphParser.php
+    │   │       │   │   └── SkipLinesStartingWithLettersParser.php
+    │   │       │   ├── Cursor.php
+    │   │       │   ├── CursorState.php
+    │   │       │   ├── Inline
+    │   │       │   │   ├── InlineParserInterface.php
+    │   │       │   │   ├── InlineParserMatch.php
+    │   │       │   │   └── NewlineParser.php
+    │   │       │   ├── InlineParserContext.php
+    │   │       │   ├── InlineParserEngine.php
+    │   │       │   ├── InlineParserEngineInterface.php
+    │   │       │   ├── MarkdownParser.php
+    │   │       │   ├── MarkdownParserInterface.php
+    │   │       │   ├── MarkdownParserState.php
+    │   │       │   ├── MarkdownParserStateInterface.php
+    │   │       │   └── ParserLogicException.php
+    │   │       ├── Reference
+    │   │       │   ├── Reference.php
+    │   │       │   ├── ReferenceInterface.php
+    │   │       │   ├── ReferenceMap.php
+    │   │       │   ├── ReferenceMapInterface.php
+    │   │       │   ├── ReferenceParser.php
+    │   │       │   └── ReferenceableInterface.php
+    │   │       ├── Renderer
+    │   │       │   ├── Block
+    │   │       │   │   ├── DocumentRenderer.php
+    │   │       │   │   └── ParagraphRenderer.php
+    │   │       │   ├── ChildNodeRendererInterface.php
+    │   │       │   ├── DocumentRendererInterface.php
+    │   │       │   ├── HtmlDecorator.php
+    │   │       │   ├── HtmlRenderer.php
+    │   │       │   ├── Inline
+    │   │       │   │   ├── NewlineRenderer.php
+    │   │       │   │   └── TextRenderer.php
+    │   │       │   ├── MarkdownRendererInterface.php
+    │   │       │   ├── NoMatchingRendererException.php
+    │   │       │   └── NodeRendererInterface.php
+    │   │       ├── Util
+    │   │       │   ├── ArrayCollection.php
+    │   │       │   ├── Html5EntityDecoder.php
+    │   │       │   ├── HtmlElement.php
+    │   │       │   ├── HtmlFilter.php
+    │   │       │   ├── LinkParserHelper.php
+    │   │       │   ├── PrioritizedList.php
+    │   │       │   ├── RegexHelper.php
+    │   │       │   ├── SpecReader.php
+    │   │       │   ├── UrlEncoder.php
+    │   │       │   └── Xml.php
+    │   │       └── Xml
+    │   │           ├── FallbackNodeXmlRenderer.php
+    │   │           ├── MarkdownToXmlConverter.php
+    │   │           ├── XmlNodeRendererInterface.php
+    │   │           └── XmlRenderer.php
+    │   └── config
+    │       ├── CHANGELOG.md
+    │       ├── LICENSE.md
+    │       ├── README.md
+    │       ├── composer.json
+    │       └── src
+    │           ├── Configuration.php
+    │           ├── ConfigurationAwareInterface.php
+    │           ├── ConfigurationBuilderInterface.php
+    │           ├── ConfigurationInterface.php
+    │           ├── ConfigurationProviderInterface.php
+    │           ├── Exception
+    │           │   ├── ConfigurationExceptionInterface.php
+    │           │   ├── InvalidConfigurationException.php
+    │           │   ├── UnknownOptionException.php
+    │           │   └── ValidationException.php
+    │           ├── MutableConfigurationInterface.php
+    │           ├── ReadOnlyConfiguration.php
+    │           └── SchemaBuilderInterface.php
+    ├── nette
+    │   ├── schema
+    │   │   ├── composer.json
+    │   │   ├── license.md
+    │   │   ├── readme.md
+    │   │   └── src
+    │   │       └── Schema
+    │   │           ├── Context.php
+    │   │           ├── DynamicParameter.php
+    │   │           ├── Elements
+    │   │           │   ├── AnyOf.php
+    │   │           │   ├── Base.php
+    │   │           │   ├── Structure.php
+    │   │           │   └── Type.php
+    │   │           ├── Expect.php
+    │   │           ├── Helpers.php
+    │   │           ├── Message.php
+    │   │           ├── Processor.php
+    │   │           ├── Schema.php
+    │   │           └── ValidationException.php
+    │   └── utils
+    │       ├── composer.json
+    │       ├── license.md
+    │       ├── readme.md
+    │       └── src
+    │           ├── HtmlStringable.php
+    │           ├── Iterators
+    │           │   ├── CachingIterator.php
+    │           │   └── Mapper.php
+    │           ├── SmartObject.php
+    │           ├── StaticClass.php
+    │           ├── Translator.php
+    │           ├── Utils
+    │           │   ├── ArrayHash.php
+    │           │   ├── ArrayList.php
+    │           │   ├── Arrays.php
+    │           │   ├── Callback.php
+    │           │   ├── DateTime.php
+    │           │   ├── FileInfo.php
+    │           │   ├── FileSystem.php
+    │           │   ├── Finder.php
+    │           │   ├── Floats.php
+    │           │   ├── Helpers.php
+    │           │   ├── Html.php
+    │           │   ├── Image.php
+    │           │   ├── ImageColor.php
+    │           │   ├── ImageType.php
+    │           │   ├── Iterables.php
+    │           │   ├── Json.php
+    │           │   ├── ObjectHelpers.php
+    │           │   ├── Paginator.php
+    │           │   ├── Random.php
+    │           │   ├── Reflection.php
+    │           │   ├── ReflectionMethod.php
+    │           │   ├── Strings.php
+    │           │   ├── Type.php
+    │           │   ├── Validators.php
+    │           │   └── exceptions.php
+    │           ├── compatibility.php
+    │           └── exceptions.php
+    ├── psr
+    │   └── event-dispatcher
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── composer.json
+    │       └── src
+    │           ├── EventDispatcherInterface.php
+    │           ├── ListenerProviderInterface.php
+    │           └── StoppableEventInterface.php
+    ├── robthree
+    │   └── twofactorauth
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── TwoFactorAuth.phpproj
+    │       ├── TwoFactorAuth.sln
+    │       ├── composer.json
+    │       ├── demo
+    │       │   └── demo.php
+    │       ├── docs
+    │       │   ├── _config.yml
+    │       │   ├── _layouts
+    │       │   │   └── post.html
+    │       │   ├── assets
+    │       │   │   └── css
+    │       │   │       └── style.scss
+    │       │   ├── getting-started.md
+    │       │   ├── improved-code-verification.md
+    │       │   ├── index.md
+    │       │   ├── optional-configuration.md
+    │       │   ├── qr-codes
+    │       │   │   ├── bacon.md
+    │       │   │   ├── endroid.md
+    │       │   │   ├── image-charts.md
+    │       │   │   ├── qr-server.md
+    │       │   │   └── qrickit.md
+    │       │   └── qr-codes.md
+    │       ├── lib
+    │       │   ├── Providers
+    │       │   │   ├── Qr
+    │       │   │   │   ├── BaconQrCodeProvider.php
+    │       │   │   │   ├── BaseHTTPQRCodeProvider.php
+    │       │   │   │   ├── EndroidQrCodeProvider.php
+    │       │   │   │   ├── EndroidQrCodeWithLogoProvider.php
+    │       │   │   │   ├── GoogleChartsQrCodeProvider.php
+    │       │   │   │   ├── HandlesDataUri.php
+    │       │   │   │   ├── IQRCodeProvider.php
+    │       │   │   │   ├── ImageChartsQRCodeProvider.php
+    │       │   │   │   ├── QRException.php
+    │       │   │   │   ├── QRServerProvider.php
+    │       │   │   │   └── QRicketProvider.php
+    │       │   │   ├── Rng
+    │       │   │   │   ├── CSRNGProvider.php
+    │       │   │   │   ├── HashRNGProvider.php
+    │       │   │   │   ├── IRNGProvider.php
+    │       │   │   │   ├── MCryptRNGProvider.php
+    │       │   │   │   ├── OpenSSLRNGProvider.php
+    │       │   │   │   └── RNGException.php
+    │       │   │   └── Time
+    │       │   │       ├── HttpTimeProvider.php
+    │       │   │       ├── ITimeProvider.php
+    │       │   │       ├── LocalMachineTimeProvider.php
+    │       │   │       ├── NTPTimeProvider.php
+    │       │   │       └── TimeException.php
+    │       │   ├── TwoFactorAuth.php
+    │       │   └── TwoFactorAuthException.php
+    │       ├── logo.png
+    │       ├── multifactorauthforeveryone.png
+    │       ├── phpunit.xml
+    │       ├── tests
+    │       │   ├── MightNotMakeAssertions.php
+    │       │   ├── Providers
+    │       │   │   ├── Qr
+    │       │   │   │   ├── IQRCodeProviderTest.php
+    │       │   │   │   └── TestQrProvider.php
+    │       │   │   ├── Rng
+    │       │   │   │   ├── CSRNGProviderTest.php
+    │       │   │   │   ├── HashRNGProviderTest.php
+    │       │   │   │   ├── IRNGProviderTest.php
+    │       │   │   │   ├── MCryptRNGProviderTest.php
+    │       │   │   │   ├── NeedsRngLengths.php
+    │       │   │   │   ├── OpenSSLRNGProviderTest.php
+    │       │   │   │   └── TestRNGProvider.php
+    │       │   │   └── Time
+    │       │   │       ├── ITimeProviderTest.php
+    │       │   │       └── TestTimeProvider.php
+    │       │   └── TwoFactorAuthTest.php
+    │       └── testsDependency
+    │           ├── BaconQRCodeTest.php
+    │           └── EndroidQRCodeTest.php
+    └── symfony
+        ├── asset
+        │   ├── CHANGELOG.md
+        │   ├── Context
+        │   │   ├── ContextInterface.php
+        │   │   ├── NullContext.php
+        │   │   └── RequestStackContext.php
+        │   ├── Exception
+        │   │   ├── AssetNotFoundException.php
+        │   │   ├── ExceptionInterface.php
+        │   │   ├── InvalidArgumentException.php
+        │   │   ├── LogicException.php
+        │   │   └── RuntimeException.php
+        │   ├── LICENSE
+        │   ├── Package.php
+        │   ├── PackageInterface.php
+        │   ├── Packages.php
+        │   ├── PathPackage.php
+        │   ├── README.md
+        │   ├── UrlPackage.php
+        │   ├── VersionStrategy
+        │   │   ├── EmptyVersionStrategy.php
+        │   │   ├── JsonManifestVersionStrategy.php
+        │   │   ├── StaticVersionStrategy.php
+        │   │   └── VersionStrategyInterface.php
+        │   └── composer.json
+        ├── deprecation-contracts
+        │   ├── CHANGELOG.md
+        │   ├── LICENSE
+        │   ├── README.md
+        │   ├── composer.json
+        │   └── function.php
+        └── polyfill-php80
+            ├── LICENSE
+            ├── Php80.php
+            ├── PhpToken.php
+            ├── README.md
+            ├── Resources
+            │   └── stubs
+            │       ├── Attribute.php
+            │       ├── PhpToken.php
+            │       ├── Stringable.php
+            │       ├── UnhandledMatchError.php
+            │       └── ValueError.php
+            ├── bootstrap.php
+            └── composer.json
+
+213 directories, 1043 files

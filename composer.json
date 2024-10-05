@@ -1,0 +1,35 @@
+{
+    "name": "your-vendor/your-project",
+    "description": "Your SaaS AI Inference Service project",
+    "type": "project",
+    "require": {
+        "php": "^8.2",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-swoole": "^5.1",
+        "firebase/php-jwt": "^6.0",
+        "intervention/image": "^3.8",
+        "league/commonmark": "^2.5",
+        "robthree/twofactorauth": "^1.8",
+        "symfony/asset": "^7.1",
+        "symfony/config": "^7.1",
+        "symfony/console": "^7.1",
+        "symfony/dependency-injection": "^7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
