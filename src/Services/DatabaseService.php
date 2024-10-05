@@ -4,70 +4,46 @@ declare(strict_types=1);
 
 namespace Src\Services;
 
-use PDO;
-use PDOException;
-use Src\Core\Database;
-use Src\Interfaces\DatabaseServiceInterface;
-use Src\Exceptions\DatabaseException;
+use Src\Database\Database;
+use Psr\Log\LoggerInterface;
+use RuntimeException;
+use Throwable;
 
-class DatabaseService implements DatabaseServiceInterface
+class DatabaseService
 {
-    private PDO $pdo;
+    private Database $database;
 
-    public function __construct(Database $database)
+    public function __construct(array $configs, LoggerInterface $logger)
     {
-        $this->pdo = $database->getConnection();
+        $this->database = Database::getInstance($configs, $logger);
     }
 
-    public function query(string $sql, array $params = []): array
+    public function query(string $sql, array $params = [], string $connectionName = 'default'): array
     {
         try {
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute($params);
-            return $stmt->fetchAll();
-        } catch (PDOException $e) {
-            throw new DatabaseException("Query execution failed: " . $e->getMessage());
+            return $this->database->query($sql, $params, true, $connectionName);
+        } catch (Throwable $e) {
+            // Log the error
+            error_log("Database query error: " . $e->getMessage());
+            throw new RuntimeException("An error occurred while executing the database query.", 0, $e);
         }
     }
 
-    public function execute(string $sql, array $params = []): int
+    public function execute(string $sql, array $params = [], string $connectionName = 'default'): int
     {
         try {
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute($params);
-            return $stmt->rowCount();
-        } catch (PDOException $e) {
-            throw new DatabaseException("Statement execution failed: " . $e->getMessage());
+            return $this->database->execute($sql, $params, $connectionName);
+        } catch (Throwable $e) {
+            // Log the error
+            error_log("Database execute error: " . $e->getMessage());
+            throw new RuntimeException("An error occurred while executing the database command.", 0, $e);
         }
     }
 
-    public function lastInsertId(): string
-    {
-        return $this->pdo->lastInsertId();
-    }
+    // Add other methods as needed
 
-    public function beginTransaction(): void
+    public function close(): void
     {
-        $this->pdo->beginTransaction();
-    }
-
-    public function commit(): void
-    {
-        $this->pdo->commit();
-    }
-
-    public function rollBack(): void
-    {
-        $this->pdo->rollBack();
-    }
-
-    public function prepare(string $sql): \PDOStatement
-    {
-        return $this->pdo->prepare($sql);
-    }
-
-    public function getPdo(): PDO
-    {
-        return $this->pdo;
+        $this->database->close();
     }
 }

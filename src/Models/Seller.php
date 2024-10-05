@@ -2,7 +2,7 @@
 
 namespace Src\Models;
 
-use Src\Core\Database;
+use Src\Database\Database;
 
 class Seller extends User
 {

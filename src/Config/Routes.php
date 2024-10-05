@@ -8,8 +8,6 @@ use Src\Controllers\UserController;
 use Src\Middleware\ValidationSanitizationMiddleware;
 
 return function (RouteCollection $routes) {
-    $routes = RouteCollection::getInstance();
-    
     // Home routes
     $routes->get('/', ['Src\Controllers\HomeController', 'index']);
     $routes->get('/about', ['Src\Controllers\HomeController', 'about']);

@@ -4,69 +4,58 @@ declare(strict_types=1);
 
 namespace Src\Core;
 
-use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 
 class Router
 {
     private array $routes = [];
+    private array $middleware = [];
+    private ContainerInterface $container;
 
-    public function __construct(
-        private readonly ContainerInterface $container,
-        private readonly ErrorHandler $errorHandler
-    ) {}
-
-    public function addRoute(string $method, string $path, array $handler): void
+    public function __construct(ContainerInterface $container)
     {
-        $this->routes[] = [
-            'method' => $method,
-            'path' => $path,
-            'handler' => $handler,
-        ];
+        $this->container = $container;
+    }
+
+    // ... (other methods remain the same)
+
+    public function addMiddleware(string $middleware): void
+    {
+        $this->middleware[] = $middleware;
     }
 
     public function dispatch(Request $request, Response $response): void
     {
-        $method = $request->server['request_method'];
         $path = $request->server['request_uri'];
+        $method = strtolower($request->server['request_method']);
 
         foreach ($this->routes as $route) {
-            if ($route['method'] === $method && $this->matchPath($route['path'], $path, $params)) {
-                try {
-                    [$controllerName, $actionName] = $route['handler'];
+            if ($route['path'] === $path && $route['method'] === $method) {
+                $this->runMiddleware($request, $response, function ($request, $response) use ($route) {
+                    [$controllerName, $action] = explode('@', $route['handler']);
                     $controller = $this->container->get($controllerName);
-                    $controller->$actionName($request, $response, $params);
-                    return;
-                } catch (\Throwable $e) {
-                    $this->errorHandler->handleException($e, $response);
-                    return;
-                }
+                    $controller->$action($request, $response);
+                });
+                return;
             }
         }
 
-        $this->errorHandler->handleNotFound($response);
+        $response->status(404);
+        $response->end('404 Not Found');
     }
 
-    private function matchPath(string $routePath, string $requestPath, &$params): bool
+    private function runMiddleware(Request $request, Response $response, callable $controller): void
     {
-        $routeParts = explode('/', trim($routePath, '/'));
-        $requestParts = explode('/', trim($requestPath, '/'));
+        $next = $controller;
 
-        if (count($routeParts) !== count($requestParts)) {
-            return false;
+        foreach (array_reverse($this->middleware) as $middleware) {
+            $next = function ($request, $response) use ($middleware, $next) {
+                $this->container->get($middleware)->process($request, $response, $next);
+            };
         }
 
-        $params = [];
-
-        foreach ($routeParts as $index => $routePart) {
-            if (preg_match('/^{(\w+)}$/', $routePart, $matches)) {
-                $params[$matches[1]] = $requestParts[$index];
-            } elseif ($routePart !== $requestParts[$index]) {
-                return false;
-            }
-        }
-
-        return true;
+        $next($request, $response);
     }
 }

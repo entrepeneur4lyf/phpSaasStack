@@ -144,20 +144,11 @@ Let's create a Software As A Service project to develop a comprehensively featur
 - [x] Implement notifications for new formal messages
 - [x] Add categorization for contact form messages
 - [x] Create admin interface for managing message categories
-- [ ] Implement real-time instant messaging system
-- [ ] Create chat interface for user-to-user communication
-- [ ] Implement WebSocket connection for real-time updates
-- [ ] Add support for text messages in instant chat
-- [ ] Implement user online/offline status
-- [ ] Add typing indicators
-- [ ] Create chat history and message persistence
-- [ ] Add support for attachments in both messaging systems
+- [ ] Add support for attachments in messaging systems
 - [ ] Implement message threading for formal messages
 - [x] Add read/unread status for both messaging systems
 - [ ] Implement message search functionality
 - [ ] Create message filtering and organization tools
-- [ ] Implement privacy settings for instant messaging (e.g., who can message you)
-- [ ] Add blocking functionality for instant messaging
 
 ## 9. Post Management
 - [x] Implement post creation functionality

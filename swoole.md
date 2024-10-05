@@ -1,62 +1,67 @@
 # Swoole Implementation Tasks
 
 ## 1. WebSocket Integration
-- [ ] Add WebSocket handler to the existing Swoole HTTP server in `public/index.php`
-- [ ] Implement WebSocket open, message, close, and error event handlers
-- [ ] Create a WebSocket connection manager to track active connections
-- [ ] Implement authentication for WebSocket connections
-- [ ] Develop a protocol for WebSocket messages (e.g., JSON-based with message types)
-- [ ] Create a WebSocket client for the frontend (using JavaScript)
-- [ ] Implement error handling and logging for WebSocket events
-- [ ] Add SSL/TLS support for secure WebSocket connections
+- [x] Add WebSocket handler to the existing Swoole HTTP server in `public/index.php`
+- [x] Implement WebSocket open, message, close, and error event handlers
+- [x] Create a WebSocket connection manager to track active connections
+- [x] Implement authentication for WebSocket connections
+- [x] Develop a protocol for WebSocket messages (e.g., JSON-based with message types)
+- [x] Create a WebSocket client for the frontend (using HTMX and AlpineJS)
+- [x] Implement error handling and logging for WebSocket events
+- [x] Add SSL/TLS support for secure WebSocket connections
 
 ## 2. Router Adaptation
-- [ ] Extend the existing Router class to handle WebSocket routes
-- [ ] Create a WebSocketRouteCollection class
-- [ ] Implement a method to register WebSocket routes with handlers
-- [ ] Modify the Router's dispatch method to handle both HTTP and WebSocket requests
-- [ ] Create a WebSocketRequest class to encapsulate WebSocket message data
-- [ ] Implement middleware support for WebSocket routes
-- [ ] Add error handling for invalid WebSocket routes
+- [x] Extend the existing Router class to handle WebSocket routes
+- [x] Create a WebSocketRouteCollection class
+- [x] Implement a method to register WebSocket routes with handlers
+- [x] Modify the Router's dispatch method to handle both HTTP and WebSocket requests
+- [x] Create a WebSocketRequest class to encapsulate WebSocket message data
+- [x] Implement middleware support for WebSocket routes
+- [x] Add error handling for invalid WebSocket routes
 
 ## 3. Controller Structure
-- [ ] Refactor existing controllers to return data instead of echoing or requiring views
-- [ ] Create base Controller class with common methods for Swoole compatibility
-- [ ] Implement asynchronous methods in controllers where necessary
-- [ ] Add support for Swoole's defer() and Co::create() in controllers
-- [ ] Create WebSocketController base class for WebSocket-specific controllers
-- [ ] Implement proper error handling and response formatting in controllers
-- [ ] Add logging to controllers for better debugging and monitoring
+- [x] Refactor existing controllers to return data instead of echoing or requiring views
+- [x] Create base Controller class with common methods for Swoole compatibility
+- [x] Implement proper error handling and response formatting in controllers
+- [x] Implement asynchronous methods in controllers where necessary
+- [x] Add support for Swoole's defer() and Co::create() in controllers
+- [x] Create WebSocketController base class for WebSocket-specific controllers
+- [x] Add logging to controllers for better debugging and monitoring
 
 ## 4. View Rendering
-- [ ] Research and choose a template engine compatible with Swoole (e.g., Twig, Latte)
-- [ ] Implement the chosen template engine in the project
-- [ ] Create a ViewRenderer class to handle view compilation and rendering
-- [ ] Modify controllers to use the new ViewRenderer
-- [ ] Implement caching for compiled views
-- [ ] Create helper functions for use in views (e.g., asset(), url())
-- [ ] Add support for layouts and partials in the view system
-- [ ] Implement a method to pre-compile all views for production use
+- [x] Implement basic view rendering in the Controller base class
+- [x] Add support for partial view rendering for HTMX requests
+- [x] Research and choose a template engine compatible with Swoole (Twig chosen)
+- [x] Implement the chosen template engine in the project
+- [x] Create a ViewRenderer class to handle view compilation and rendering
+- [x] Implement caching for compiled views
+- [x] Create helper functions for use in views (e.g., markdown filter)
+- [x] Add support for layouts and partials in the view system
+- [x] Implement a method to pre-compile all views for production use
+- [ ] Refactor existing views to use Twig with HTMX for websockets/SSE, AlpineJS and Shoelace with Webcomponents
 
 ## 5. Session Handling
-- [ ] Implement a custom SessionManager class compatible with Swoole
-- [ ] Create a storage mechanism for sessions (e.g., Redis, Table)
-- [ ] Implement session creation, retrieval, and destruction methods
-- [ ] Add session garbage collection
-- [ ] Implement session encryption for security
-- [ ] Create middleware for session handling
-- [ ] Add configurable session lifetime and cookie parameters
-- [ ] Implement session locking to prevent race conditions
+- [x] Implement a custom SessionManager class compatible with Swoole
+- [x] Create a storage mechanism for sessions (e.g., Redis, Table)
+- [x] Implement session creation, retrieval, and destruction methods
+- [x] Add session garbage collection
+- [x] Implement session encryption for security
+- [x] Create middleware for session handling
+- [x] Add configurable session lifetime and cookie parameters
+- [x] Implement session locking to prevent race conditions
 
 ## 6. Database Connections
-- [ ] Implement a database connection pool
-- [ ] Create a CoroutineMySQLPool class for managing MySQL connections
-- [ ] Modify the existing database service to use the connection pool
-- [ ] Implement automatic connection retry and error handling
-- [ ] Add support for transactions in the coroutine context
-- [ ] Implement query logging and performance monitoring
-- [ ] Create a database profiler for debugging and optimization
-- [ ] Add support for multiple database connections (e.g., read/write splitting)
+- [x] Implement a database connection pool
+- [x] Create a CoroutineMySQLPool class for managing MySQL connections
+- [x] Modify the existing database service to use the connection pool
+- [x] Implement automatic connection retry and error handling
+- [x] Update the Database class to work with CoroutineMySQLPool
+- [x] Add support for transactions in the coroutine context
+- [x] Implement query caching using CacheManager
+- [x] Implement query logging and performance monitoring
+- [x] Create a database profiler for debugging and optimization
+- [x] Move Database class from Core to Database namespace
+- [x] Add support for multiple database connections (e.g., read/write splitting)
 
 ## 7. Error Handling
 - [ ] Create a SwooleErrorHandler class

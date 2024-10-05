@@ -9,15 +9,23 @@ use Swoole\Http\Response;
 
 class SessionManager
 {
-    private const SESSION_NAME = 'SECURE_SESSION_ID';
+    private string $sessionName;
     private const SESSION_LIFETIME = 3600; // 1 hour
     private string $sessionPath;
     private string $encryptionKey;
+    private string $hmacKey;
 
     public function __construct(string $sessionPath, string $encryptionKey)
     {
         $this->sessionPath = $sessionPath;
         $this->encryptionKey = $encryptionKey;
+        $this->hmacKey = hash_hmac('sha256', $encryptionKey, $encryptionKey, true);
+        $this->sessionName = $this->generateSessionName();
+    }
+
+    private function generateSessionName(): string
+    {
+        return 'sess_' . bin2hex(random_bytes(16)); // This generates a 32-character random string with a prefix
     }
 
     public function startSession(Request $request, Response $response): array
@@ -26,9 +34,9 @@ class SessionManager
 
         if (!$sessionId || !$this->isValidSession($sessionId)) {
             $sessionId = $this->createSession();
-            $this->setSessionCookie($response, $sessionId);
         }
 
+        $this->setSessionCookie($response, $sessionId);
         return $this->loadSessionData($sessionId);
     }
 
@@ -50,13 +58,15 @@ class SessionManager
 
     private function createSession(): string
     {
-        return bin2hex(random_bytes(32));
+        return bin2hex(random_bytes(32)); // 64-character session ID
     }
 
     private function isValidSession(string $sessionId): bool
     {
         $sessionFile = $this->getSessionFilePath($sessionId);
-        return file_exists($sessionFile) && (time() - filemtime($sessionFile) < self::SESSION_LIFETIME);
+        return file_exists($sessionFile) && 
+               (time() - filemtime($sessionFile) < self::SESSION_LIFETIME) &&
+               $this->verifySessionIntegrity($sessionId);
     }
 
     private function loadSessionData(string $sessionId): array
@@ -65,7 +75,10 @@ class SessionManager
         if (file_exists($sessionFile)) {
             $encryptedData = file_get_contents($sessionFile);
             $decryptedData = $this->decrypt($encryptedData);
-            return json_decode($decryptedData, true) ?? [];
+            $data = json_decode($decryptedData, true) ?? [];
+            if ($this->verifySessionIntegrity($sessionId, $data)) {
+                return $data;
+            }
         }
         return [];
     }
@@ -75,6 +88,7 @@ class SessionManager
         $sessionFile = $this->getSessionFilePath($sessionId);
         $encryptedData = $this->encrypt(json_encode($data));
         file_put_contents($sessionFile, $encryptedData);
+        $this->updateSessionIntegrity($sessionId, $data);
     }
 
     private function regenerateSession(string $oldSessionId, Response $response): void
@@ -85,9 +99,11 @@ class SessionManager
 
         if (file_exists($oldSessionFile)) {
             rename($oldSessionFile, $newSessionFile);
+            $this->updateSessionIntegrity($newSessionId, $this->loadSessionData($newSessionId));
         }
 
         $this->setSessionCookie($response, $newSessionId);
+        $this->deleteSessionFile($oldSessionId);
     }
 
     private function getSessionFilePath(string $sessionId): string
@@ -97,19 +113,27 @@ class SessionManager
 
     private function getSessionIdFromCookie(Request $request): ?string
     {
-        $sessionCookie = $request->cookie[self::SESSION_NAME] ?? null;
+        $sessionCookie = $request->cookie[$this->sessionName] ?? null;
         return $sessionCookie ? $this->decrypt($sessionCookie) : null;
     }
 
     private function setSessionCookie(Response $response, string $sessionId): void
     {
         $encryptedSessionId = $this->encrypt($sessionId);
-        $response->cookie(self::SESSION_NAME, $encryptedSessionId, time() + self::SESSION_LIFETIME, '/', '', true, true);
+        $response->cookie(
+            $this->sessionName, 
+            $encryptedSessionId, 
+            time() + self::SESSION_LIFETIME, 
+            '/', 
+            '', 
+            true, // Secure flag
+            true  // HttpOnly flag
+        );
     }
 
     private function removeSessionCookie(Response $response): void
     {
-        $response->cookie(self::SESSION_NAME, '', time() - 3600, '/', '', true, true);
+        $response->cookie($this->sessionName, '', time() - 3600, '/', '', true, true);
     }
 
     private function deleteSessionFile(string $sessionId): void
@@ -123,15 +147,39 @@ class SessionManager
     private function encrypt(string $data): string
     {
         $iv = random_bytes(16);
-        $encrypted = openssl_encrypt($data, 'AES-256-CBC', $this->encryptionKey, 0, $iv);
-        return base64_encode($iv . $encrypted);
+        $encrypted = openssl_encrypt($data, 'AES-256-GCM', $this->encryptionKey, 0, $iv, $tag);
+        return base64_encode($iv . $tag . $encrypted);
     }
 
     private function decrypt(string $data): string
     {
         $data = base64_decode($data);
         $iv = substr($data, 0, 16);
-        $encrypted = substr($data, 16);
-        return openssl_decrypt($encrypted, 'AES-256-CBC', $this->encryptionKey, 0, $iv);
+        $tag = substr($data, 16, 16);
+        $encrypted = substr($data, 32);
+        return openssl_decrypt($encrypted, 'AES-256-GCM', $this->encryptionKey, 0, $iv, $tag);
+    }
+
+    private function updateSessionIntegrity(string $sessionId, array $data): void
+    {
+        $hmac = hash_hmac('sha256', $sessionId . json_encode($data), $this->hmacKey, true);
+        file_put_contents($this->getSessionFilePath($sessionId) . '.hmac', $hmac);
+    }
+
+    private function verifySessionIntegrity(string $sessionId, ?array $data = null): bool
+    {
+        $hmacFile = $this->getSessionFilePath($sessionId) . '.hmac';
+        if (!file_exists($hmacFile)) {
+            return false;
+        }
+        $storedHmac = file_get_contents($hmacFile);
+        $data = $data ?? $this->loadSessionData($sessionId);
+        $calculatedHmac = hash_hmac('sha256', $sessionId . json_encode($data), $this->hmacKey, true);
+        return hash_equals($storedHmac, $calculatedHmac);
+    }
+
+    public function getSessionName(): string
+    {
+        return $this->sessionName;
     }
 }

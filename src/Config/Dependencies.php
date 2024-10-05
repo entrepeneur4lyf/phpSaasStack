@@ -79,6 +79,7 @@ use Src\Models\Order;
 use Src\Controllers\AssetController;
 use Src\Commands\PublishScheduledPosts;
 use Src\Commands\ProcessAIRequests;
+use Src\Core\CacheManager;
 
 return function (ContainerBuilder $containerBuilder, array $config) {
     // AI Services
@@ -296,5 +297,17 @@ return function (ContainerBuilder $containerBuilder, array $config) {
         ->setArguments([
             new Reference(AIServiceInterface::class),
             new Reference(RequestQueueServiceInterface::class)
+        ]);
+
+    // Register CacheManager
+    $containerBuilder->register(CacheManager::class)
+        ->setArguments([
+            new Reference('cache.default')
+        ]);
+
+    // Register cache driver (assuming you're using the default driver from config)
+    $containerBuilder->register('cache.default', $config['cache']['default']['driver'])
+        ->setArguments([
+            $config['cache']['default']
         ]);
 };

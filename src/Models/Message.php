@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Src\Models;
 
-use Src\Core\Database;
+use Src\Database\Database;
 
 class Message
 {
