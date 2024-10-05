@@ -1,0 +1,42 @@
+<header class="bg-white shadow">
+    <nav class="container mx-auto px-6 py-3">
+        <div class="flex justify-between items-center">
+            <div>
+                <a href="{{ site_url() }}" class="text-xl font-bold text-gray-800">SaaS AI Marketplace</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-4">
+                <a href="{{ site_url('posts') }}" class="text-gray-800 hover:text-gray-600">Posts</a>
+                <a href="{{ site_url('products') }}" class="text-gray-800 hover:text-gray-600">Products</a>
+                <a href="{{ site_url('offers') }}" class="text-gray-800 hover:text-gray-600">Offers</a>
+                {% if auth().check() %}
+                    <a href="{{ site_url('profile/' ~ auth().user().id) }}" class="text-gray-800 hover:text-gray-600">My Profile</a>
+                    <form action="{{ site_url('logout') }}" method="post" class="inline">
+                        <button type="submit" class="text-gray-800 hover:text-gray-600">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{{ site_url('login') }}" class="text-gray-800 hover:text-gray-600">Login</a>
+                    <a href="{{ site_url('register') }}" class="text-gray-800 hover:text-gray-600">Register</a>
+                {% endif %}
+            </div>
+            <div class="md:hidden">
+                <sl-icon-button name="list" label="Menu" @click="mobileMenuOpen = !mobileMenuOpen"></sl-icon-button>
+            </div>
+        </div>
+    </nav>
+    <div x-show="mobileMenuOpen" class="md:hidden">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="{{ site_url('posts') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Posts</a>
+            <a href="{{ site_url('products') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Products</a>
+            <a href="{{ site_url('offers') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Offers</a>
+            {% if auth().check() %}
+                <a href="{{ site_url('profile/' ~ auth().user().id) }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">My Profile</a>
+                <form action="{{ site_url('logout') }}" method="post" class="block">
+                    <button type="submit" class="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Logout</button>
+                </form>
+            {% else %}
+                <a href="{{ site_url('login') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Login</a>
+                <a href="{{ site_url('register') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Register</a>
+            {% endif %}
+        </div>
+    </div>
+</header>

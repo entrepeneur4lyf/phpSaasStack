@@ -1,0 +1,94 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="productShow()" class="product-container">
+    <h1>{{ product.name }}</h1>
+    <div class="product-details">
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
+        <div class="product-info">
+            <p>{{ product.description }}</p>
+            <p>Price: ${{ product.price }}</p>
+            <p>Category: {{ product.category }}</p>
+            <sl-button @click="addToCart({{ product.id }})">Add to Cart</sl-button>
+        </div>
+    </div>
+
+    <div class="product-reviews">
+        <h2>Reviews</h2>
+        <template x-for="review in reviews" :key="review.id">
+            <sl-card class="review-card">
+                <strong x-text="review.title"></strong>
+                <p x-text="review.content"></p>
+                <div class="review-meta">
+                    <span x-text="'Rating: ' + review.rating + '/5'"></span>
+                    <span x-text="'By: ' + review.user_name"></span>
+                    <span x-text="formatDate(review.created_at)"></span>
+                </div>
+            </sl-card>
+        </template>
+
+        <sl-button @click="showReviewForm = true">Write a Review</sl-button>
+
+        <sl-dialog label="Write a Review" :open="showReviewForm">
+            <sl-form @submit.prevent="submitReview">
+                <sl-input name="title" label="Title" required></sl-input>
+                <sl-textarea name="content" label="Review" required></sl-textarea>
+                <sl-rating name="rating" label="Rating"></sl-rating>
+                <sl-button type="submit" variant="primary">Submit Review</sl-button>
+            </sl-form>
+        </sl-dialog>
+    </div>
+</div>
+
+<script>
+function productShow() {
+    return {
+        reviews: {{ reviews|json_encode|raw }},
+        showReviewForm: false,
+
+        addToCart(productId) {
+            fetch('/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ product_id: productId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Product added to cart');
+                } else {
+                    alert('Failed to add product to cart');
+                }
+            });
+        },
+
+        submitReview(event) {
+            const form = event.target;
+            const formData = new FormData(form);
+            formData.append('product_id', {{ product.id }});
+
+            fetch('/products/review', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.reviews.unshift(data.review);
+                    this.showReviewForm = false;
+                    form.reset();
+                } else {
+                    alert('Failed to submit review');
+                }
+            });
+        },
+
+        formatDate(dateString) {
+            return new Date(dateString).toLocaleString();
+        }
+    }
+}
+</script>
+{% endblock %}

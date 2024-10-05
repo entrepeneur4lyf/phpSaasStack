@@ -1,0 +1,40 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="viewMessage()" class="message-view">
+    <h1>View Message</h1>
+    
+    <sl-card>
+        <h2 slot="header" x-text="message.subject"></h2>
+        <div>
+            <p><strong>From:</strong> <span x-text="message.sender_name"></span></p>
+            <p><strong>Date:</strong> <span x-text="formatDate(message.created_at)"></span></p>
+        </div>
+        <div x-html="formatContent(message.content)"></div>
+        <div slot="footer">
+            <sl-button @click="backToMessages">Back to Messages</sl-button>
+            <sl-button @click="replyToMessage">Reply</sl-button>
+        </div>
+    </sl-card>
+</div>
+
+<script>
+function viewMessage() {
+    return {
+        message: {{ message|json_encode|raw }},
+        formatDate(dateString) {
+            return new Date(dateString).toLocaleString();
+        },
+        formatContent(content) {
+            return content.replace(/\n/g, '<br>');
+        },
+        backToMessages() {
+            window.location.href = '{{ site_url('messages') }}';
+        },
+        replyToMessage() {
+            window.location.href = `{{ site_url('messages/compose') }}?reply_to=${this.message.id}`;
+        }
+    }
+}
+</script>
+{% endblock %}

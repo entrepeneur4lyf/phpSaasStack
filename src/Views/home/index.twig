@@ -1,0 +1,48 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="homeIndex()" class="home-container">
+    <h1 x-text="message"></h1>
+    <sl-button @click="updateMessage">Update Message</sl-button>
+
+    <div class="featured-content">
+        <h2>Featured Products</h2>
+        <div class="product-grid">
+            {% for product in featured_products %}
+                <sl-card class="product-card">
+                    <img slot="image" src="{{ product.image_url }}" alt="{{ product.name }}">
+                    <strong>{{ product.name }}</strong>
+                    <p>{{ product.description|slice(0, 100) }}...</p>
+                    <div slot="footer">
+                        <sl-button href="{{ site_url('products/view/' ~ product.id) }}">View Details</sl-button>
+                    </div>
+                </sl-card>
+            {% endfor %}
+        </div>
+
+        <h2>Latest Posts</h2>
+        <div class="post-list">
+            {% for post in latest_posts %}
+                <sl-card class="post-card">
+                    <strong slot="header">{{ post.title }}</strong>
+                    <p>{{ post.content|striptags|slice(0, 150) }}...</p>
+                    <div slot="footer">
+                        <sl-button href="{{ site_url('posts/view/' ~ post.id) }}">Read More</sl-button>
+                    </div>
+                </sl-card>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+function homeIndex() {
+    return {
+        message: 'Welcome to AI Inference Service',
+        updateMessage() {
+            this.message = 'Empowering your projects with cutting-edge AI technology';
+        }
+    }
+}
+</script>
+{% endblock %}

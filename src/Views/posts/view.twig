@@ -1,0 +1,135 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="postView()" class="post-container">
+    <h1>{{ post.title }}</h1>
+    <div class="post-content">
+        {{ markdownParser.parse(post.content)|raw }}
+    </div>
+    <div class="post-meta">
+        <span>Views: {{ post.views }}</span>
+        <span>Likes: {{ post.likes }}</span>
+        <span>Comments: {{ comments|length }}</span>
+        <span>Status: {{ post.status|capitalize }}</span>
+        {% if post.status == 'scheduled' %}
+            <span>Scheduled for: {{ post.scheduled_at }}</span>
+        {% endif %}
+    </div>
+
+    {% if auth().user().can('edit_post', post) %}
+        <div class="post-actions">
+            <a href="{{ site_url('posts/edit/' ~ post.id) }}" class="btn btn-primary">Edit Post</a>
+            
+            <form action="{{ site_url('posts/schedule/' ~ post.id) }}" method="post" class="inline-form">
+                <input type="datetime-local" name="scheduled_at" required>
+                <button type="submit" class="btn btn-secondary">Schedule Post</button>
+            </form>
+
+            <form action="{{ site_url('posts/toggle-featured/' ~ post.id) }}" method="post" class="inline-form">
+                <button type="submit" class="btn btn-secondary">
+                    {{ post.is_featured ? 'Unfeature Post' : 'Feature Post' }}
+                </button>
+            </form>
+        </div>
+    {% endif %}
+
+    <div class="comments-section">
+        <h2>Comments</h2>
+        <template x-for="comment in comments" :key="comment.id">
+            <div class="comment">
+                <p x-text="comment.content"></p>
+                <div class="comment-meta">
+                    <span x-text="'By: ' + comment.user.username"></span>
+                    <span x-text="'On: ' + formatDate(comment.created_at)"></span>
+                </div>
+                <div class="comment-actions">
+                    <sl-button size="small" @click="voteComment(comment.id, 'upvote')">
+                        Upvote <span x-text="comment.upvotes"></span>
+                    </sl-button>
+                    <sl-button size="small" @click="voteComment(comment.id, 'downvote')">
+                        Downvote <span x-text="comment.downvotes"></span>
+                    </sl-button>
+                    <sl-button size="small" @click="replyToComment(comment.id)">Reply</sl-button>
+                </div>
+                <template x-if="comment.replies">
+                    <div class="comment-replies" x-html="renderReplies(comment.replies)"></div>
+                </template>
+            </div>
+        </template>
+
+        <sl-form @submit.prevent="addComment">
+            <sl-textarea name="content" label="Add a comment" required></sl-textarea>
+            <sl-button type="submit">Post Comment</sl-button>
+        </sl-form>
+    </div>
+</div>
+
+<script>
+function postView() {
+    return {
+        comments: {{ comments|json_encode|raw }},
+
+        addComment(event) {
+            const form = event.target;
+            const formData = new FormData(form);
+            formData.append('post_id', {{ post.id }});
+
+            fetch('/comments/add', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.comments.push(data.comment);
+                    form.reset();
+                } else {
+                    alert('Failed to add comment');
+                }
+            });
+        },
+
+        replyToComment(commentId) {
+            // Implement reply functionality
+        },
+
+        renderReplies(replies) {
+            // Implement nested replies rendering
+        },
+
+        voteComment(commentId, voteType) {
+            fetch(`/comments/vote/${commentId}/${voteType}`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.comments = this.updateCommentVotes(this.comments, commentId, voteType, data.newCount);
+                }
+            });
+        },
+
+        updateCommentVotes(comments, commentId, voteType, newCount) {
+            return comments.map(comment => {
+                if (comment.id === commentId) {
+                    return {...comment, [voteType + 'votes']: newCount};
+                }
+                if (comment.replies) {
+                    return {...comment, replies: this.updateCommentVotes(comment.replies, commentId, voteType, newCount)};
+                }
+                return comment;
+            });
+        },
+
+        renderMarkdown(content) {
+            // Use the server-side markdown rendering here
+            return content; // Placeholder for now
+        },
+
+        formatDate(dateString) {
+            return new Date(dateString).toLocaleString();
+        }
+    }
+}
+</script>
+{% endblock %}

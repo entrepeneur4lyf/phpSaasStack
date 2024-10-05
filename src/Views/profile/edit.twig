@@ -1,0 +1,83 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="profileEdit()" class="container">
+    <h1>Edit Profile</h1>
+    
+    <sl-form @submit.prevent="updateProfile" enctype="multipart/form-data">
+        <sl-textarea name="bio" label="Bio" x-model="profile.bio"></sl-textarea>
+        
+        <sl-input name="website" label="Website" type="url" x-model="profile.website"></sl-input>
+
+        <sl-details summary="Social Media Links">
+            <sl-input name="twitter" label="Twitter" type="url" x-model="profile.social_media.twitter"></sl-input>
+            <sl-input name="facebook" label="Facebook" type="url" x-model="profile.social_media.facebook"></sl-input>
+            <sl-input name="instagram" label="Instagram" type="url" x-model="profile.social_media.instagram"></sl-input>
+        </sl-details>
+
+        <sl-input name="avatar" label="Avatar" type="file" accept="image/*" @change="handleAvatarChange"></sl-input>
+        <template x-if="profile.avatar_url">
+            <img :src="profile.avatar_url" alt="Current Avatar" class="current-avatar">
+        </template>
+
+        <sl-input name="location" label="Location" x-model="profile.location"></sl-input>
+
+        <sl-input name="skills" label="Skills (comma-separated)" x-model="profile.skills"></sl-input>
+
+        <sl-button type="submit" variant="primary">Update Profile</sl-button>
+    </sl-form>
+</div>
+
+<script>
+function profileEdit() {
+    return {
+        profile: {{ profile|json_encode|raw }},
+        
+        handleAvatarChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.profile.avatar_url = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        },
+
+        updateProfile() {
+            const formData = new FormData();
+            Object.keys(this.profile).forEach(key => {
+                if (key === 'social_media') {
+                    Object.keys(this.profile.social_media).forEach(socialKey => {
+                        formData.append(`social_media[${socialKey}]`, this.profile.social_media[socialKey]);
+                    });
+                } else if (key === 'avatar_url') {
+                    // Skip avatar_url as it's handled separately
+                } else {
+                    formData.append(key, this.profile[key]);
+                }
+            });
+
+            // Add the file input separately
+            const avatarInput = document.querySelector('input[name="avatar"]');
+            if (avatarInput.files.length > 0) {
+                formData.append('avatar', avatarInput.files[0]);
+            }
+
+            fetch('/profile/update', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Profile updated successfully');
+                } else {
+                    alert('Failed to update profile');
+                }
+            });
+        }
+    }
+}
+</script>
+{% endblock %}

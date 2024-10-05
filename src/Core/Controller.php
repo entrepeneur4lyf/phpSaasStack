@@ -22,7 +22,8 @@ abstract class Controller
     protected function render(Response $response, string $view, array $data = []): void
     {
         $this->logger->info('Rendering view', ['view' => $view, 'data' => $data]);
-        $this->renderer->render($response, $view, $data);
+        $content = $this->renderer->render($view, $data);
+        $response->end($content);
     }
 
     protected function jsonResponse(Response $response, array $data, int $statusCode = 200): void

@@ -1,0 +1,93 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="messageCategories()" class="message-categories">
+    <h1>Message Categories</h1>
+
+    <sl-button @click="showAddCategoryModal = true">Add New Category</sl-button>
+
+    <div class="category-list">
+        <template x-for="category in categories" :key="category.id">
+            <sl-card class="category-card">
+                <h3 slot="header" x-text="category.name"></h3>
+                <p x-text="category.description"></p>
+                <div slot="footer">
+                    <sl-button @click="editCategory(category)">Edit</sl-button>
+                    <sl-button @click="deleteCategory(category.id)" variant="danger">Delete</sl-button>
+                </div>
+            </sl-card>
+        </template>
+    </div>
+
+    <sl-dialog label="Add/Edit Category" :open="showAddCategoryModal || showEditCategoryModal">
+        <sl-form @submit.prevent="submitCategory">
+            <sl-input name="name" label="Name" x-model="currentCategory.name" required></sl-input>
+            <sl-textarea name="description" label="Description" x-model="currentCategory.description"></sl-textarea>
+            <sl-button type="submit" variant="primary" x-text="showEditCategoryModal ? 'Update Category' : 'Add Category'"></sl-button>
+            <sl-button @click="cancelCategoryModal" variant="default">Cancel</sl-button>
+        </sl-form>
+    </sl-dialog>
+</div>
+
+<script>
+function messageCategories() {
+    return {
+        categories: {{ categories|json_encode|raw }},
+        showAddCategoryModal: false,
+        showEditCategoryModal: false,
+        currentCategory: {},
+
+        editCategory(category) {
+            this.currentCategory = {...category};
+            this.showEditCategoryModal = true;
+        },
+
+        deleteCategory(categoryId) {
+            if (confirm('Are you sure you want to delete this category?')) {
+                fetch(`/messages/categories/delete/${categoryId}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.categories = this.categories.filter(c => c.id !== categoryId);
+                    } else {
+                        alert('Failed to delete category');
+                    }
+                });
+            }
+        },
+
+        submitCategory() {
+            const url = this.showEditCategoryModal ? `/messages/categories/update/${this.currentCategory.id}` : '/messages/categories/add';
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(this.currentCategory)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (this.showEditCategoryModal) {
+                        this.categories = this.categories.map(c => c.id === data.category.id ? data.category : c);
+                    } else {
+                        this.categories.push(data.category);
+                    }
+                    this.cancelCategoryModal();
+                } else {
+                    alert('Failed to save category');
+                }
+            });
+        },
+
+        cancelCategoryModal() {
+            this.showAddCategoryModal = false;
+            this.showEditCategoryModal = false;
+            this.currentCategory = {};
+        }
+    }
+}
+</script>
+{% endblock %}

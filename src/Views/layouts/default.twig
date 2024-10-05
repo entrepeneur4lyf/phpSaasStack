@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title|default('AI Inference Service') }}</title>
+    <link rel="stylesheet" href="{{ site_url('css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/themes/light.css">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/shoelace.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <script src="{{ site_url('js/app.js') }}" defer></script>
+</head>
+<body>
+    <div class="app-container" x-data="appState()">
+        {% include 'partials/header.twig' %}
+
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        {% include 'partials/footer.twig' %}
+
+        <sl-dialog label="Notification" :open="showNotification">
+            <p x-text="notificationMessage"></p>
+            <sl-button slot="footer" @click="closeNotification">Close</sl-button>
+        </sl-dialog>
+    </div>
+
+    <script>
+    function appState() {
+        return {
+            showNotification: false,
+            notificationMessage: '',
+
+            showNotificationMessage(message) {
+                this.notificationMessage = message;
+                this.showNotification = true;
+            },
+
+            closeNotification() {
+                this.showNotification = false;
+                this.notificationMessage = '';
+            }
+        }
+    }
+    </script>
+</body>
+</html>

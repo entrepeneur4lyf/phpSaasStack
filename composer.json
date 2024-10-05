@@ -16,10 +16,13 @@
         "intervention/image": "^3.8",
         "league/commonmark": "^2.5",
         "robthree/twofactorauth": "^1.8",
+        "rollbar/rollbar": "~4.0",
         "symfony/asset": "^7.1",
         "symfony/config": "^7.1",
         "symfony/console": "^7.1",
         "symfony/dependency-injection": "^7.1",
+        "symfony/error-handler": "^7.1",
+        "symfony/twig-pack": "^1.0",
         "twig/twig": "^3.0"
     },
     "autoload": {
@@ -32,13 +35,11 @@
             "Tests\\": "tests/"
         }
     },
-    "scripts": {
-        "test": "phpunit"
-    },
     "config": {
         "sort-packages": true
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.64",
         "swoole/ide-helper": "~5.0.0"
     }
 }

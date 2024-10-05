@@ -1,0 +1,81 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="manageProduct()" class="manage-product">
+    <h1>Manage Product</h1>
+
+    <sl-form @submit.prevent="saveProduct">
+        <sl-input name="name" label="Product Name" x-model="product.name" required></sl-input>
+        <sl-textarea name="description" label="Description" x-model="product.description" required></sl-textarea>
+        <sl-input type="number" name="price" label="Price" x-model="product.price" required></sl-input>
+        <sl-select name="category_id" label="Category" x-model="product.category_id" required>
+            <template x-for="category in categories" :key="category.id">
+                <sl-menu-item :value="category.id" x-text="category.name"></sl-menu-item>
+            </template>
+        </sl-select>
+        <sl-input type="file" name="image" label="Product Image" @change="handleImageUpload" accept="image/*"></sl-input>
+        <sl-button type="submit" variant="primary">Save Product</sl-button>
+    </sl-form>
+
+    <h2 class="mt-8">Product Variants</h2>
+    <sl-button @click="addVariant">Add Variant</sl-button>
+
+    <div class="variants-list mt-4">
+        <template x-for="(variant, index) in product.variants" :key="index">
+            <div class="variant-item">
+                <sl-input x-model="variant.name" placeholder="Variant Name"></sl-input>
+                <sl-input type="number" x-model="variant.price" placeholder="Variant Price"></sl-input>
+                <sl-button size="small" variant="danger" @click="removeVariant(index)">Remove</sl-button>
+            </div>
+        </template>
+    </div>
+</div>
+
+<script>
+function manageProduct() {
+    return {
+        product: {{ product|json_encode|raw }},
+        categories: {{ categories|json_encode|raw }},
+
+        saveProduct() {
+            const formData = new FormData();
+            for (const key in this.product) {
+                if (key !== 'variants') {
+                    formData.append(key, this.product[key]);
+                }
+            }
+            formData.append('variants', JSON.stringify(this.product.variants));
+
+            fetch('{{ product.id ? "/products/update/#{product.id}" : "/products/create" }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Product saved successfully');
+                    window.location.href = '/products';
+                } else {
+                    alert('Failed to save product');
+                }
+            });
+        },
+
+        handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.product.image = file;
+            }
+        },
+
+        addVariant() {
+            this.product.variants.push({ name: '', price: 0 });
+        },
+
+        removeVariant(index) {
+            this.product.variants.splice(index, 1);
+        }
+    }
+}
+</script>
+{% endblock %}

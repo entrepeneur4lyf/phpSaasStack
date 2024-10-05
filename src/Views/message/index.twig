@@ -1,0 +1,40 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="messageIndex()" class="message-container">
+    <h1>Messages</h1>
+    
+    <sl-button href="{{ site_url('messages/compose') }}" variant="primary">Compose New Message</sl-button>
+
+    <sl-tab-group>
+        <sl-tab slot="nav" panel="inbox">Inbox</sl-tab>
+        <sl-tab slot="nav" panel="sent">Sent</sl-tab>
+
+        <sl-tab-panel name="inbox">
+            <div class="message-list" hx-get="{{ site_url('messages/list/inbox') }}" hx-trigger="load, every 30s" hx-swap="innerHTML">
+                <!-- Inbox messages will be loaded here via HTMX -->
+            </div>
+        </sl-tab-panel>
+
+        <sl-tab-panel name="sent">
+            <div class="message-list" hx-get="{{ site_url('messages/list/sent') }}" hx-trigger="load" hx-swap="innerHTML">
+                <!-- Sent messages will be loaded here via HTMX -->
+            </div>
+        </sl-tab-panel>
+    </sl-tab-group>
+</div>
+
+<script>
+function messageIndex() {
+    return {
+        formatDate(dateString) {
+            return new Date(dateString).toLocaleString();
+        },
+
+        viewMessage(messageId) {
+            window.location.href = `{{ site_url('messages/view') }}/${messageId}`;
+        }
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="moderationDashboard()" class="moderation-dashboard">
+    <h1>Moderation Dashboard</h1>
+
+    <sl-tab-group>
+        <sl-tab slot="nav" panel="reported-content">Reported Content</sl-tab>
+        <sl-tab slot="nav" panel="pending-reviews">Pending Reviews</sl-tab>
+        <sl-tab slot="nav" panel="moderation-logs">Moderation Logs</sl-tab>
+
+        <sl-tab-panel name="reported-content">
+            <h2>Reported Content</h2>
+            <sl-table>
+                <sl-thead>
+                    <sl-tr>
+                        <sl-th>Type</sl-th>
+                        <sl-th>Content</sl-th>
+                        <sl-th>Reported By</sl-th>
+                        <sl-th>Reason</sl-th>
+                        <sl-th>Actions</sl-th>
+                    </sl-tr>
+                </sl-thead>
+                <sl-tbody>
+                    <template x-for="report in reportedContent" :key="report.id">
+                        <sl-tr>
+                            <sl-td x-text="report.type"></sl-td>
+                            <sl-td x-text="report.content.substring(0, 50) + '...'"></sl-td>
+                            <sl-td x-text="report.reported_by"></sl-td>
+                            <sl-td x-text="report.reason"></sl-td>
+                            <sl-td>
+                                <sl-button-group>
+                                    <sl-button size="small" @click="reviewContent(report.id)">Review</sl-button>
+                                    <sl-button size="small" variant="danger" @click="removeContent(report.id)">Remove</sl-button>
+                                </sl-button-group>
+                            </sl-td>
+                        </sl-tr>
+                    </template>
+                </sl-tbody>
+            </sl-table>
+        </sl-tab-panel>
+
+        <sl-tab-panel name="pending-reviews">
+            <h2>Pending Reviews</h2>
+            <sl-table>
+                <sl-thead>
+                    <sl-tr>
+                        <sl-th>Type</sl-th>
+                        <sl-th>Content</sl-th>
+                        <sl-th>Submitted By</sl-th>
+                        <sl-th>Submitted At</sl-th>
+                        <sl-th>Actions</sl-th>
+                    </sl-tr>
+                </sl-thead>
+                <sl-tbody>
+                    <template x-for="review in pendingReviews" :key="review.id">
+                        <sl-tr>
+                            <sl-td x-text="review.type"></sl-td>
+                            <sl-td x-text="review.content.substring(0, 50) + '...'"></sl-td>
+                            <sl-td x-text="review.submitted_by"></sl-td>
+                            <sl-td x-text="formatDate(review.submitted_at)"></sl-td>
+                            <sl-td>
+                                <sl-button-group>
+                                    <sl-button size="small" @click="approveContent(review.id)">Approve</sl-button>
+                                    <sl-button size="small" variant="danger" @click="rejectContent(review.id)">Reject</sl-button>
+                                </sl-button-group>
+                            </sl-td>
+                        </sl-tr>
+                    </template>
+                </sl-tbody>
+            </sl-table>
+        </sl-tab-panel>
+
+        <sl-tab-panel name="moderation-logs">
+            <h2>Moderation Logs</h2>
+            <sl-table>
+                <sl-thead>
+                    <sl-tr>
+                        <sl-th>Moderator</sl-th>
+                        <sl-th>Action</sl-th>
+                        <sl-th>Content Type</sl-th>
+                        <sl-th>Date</sl-th>
+                    </sl-tr>
+                </sl-thead>
+                <sl-tbody>
+                    <template x-for="log in moderationLogs" :key="log.id">
+                        <sl-tr>
+                            <sl-td x-text="log.moderator"></sl-td>
+                            <sl-td x-text="log.action"></sl-td>
+                            <sl-td x-text="log.content_type"></sl-td>
+                            <sl-td x-text="formatDate(log.date)"></sl-td>
+                        </sl-tr>
+                    </template>
+                </sl-tbody>
+            </sl-table>
+        </sl-tab-panel>
+    </sl-tab-group>
+</div>
+
+<script>
+function moderationDashboard() {
+    return {
+        reportedContent: {{ reported_content|json_encode|raw }},
+        pendingReviews: {{ pending_reviews|json_encode|raw }},
+        moderationLogs: {{ moderation_logs|json_encode|raw }},
+
+        formatDate(dateString) {
+            return new Date(dateString).toLocaleString();
+        },
+
+        reviewContent(id) {
+            // Implement review content logic
+            console.log('Reviewing content:', id);
+        },
+
+        removeContent(id) {
+            // Implement remove content logic
+            console.log('Removing content:', id);
+        },
+
+        approveContent(id) {
+            // Implement approve content logic
+            console.log('Approving content:', id);
+        },
+
+        rejectContent(id) {
+            // Implement reject content logic
+            console.log('Rejecting content:', id);
+        }
+    }
+}
+</script>
+{% endblock %}

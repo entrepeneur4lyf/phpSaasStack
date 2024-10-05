@@ -1,62 +1,60 @@
 <?php
 
-namespace Src\Controllers;
+namespace App\Controllers;
 
-use League\CommonMark\Environment\Environment;
-use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
-use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
-use League\CommonMark\Extension\Embed\EmbedExtension;
-use League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension;
-use League\CommonMark\MarkdownConverter;
-use Src\Interfaces\CacheServiceInterface;
+use Twig\Environment;
+use App\Services\MarkdownService;
+use App\Services\AuthService;
 
 class MarkdownController extends BaseController
 {
-    private CacheServiceInterface $cacheService;
+    protected $twig;
+    protected $markdownService;
+    protected $authService;
 
-    public function __construct(CacheServiceInterface $cacheService)
+    public function __construct(Environment $twig, MarkdownService $markdownService, AuthService $authService)
     {
-        $this->cacheService = $cacheService;
+        $this->twig = $twig;
+        $this->markdownService = $markdownService;
+        $this->authService = $authService;
     }
 
-    public function render()
+    public function preview()
     {
-        $markdown = $this->request->getJSON()->markdown;
-        $cacheKey = 'markdown_' . md5($markdown);
+        $markdown = $this->request->getPost('markdown');
+        $html = $this->markdownService->convertToHtml($markdown);
+        return $this->response->setJSON(['html' => $html]);
+    }
 
-        $cachedHtml = $this->cacheService->get($cacheKey);
-        if ($cachedHtml !== null) {
-            return $this->response->setJSON(['html' => $cachedHtml]);
+    public function editor()
+    {
+        return $this->twig->render('markdown/editor.twig');
+    }
+
+    public function save()
+    {
+        $user = $this->authService->getUser();
+        $data = $this->request->getPost();
+        $data['user_id'] = $user->id;
+
+        $result = $this->markdownService->saveDocument($data);
+
+        if ($result) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Document saved successfully']);
+        } else {
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to save document']);
+        }
+    }
+
+    public function load($id)
+    {
+        $user = $this->authService->getUser();
+        $document = $this->markdownService->getDocumentById($id);
+
+        if (!$document || $document->user_id !== $user->id) {
+            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Document not found']);
         }
 
-        // Configure the Environment with all the CommonMark parsers/renderers
-        $environment = new Environment([
-            'allow_unsafe_links' => false,
-            'embed' => [
-                'adapter' => new \League\CommonMark\Extension\Embed\Bridge\OscaroteroEmbedAdapter(),
-                'allowed_domains' => ['youtube.com', 'twitter.com', 'github.com'],
-                'fallback' => 'link',
-            ],
-            'disallowed_raw_html' => [
-                'disallowed_tags' => ['title', 'textarea', 'style', 'xmp', 'iframe', 'noembed', 'noframes', 'script', 'plaintext'],
-            ],
-        ]);
-
-        // Add the extensions
-        $environment->addExtension(new CommonMarkCoreExtension());
-        $environment->addExtension(new GithubFlavoredMarkdownExtension());
-        $environment->addExtension(new EmbedExtension());
-        $environment->addExtension(new DisallowedRawHtmlExtension());
-
-        // Create the converter
-        $converter = new MarkdownConverter($environment);
-
-        // Convert the Markdown to HTML
-        $html = $converter->convert($markdown)->getContent();
-
-        // Cache the result
-        $this->cacheService->set($cacheKey, $html, 3600); // Cache for 1 hour
-
-        return $this->response->setJSON(['html' => $html]);
+        return $this->response->setJSON(['success' => true, 'document' => $document]);
     }
 }

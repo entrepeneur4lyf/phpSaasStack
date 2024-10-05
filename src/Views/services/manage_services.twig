@@ -1,0 +1,95 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="manageServices()" class="manage-services">
+    <h1>Manage Services</h1>
+
+    <sl-button @click="showAddServiceModal = true">Add New Service</sl-button>
+
+    <div class="services-list">
+        <template x-for="service in services" :key="service.id">
+            <sl-card class="service-card">
+                <h3 slot="header" x-text="service.name"></h3>
+                <p x-text="service.description"></p>
+                <p x-text="'Price: $' + service.price"></p>
+                <div slot="footer">
+                    <sl-button @click="editService(service)">Edit</sl-button>
+                    <sl-button @click="deleteService(service.id)" variant="danger">Delete</sl-button>
+                </div>
+            </sl-card>
+        </template>
+    </div>
+
+    <sl-dialog label="Add/Edit Service" :open="showAddServiceModal || showEditServiceModal">
+        <sl-form @submit.prevent="submitService">
+            <sl-input name="name" label="Service Name" x-model="currentService.name" required></sl-input>
+            <sl-textarea name="description" label="Description" x-model="currentService.description" required></sl-textarea>
+            <sl-input type="number" name="price" label="Price" x-model="currentService.price" required></sl-input>
+            <sl-button type="submit" variant="primary" x-text="showEditServiceModal ? 'Update Service' : 'Add Service'"></sl-button>
+            <sl-button @click="cancelServiceModal" variant="default">Cancel</sl-button>
+        </sl-form>
+    </sl-dialog>
+</div>
+
+<script>
+function manageServices() {
+    return {
+        services: {{ services|json_encode|raw }},
+        showAddServiceModal: false,
+        showEditServiceModal: false,
+        currentService: {},
+
+        editService(service) {
+            this.currentService = { ...service };
+            this.showEditServiceModal = true;
+        },
+
+        deleteService(serviceId) {
+            if (confirm('Are you sure you want to delete this service?')) {
+                fetch(`/services/delete/${serviceId}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.services = this.services.filter(s => s.id !== serviceId);
+                    } else {
+                        alert('Failed to delete service');
+                    }
+                });
+            }
+        },
+
+        submitService() {
+            const url = this.showEditServiceModal ? `/services/update/${this.currentService.id}` : '/services/create';
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(this.currentService)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (this.showEditServiceModal) {
+                        this.services = this.services.map(s => s.id === data.service.id ? data.service : s);
+                    } else {
+                        this.services.push(data.service);
+                    }
+                    this.cancelServiceModal();
+                } else {
+                    alert('Failed to save service');
+                }
+            });
+        },
+
+        cancelServiceModal() {
+            this.showAddServiceModal = false;
+            this.showEditServiceModal = false;
+            this.currentService = {};
+        }
+    }
+}
+</script>
+{% endblock %}

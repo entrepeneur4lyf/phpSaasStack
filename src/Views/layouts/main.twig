@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Your App{% endblock %}</title>
+    {{ debugbar_head | raw }}
+</head>
+<body>
+    {% block content %}{% endblock %}
+    {{ debugbar_body | raw }}
+</body>
+</html>

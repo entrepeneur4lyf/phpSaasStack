@@ -2,101 +2,79 @@
 
 declare(strict_types=1);
 
-namespace Src\Controllers;
+namespace App\Controllers;
 
-use Src\Interfaces\ModerationServiceInterface;
-use Src\Interfaces\UserServiceInterface;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
+use Twig\Environment;
+use App\Services\ModerationService;
 
 class ModerationController extends BaseController
 {
-    public function __construct(
-        private readonly ModerationServiceInterface $moderationService,
-        private readonly UserServiceInterface $userService
-    ) {}
+    protected $twig;
+    protected $moderationService;
 
-    public function index(Request $request, Response $response): void
+    public function __construct(Environment $twig, ModerationService $moderationService)
     {
-        if (!$this->moderationService->isModeratorOrAdmin($request->user)) {
-            $this->redirect($response, '/');
-            return;
-        }
-
-        $reports = $this->moderationService->getAllReports();
-        $this->render($response, 'moderation/dashboard', ['reports' => $reports]);
+        $this->twig = $twig;
+        $this->moderationService = $moderationService;
     }
 
-    public function reviewReport(Request $request, Response $response, array $args): void
+    public function dashboard()
     {
-        if (!$this->moderationService->isModeratorOrAdmin($request->user)) {
-            $this->redirect($response, '/');
-            return;
-        }
+        $reportedContent = $this->moderationService->getReportedContent();
+        $pendingReviews = $this->moderationService->getPendingReviews();
+        $moderationLogs = $this->moderationService->getModerationLogs();
 
-        $reportId = (int) $args['id'];
-        $report = $this->moderationService->getReportById($reportId);
-        if (!$report) {
-            $this->redirect($response, '/moderation');
-            return;
-        }
-
-        $reportedContent = $this->moderationService->getReportedContent($report['content_type'], $report['content_id']);
-        $reportedUser = $this->userService->getUserById($report['reported_user_id']);
-
-        $this->render($response, 'moderation/review_report', [
-            'report' => $report,
-            'reportedContent' => $reportedContent,
-            'reportedUser' => $reportedUser
+        return $this->twig->render('moderation/dashboard.twig', [
+            'reported_content' => $reportedContent,
+            'pending_reviews' => $pendingReviews,
+            'moderation_logs' => $moderationLogs
         ]);
     }
 
-    public function approveContent(Request $request, Response $response, array $args): void
+    public function reviewContent($id)
     {
-        if (!$this->moderationService->isModeratorOrAdmin($request->user)) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'Unauthorized'], 401);
-            return;
+        $content = $this->moderationService->getContentForReview($id);
+
+        if (!$content) {
+            return $this->response->setStatusCode(404)->setBody('Content not found');
         }
 
-        $reportId = (int) $args['id'];
-        $result = $this->moderationService->approveContent($reportId, $request->user->id);
-        $this->jsonResponse($response, ['success' => $result]);
+        return $this->twig->render('moderation/review.twig', [
+            'content' => $content
+        ]);
     }
 
-    public function removeContent(Request $request, Response $response, array $args): void
+    public function approveContent()
     {
-        if (!$this->moderationService->isModeratorOrAdmin($request->user)) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'Unauthorized'], 401);
-            return;
-        }
+        $id = $this->request->getPost('id');
+        $result = $this->moderationService->approveContent($id);
 
-        $reportId = (int) $args['id'];
-        $result = $this->moderationService->removeContent($reportId, $request->user->id);
-        $this->jsonResponse($response, ['success' => $result]);
+        return $this->response->setJSON([
+            'success' => $result,
+            'message' => $result ? 'Content approved' : 'Failed to approve content'
+        ]);
     }
 
-    public function warnUser(Request $request, Response $response, array $args): void
+    public function rejectContent()
     {
-        if (!$this->moderationService->isModeratorOrAdmin($request->user)) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'Unauthorized'], 401);
-            return;
-        }
+        $id = $this->request->getPost('id');
+        $reason = $this->request->getPost('reason');
+        $result = $this->moderationService->rejectContent($id, $reason);
 
-        $userId = (int) $args['id'];
-        $result = $this->moderationService->warnUser($userId, $request->user->id);
-        $this->jsonResponse($response, ['success' => $result]);
+        return $this->response->setJSON([
+            'success' => $result,
+            'message' => $result ? 'Content rejected' : 'Failed to reject content'
+        ]);
     }
 
-    public function suspendUser(Request $request, Response $response, array $args): void
+    public function removeContent()
     {
-        if (!$this->moderationService->isModeratorOrAdmin($request->user)) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'Unauthorized'], 401);
-            return;
-        }
+        $id = $this->request->getPost('id');
+        $result = $this->moderationService->removeContent($id);
 
-        $userId = (int) $args['id'];
-        $days = (int) $args['days'];
-        $result = $this->moderationService->suspendUser($userId, $days, $request->user->id);
-        $this->jsonResponse($response, ['success' => $result]);
+        return $this->response->setJSON([
+            'success' => $result,
+            'message' => $result ? 'Content removed' : 'Failed to remove content'
+        ]);
     }
 }

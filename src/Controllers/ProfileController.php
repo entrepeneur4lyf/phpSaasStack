@@ -2,43 +2,61 @@
 
 declare(strict_types=1);
 
-namespace Src\Controllers;
+namespace App\Controllers;
 
-use Src\Interfaces\UserServiceInterface;
-use Src\Interfaces\ProfileServiceInterface;
-use Src\Interfaces\PortfolioServiceInterface;
-use Src\Interfaces\OfferServiceInterface;
-use Src\Interfaces\MessageServiceInterface;
-use Src\Interfaces\PostServiceInterface;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
+use Twig\Environment;
+use App\Services\UserService;
+use App\Services\ProfileService;
+use App\Services\PortfolioService;
+use App\Services\OfferService;
+use App\Services\MessageService;
+use App\Services\PostService;
+use App\Services\AuthService;
 
-class ProfileController
+class ProfileController extends BaseController
 {
-    public function __construct(
-        private readonly UserServiceInterface $userService,
-        private readonly ProfileServiceInterface $profileService,
-        private readonly PortfolioServiceInterface $portfolioService,
-        private readonly OfferServiceInterface $offerService,
-        private readonly MessageServiceInterface $messageService,
-        private readonly PostServiceInterface $postService
-    ) {}
+    protected $twig;
+    protected $userService;
+    protected $profileService;
+    protected $portfolioService;
+    protected $offerService;
+    protected $messageService;
+    protected $postService;
+    protected $authService;
 
-    public function show(Request $request, Response $response, array $params): void
+    public function __construct(
+        Environment $twig,
+        UserService $userService,
+        ProfileService $profileService,
+        PortfolioService $portfolioService,
+        OfferService $offerService,
+        MessageService $messageService,
+        PostService $postService,
+        AuthService $authService
+    ) {
+        $this->twig = $twig;
+        $this->userService = $userService;
+        $this->profileService = $profileService;
+        $this->portfolioService = $portfolioService;
+        $this->offerService = $offerService;
+        $this->messageService = $messageService;
+        $this->postService = $postService;
+        $this->authService = $authService;
+    }
+
+    public function show($id)
     {
-        $userId = (int) ($params['id'] ?? 0);
-        $user = $this->userService->getUserById($userId);
+        $user = $this->userService->getUserById($id);
 
         if (!$user) {
-            $this->renderError($response, 'User not found', 404);
-            return;
+            return $this->response->setStatusCode(404)->setBody('User not found');
         }
 
-        $profile = $this->profileService->getProfileByUserId($userId);
-        $portfolio = $this->portfolioService->getPortfolioByUserId($userId);
-        $offers = $this->offerService->getOffersByUserId($userId);
-        $messages = $this->messageService->getMessagesByUserId($userId);
-        $posts = $this->postService->getPostsByUserId($userId);
+        $profile = $this->profileService->getProfileByUserId($id);
+        $portfolio = $this->portfolioService->getPortfolioByUserId($id);
+        $offers = $this->offerService->getOffersByUserId($id);
+        $messages = $this->messageService->getMessagesByUserId($id);
+        $posts = $this->postService->getPostsByUserId($id);
 
         $viewData = [
             'user' => $user,
@@ -49,19 +67,31 @@ class ProfileController
             'posts' => $posts,
         ];
 
-        $this->render($response, 'profile/show', $viewData);
+        return $this->twig->render('profile/show.twig', $viewData);
     }
 
-    private function render(Response $response, string $view, array $data = []): void
+    public function edit()
     {
-        // Implement your rendering logic here
-        $content = "Rendered view: $view with data: " . json_encode($data);
-        $response->end($content);
+        $user = $this->authService->getUser();
+        $profile = $this->profileService->getProfileByUserId($user->id);
+
+        return $this->twig->render('profile/edit.twig', [
+            'user' => $user,
+            'profile' => $profile
+        ]);
     }
 
-    private function renderError(Response $response, string $message, int $statusCode): void
+    public function update()
     {
-        $response->status($statusCode);
-        $response->end($message);
+        $user = $this->authService->getUser();
+        $data = $this->request->getPost();
+
+        $result = $this->profileService->updateProfile($user->id, $data);
+
+        if ($result) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Profile updated successfully']);
+        } else {
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to update profile']);
+        }
     }
 }

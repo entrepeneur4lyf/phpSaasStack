@@ -1,0 +1,54 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="composeMessage()" class="compose-message">
+    <h1>Compose Message</h1>
+    
+    <sl-form @submit.prevent="sendMessage">
+        <sl-select name="recipient_id" label="Recipient" x-model="recipient" required>
+            <template x-for="user in users" :key="user.id">
+                <sl-menu-item :value="user.id" x-text="user.username"></sl-menu-item>
+            </template>
+        </sl-select>
+
+        <sl-input name="subject" label="Subject" x-model="subject" required></sl-input>
+
+        <sl-textarea name="content" label="Message" x-model="content" required></sl-textarea>
+
+        <sl-button type="submit" variant="primary">Send Message</sl-button>
+    </sl-form>
+</div>
+
+<script>
+function composeMessage() {
+    return {
+        users: {{ users|json_encode|raw }},
+        recipient: '',
+        subject: '',
+        content: '',
+
+        sendMessage() {
+            fetch('{{ site_url('messages/send') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    recipient_id: this.recipient,
+                    subject: this.subject,
+                    content: this.content
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '{{ site_url('messages') }}';
+                } else {
+                    alert('Failed to send message: ' + data.message);
+                }
+            });
+        }
+    }
+}
+</script>
+{% endblock %}

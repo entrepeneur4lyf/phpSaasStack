@@ -1,0 +1,83 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="messageSystem()" class="messages-container">
+    <h2>Messages</h2>
+    
+    <sl-tab-group>
+        <sl-tab slot="nav" panel="inbox">Inbox</sl-tab>
+        <sl-tab slot="nav" panel="sent">Sent</sl-tab>
+        <sl-tab slot="nav" panel="compose">Compose</sl-tab>
+
+        <sl-tab-panel name="inbox">
+            <div class="message-list">
+                <template x-for="message in inbox" :key="message.id">
+                    <sl-card class="message-card" @click="viewMessage(message.id)">
+                        <strong x-text="message.subject"></strong>
+                        <p x-text="'From: ' + message.sender_name"></p>
+                        <p x-text="formatDate(message.created_at)"></p>
+                    </sl-card>
+                </template>
+            </div>
+        </sl-tab-panel>
+
+        <sl-tab-panel name="sent">
+            <div class="message-list">
+                <template x-for="message in sent" :key="message.id">
+                    <sl-card class="message-card" @click="viewMessage(message.id)">
+                        <strong x-text="message.subject"></strong>
+                        <p x-text="'To: ' + message.recipient_name"></p>
+                        <p x-text="formatDate(message.created_at)"></p>
+                    </sl-card>
+                </template>
+            </div>
+        </sl-tab-panel>
+
+        <sl-tab-panel name="compose">
+            <sl-form @submit.prevent="sendMessage">
+                <sl-input name="recipient" label="To" required></sl-input>
+                <sl-input name="subject" label="Subject" required></sl-input>
+                <sl-textarea name="content" label="Message" required></sl-textarea>
+                <sl-button type="submit" variant="primary">Send Message</sl-button>
+            </sl-form>
+        </sl-tab-panel>
+    </sl-tab-group>
+</div>
+
+<script>
+function messageSystem() {
+    return {
+        inbox: {{ inbox|json_encode|raw }},
+        sent: {{ sent|json_encode|raw }},
+
+        formatDate(dateString) {
+            return new Date(dateString).toLocaleString();
+        },
+
+        viewMessage(messageId) {
+            window.location.href = `/messages/view/${messageId}`;
+        },
+
+        sendMessage(event) {
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch('/messages/send', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.sent.unshift(data.message);
+                    form.reset();
+                    alert('Message sent successfully');
+                } else {
+                    alert('Failed to send message');
+                }
+            });
+        }
+    }
+}
+</script>
+{% endblock %}

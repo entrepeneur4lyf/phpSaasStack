@@ -1,0 +1,53 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="interfaceManager()" class="interface-manager">
+    <h1>Interface Settings</h1>
+
+    <sl-form @submit.prevent="saveSettings">
+        <sl-select name="theme" label="Theme" x-model="settings.theme">
+            <sl-menu-item value="light">Light</sl-menu-item>
+            <sl-menu-item value="dark">Dark</sl-menu-item>
+            <sl-menu-item value="auto">Auto (System)</sl-menu-item>
+        </sl-select>
+
+        <sl-select name="language" label="Language" x-model="settings.language">
+            <sl-menu-item value="en">English</sl-menu-item>
+            <sl-menu-item value="es">Español</sl-menu-item>
+            <sl-menu-item value="fr">Français</sl-menu-item>
+            <!-- Add more language options as needed -->
+        </sl-select>
+
+        <sl-switch name="notifications" x-model="settings.notifications">Enable Notifications</sl-switch>
+
+        <sl-button type="submit" variant="primary">Save Settings</sl-button>
+    </sl-form>
+</div>
+
+<script>
+function interfaceManager() {
+    return {
+        settings: {{ settings|json_encode|raw }},
+
+        saveSettings() {
+            fetch('/interface/save-settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(this.settings)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Settings saved successfully');
+                    // Optionally, update the UI or reload the page
+                } else {
+                    alert('Failed to save settings');
+                }
+            });
+        }
+    }
+}
+</script>
+{% endblock %}

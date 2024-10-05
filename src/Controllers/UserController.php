@@ -1,87 +1,68 @@
 <?php
 
-declare(strict_types=1);
+namespace App\Controllers;
 
-namespace Src\Controllers;
+use Twig\Environment;
+use App\Services\UserService;
+use App\Services\AuthService;
 
-use Src\Interfaces\UserServiceInterface;
-use Src\Interfaces\EmailServiceInterface;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
-
-class UserController
+class UserController extends BaseController
 {
-    public function __construct(
-        private readonly UserServiceInterface $userService,
-        private readonly EmailServiceInterface $emailService
-    ) {}
+    protected $twig;
+    protected $userService;
+    protected $authService;
 
-    public function register(Request $request, Response $response): void
+    public function __construct(Environment $twig, UserService $userService, AuthService $authService)
     {
-        try {
-            $data = json_decode($request->getContent(), true);
-            $user = $this->userService->createUser($data);
-            $this->emailService->sendVerificationEmail($user);
-            
-            $this->jsonResponse($response, ['message' => 'Registration successful. Please check your email to verify your account.'], 201);
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['error' => $e->getMessage()], 400);
-        }
+        $this->twig = $twig;
+        $this->userService = $userService;
+        $this->authService = $authService;
     }
 
-    public function login(Request $request, Response $response): void
+    public function index()
     {
-        try {
-            $data = json_decode($request->getContent(), true);
-            $token = $this->userService->loginUser($data['email'], $data['password']);
-            
-            $this->jsonResponse($response, ['token' => $token]);
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['error' => $e->getMessage()], 401);
-        }
+        $users = $this->userService->getAllUsers();
+        return $this->twig->render('user/index.twig', ['users' => $users]);
     }
 
-    public function getProfile(Request $request, Response $response): void
+    public function profile($id)
     {
-        try {
-            $userId = $request->user->id; // Assuming middleware sets the user
-            $user = $this->userService->getUserById($userId);
-            
-            $this->jsonResponse($response, ['user' => $user]);
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['error' => $e->getMessage()], 400);
+        $user = $this->userService->getUserById($id);
+        if (!$user) {
+            return $this->response->setStatusCode(404)->setBody('User not found');
         }
+        return $this->twig->render('user/profile.twig', ['user' => $user]);
     }
 
-    public function updateProfile(Request $request, Response $response): void
+    public function edit($id)
     {
-        try {
-            $userId = $request->user->id; // Assuming middleware sets the user
-            $data = json_decode($request->getContent(), true);
-            $updatedUser = $this->userService->updateUser($userId, $data);
-            
-            $this->jsonResponse($response, ['user' => $updatedUser]);
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['error' => $e->getMessage()], 400);
+        $currentUser = $this->authService->getUser();
+        if ($currentUser->id != $id && !$currentUser->isAdmin()) {
+            return $this->response->setStatusCode(403)->setBody('Unauthorized');
         }
+
+        $user = $this->userService->getUserById($id);
+        if (!$user) {
+            return $this->response->setStatusCode(404)->setBody('User not found');
+        }
+
+        return $this->twig->render('user/edit.twig', ['user' => $user]);
     }
 
-    public function deleteUser(Request $request, Response $response, array $args): void
+    public function update($id)
     {
-        try {
-            $userId = (int) $args['id'];
-            $this->userService->deleteUser($userId);
-            
-            $this->jsonResponse($response, ['message' => 'User deleted successfully']);
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['error' => $e->getMessage()], 400);
+        $currentUser = $this->authService->getUser();
+        if ($currentUser->id != $id && !$currentUser->isAdmin()) {
+            return $this->response->setStatusCode(403)->setBody('Unauthorized');
         }
-    }
 
-    private function jsonResponse(Response $response, array $data, int $statusCode = 200): void
-    {
-        $response->status($statusCode);
-        $response->header('Content-Type', 'application/json');
-        $response->end(json_encode($data));
+        $data = $this->request->getPost();
+        $result = $this->userService->updateUser($id, $data);
+
+        if ($result) {
+            return $this->response->setJSON(['success' => true, 'message' => 'User updated successfully']);
+        } else {
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to update user']);
+        }
     }
 }

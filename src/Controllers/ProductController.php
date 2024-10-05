@@ -1,122 +1,125 @@
 <?php
 
-declare(strict_types=1);
+namespace App\Controllers;
 
-namespace Src\Controllers;
-
-use Src\Interfaces\ProductServiceInterface;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
-use Src\Exceptions\ValidationException;
+use Twig\Environment;
+use App\Services\ProductService;
+use App\Services\AuthService;
 
 class ProductController extends BaseController
 {
-    public function __construct(
-        private readonly ProductServiceInterface $productService
-    ) {}
+    protected $twig;
+    protected $productService;
+    protected $authService;
 
-    public function listProducts(Request $request, Response $response): void
+    public function __construct(Environment $twig, ProductService $productService, AuthService $authService)
     {
-        $page = (int) ($request->get['page'] ?? 1);
-        $limit = (int) ($request->get['limit'] ?? 20);
-
-        $products = $this->productService->getProducts($page, $limit);
-        $this->render($response, 'products/list', ['products' => $products]);
+        $this->twig = $twig;
+        $this->productService = $productService;
+        $this->authService = $authService;
     }
 
-    public function showProduct(Request $request, Response $response, array $args): void
+    public function index()
     {
-        $productId = (int) $args['id'];
-        $product = $this->productService->getProductById($productId);
+        $products = $this->productService->getAllProducts();
+        return $this->twig->render('product/index.twig', ['products' => $products]);
+    }
+
+    public function show($id)
+    {
+        $product = $this->productService->getProductById($id);
+        if (!$product) {
+            return $this->response->setStatusCode(404)->setBody('Product not found');
+        }
+        return $this->twig->render('product/show.twig', ['product' => $product]);
+    }
+
+    public function create()
+    {
+        $user = $this->authService->getUser();
+        if (!$user->isSeller()) {
+            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+        }
+        return $this->twig->render('product/create.twig');
+    }
+
+    public function store()
+    {
+        $user = $this->authService->getUser();
+        if (!$user->isSeller()) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Unauthorized']);
+        }
+
+        $data = $this->request->getPost();
+        $data['seller_id'] = $user->id;
+
+        $result = $this->productService->createProduct($data);
+
+        if ($result) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Product created successfully']);
+        } else {
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to create product']);
+        }
+    }
+
+    public function edit($id)
+    {
+        $user = $this->authService->getUser();
+        $product = $this->productService->getProductById($id);
 
         if (!$product) {
-            $this->render($response, 'errors/404', [], 404);
-            return;
+            return $this->response->setStatusCode(404)->setBody('Product not found');
         }
 
-        $this->render($response, 'products/show', ['product' => $product]);
-    }
-
-    public function createProduct(Request $request, Response $response): void
-    {
-        try {
-            $productData = $request->post;
-            $productId = $this->productService->createProduct($productData);
-            $this->jsonResponse($response, ['success' => true, 'product_id' => $productId]);
-        } catch (ValidationException $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => $e->getMessage()], 400);
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred while creating the product'], 500);
+        if ($product->seller_id !== $user->id && !$user->isAdmin()) {
+            return $this->response->setStatusCode(403)->setBody('Unauthorized');
         }
+
+        return $this->twig->render('product/edit.twig', ['product' => $product]);
     }
 
-    public function updateProduct(Request $request, Response $response, array $args): void
+    public function update($id)
     {
-        try {
-            $productId = (int) $args['id'];
-            $productData = $request->post;
-            $success = $this->productService->updateProduct($productId, $productData);
-            $this->jsonResponse($response, ['success' => $success]);
-        } catch (ValidationException $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => $e->getMessage()], 400);
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred while updating the product'], 500);
+        $user = $this->authService->getUser();
+        $product = $this->productService->getProductById($id);
+
+        if (!$product) {
+            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Product not found']);
         }
-    }
 
-    public function deleteProduct(Request $request, Response $response, array $args): void
-    {
-        $productId = (int) $args['id'];
-        $success = $this->productService->deleteProduct($productId);
-        $this->jsonResponse($response, ['success' => $success]);
-    }
+        if ($product->seller_id !== $user->id && !$user->isAdmin()) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Unauthorized']);
+        }
 
-    public function searchProducts(Request $request, Response $response): void
-    {
-        $filters = $request->get;
-        $products = $this->productService->searchProducts($filters);
-        $this->jsonResponse($response, ['success' => true, 'products' => $products]);
-    }
+        $data = $this->request->getPost();
+        $result = $this->productService->updateProduct($id, $data);
 
-    public function getProductAnalytics(Request $request, Response $response, array $args): void
-    {
-        $productId = (int) $args['id'];
-        $analytics = $this->productService->getProductAnalytics($productId);
-        $this->jsonResponse($response, ['success' => true, 'analytics' => $analytics]);
-    }
-
-    public function addProductAsset(Request $request, Response $response, array $args): void
-    {
-        try {
-            $productId = (int) $args['id'];
-            $fileData = $request->files['asset'];
-            $userId = $request->user->id; // Assuming user is set by middleware
-            $assetId = $this->productService->addProductAsset($productId, $fileData, $userId);
-            $this->jsonResponse($response, ['success' => true, 'asset_id' => $assetId]);
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to add asset'], 500);
+        if ($result) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Product updated successfully']);
+        } else {
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to update product']);
         }
     }
 
-    public function removeProductAsset(Request $request, Response $response, array $args): void
+    public function delete($id)
     {
-        $productId = (int) $args['product_id'];
-        $assetId = (int) $args['asset_id'];
-        $success = $this->productService->removeProductAsset($productId, $assetId);
-        $this->jsonResponse($response, ['success' => $success]);
-    }
+        $user = $this->authService->getUser();
+        $product = $this->productService->getProductById($id);
 
-    public function getProductAssets(Request $request, Response $response, array $args): void
-    {
-        $productId = (int) $args['id'];
-        $assets = $this->productService->getProductAssets($productId);
-        $this->jsonResponse($response, ['success' => true, 'assets' => $assets]);
-    }
+        if (!$product) {
+            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Product not found']);
+        }
 
-    public function getProductLicenseInfo(Request $request, Response $response, array $args): void
-    {
-        $productId = (int) $args['id'];
-        $licenseInfo = $this->productService->getProductLicenseInfo($productId);
-        $this->jsonResponse($response, ['success' => true, 'license_info' => $licenseInfo]);
+        if ($product->seller_id !== $user->id && !$user->isAdmin()) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Unauthorized']);
+        }
+
+        $result = $this->productService->deleteProduct($id);
+
+        if ($result) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Product deleted successfully']);
+        } else {
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to delete product']);
+        }
     }
 }

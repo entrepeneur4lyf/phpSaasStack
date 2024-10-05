@@ -11,12 +11,27 @@ use Src\Core\ErrorHandler;
 use Src\Core\RouteCollection;
 use Src\Core\WebSocketRouteCollection;
 use Src\Middleware\WebSocketAuthMiddleware;
+use Src\Core\SwooleErrorHandler;
+use Src\Core\ErrorReporter;
+use Src\Core\ErrorTracker;
+use Src\Exceptions\NotFoundException;
+use Src\Exceptions\HttpException;
+use \Rollbar\Rollbar;
+use \Rollbar\Payload\Level;
 
 // Load environment variables
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
 $config = require __DIR__ . '/../src/Config/Application.php';
+
+// Initialize Rollbar
+Rollbar::init(
+    array(
+        'access_token' => $config['rollbar']['access_token'],
+        'environment' => $config['app']['environment']
+    )
+);
 
 $containerBuilder = new ContainerBuilder();
 $dependencies = require __DIR__ . '/../src/Config/Dependencies.php';
@@ -37,7 +52,22 @@ $router = new Router(
     $containerBuilder->get(ErrorHandler::class)
 );
 
-$server = new Server($config['swoole']['host'], $config['swoole']['port']);
+$server = new Swoole\HTTP\Server("0.0.0.0", 9501);
+
+// Initialize and register the error handler
+$redis = new Redis();
+$redis->connect($config['redis']['host'], $config['redis']['port']);
+
+$errorReporter = new ErrorReporter($config['error_reporting']);
+$errorTracker = new ErrorTracker($redis);
+
+$errorHandler = new SwooleErrorHandler(
+    $config['app']['display_errors'],
+    $errorReporter,
+    $errorTracker,
+    $config['app']['environment']
+);
+$errorHandler->register($server);
 
 $server->set([
     'ssl_cert_file' => $config['swoole']['ssl']['cert_file'],
@@ -84,10 +114,37 @@ $server->on('close', function (Server $server, $fd) use ($webSocketRouteCollecti
 
 $corsMiddleware = new \Src\Middleware\CorsMiddleware($config['cors']);
 
-$server->on("request", function ($request, $response) use ($router, $corsMiddleware) {
-    $corsMiddleware->handle($request, $response, function ($request, $response) use ($router) {
-        $router->dispatch($request, $response);
-    });
+$server->on("request", function ($request, $response) use ($containerBuilder, $router, $webSocketRouteCollection, $errorHandler) {
+    try {
+        $httpMethod = $request->server['request_method'];
+        $uri = $request->server['request_uri'];
+
+        $routeInfo = $router->dispatch($httpMethod, $uri);
+
+        switch ($routeInfo[0]) {
+            case FastRoute\Dispatcher::NOT_FOUND:
+                throw new NotFoundException("Route not found: $uri");
+            case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+                $allowedMethods = $routeInfo[1];
+                throw new HttpException("Method not allowed. Allowed methods: " . implode(', ', $allowedMethods), 0, 405);
+            case FastRoute\Dispatcher::FOUND:
+                $handler = $routeInfo[1];
+                $vars = $routeInfo[2];
+                
+                // Execute the handler
+                $result = $handler($vars);
+                
+                // Send the response
+                $response->end($result);
+                break;
+        }
+    } catch (Throwable $e) {
+        if ($request->header['accept'] === 'application/json') {
+            $errorHandler->handleException($e, $response);
+        } else {
+            $errorHandler->renderErrorPage($e, $response);
+        }
+    }
 });
 
 $server->start();

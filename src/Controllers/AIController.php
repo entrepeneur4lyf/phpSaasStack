@@ -2,50 +2,69 @@
 
 declare(strict_types=1);
 
-namespace Src\Controllers;
+namespace App\Controllers;
 
-use Src\Interfaces\AIServiceInterface;
-use Src\Interfaces\AuthServiceInterface;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
+use Twig\Environment;
+use App\Services\AIService;
+use App\Services\AuthService;
 
-class AIController
+class AIController extends BaseController
 {
-    public function __construct(
-        private AIServiceInterface $aiService,
-        private AuthServiceInterface $authService
-    ) {}
+    protected $twig;
+    protected $aiService;
+    protected $authService;
 
-    public function showInterface(Request $request, Response $response): void
+    public function __construct(Environment $twig, AIService $aiService, AuthService $authService)
     {
-        if (!$this->authService->isAuthenticated()) {
-            $response->status(401);
-            $response->end('Unauthorized');
-            return;
-        }
-
-        $content = file_get_contents(__DIR__ . '/../Views/ai/interface.php');
-        $response->header('Content-Type', 'text/html');
-        $response->end($content);
+        $this->twig = $twig;
+        $this->aiService = $aiService;
+        $this->authService = $authService;
     }
 
-    public function chatCompletion(Request $request, Response $response): void
+    public function index()
     {
-        if (!$this->authService->isAuthenticated()) {
-            $response->status(401);
-            $response->end(json_encode(['error' => 'Unauthorized']));
-            return;
+        $user = $this->authService->getUser();
+        return $this->twig->render('ai/interface.twig', ['user' => $user]);
+    }
+
+    public function generateContent()
+    {
+        $user = $this->authService->getUser();
+        $prompt = $this->request->getPost('prompt');
+        
+        $result = $this->aiService->generateContent($user->id, $prompt);
+
+        return $this->response->setJSON($result);
+    }
+
+    public function getHistory()
+    {
+        $user = $this->authService->getUser();
+        $history = $this->aiService->getGenerationHistory($user->id);
+
+        return $this->response->setJSON($history);
+    }
+
+    public function analyzeImage()
+    {
+        $user = $this->authService->getUser();
+        $image = $this->request->getFile('image');
+
+        if ($image->isValid() && !$image->hasMoved()) {
+            $result = $this->aiService->analyzeImage($user->id, $image);
+            return $this->response->setJSON($result);
         }
 
-        $result = $this->aiService->processRequest([
-            'type' => 'chat_completion',
-            'params' => [
-                'prompt' => $request->post['prompt'],
-                'max_tokens' => $request->post['max_tokens'] ?? 150,
-                'temperature' => $request->post['temperature'] ?? 0.7
-            ]
-        ]);
+        return $this->response->setStatusCode(400)->setJSON(['error' => 'Invalid image upload']);
+    }
 
-        $this->jsonResponse($response, $result);
+    public function chatbot()
+    {
+        $user = $this->authService->getUser();
+        $message = $this->request->getPost('message');
+
+        $response = $this->aiService->chatbotResponse($user->id, $message);
+
+        return $this->response->setJSON($response);
     }
 }

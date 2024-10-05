@@ -1,61 +1,9 @@
 .
-├── @src
-│   ├── Commands
-│   │   └── PublishScheduledPosts.php
-│   ├── Config
-│   │   └── Routes.php
-│   ├── Controllers
-│   │   └── PostController.php
-│   └── Models
-│       └── PostModel.php
-├── app
-│   ├── Commands
-│   │   └── PublishScheduledPosts.php
-│   ├── Config
-│   │   └── Routes.php
-│   ├── Controllers
-│   │   ├── AdminController.php
-│   │   ├── CommentController.php
-│   │   ├── MarkdownController.php
-│   │   ├── ModerationController.php
-│   │   ├── PostController.php
-│   │   └── ProfileController.php
-│   ├── Models
-│   │   ├── CommentModel.php
-│   │   ├── PostModel.php
-│   │   ├── Product.php
-│   │   └── User.php
-│   ├── Views
-│   │   ├── admin
-│   │   │   └── message_categories.php
-│   │   ├── dashboard.php
-│   │   ├── layouts
-│   │   │   └── main.php
-│   │   ├── messages
-│   │   │   └── index.php
-│   │   ├── moderation
-│   │   │   └── dashboard.php
-│   │   ├── offers
-│   │   │   └── index.php
-│   │   ├── posts
-│   │   │   ├── featured.php
-│   │   │   ├── index.php
-│   │   │   ├── search_results.php
-│   │   │   └── view.php
-│   │   └── profile
-│   │       ├── edit.php
-│   │       └── show.php
-│   ├── routes.php
-│   ├── structure.txt
-│   └── views
-│       └── partials
-│           └── header.php
-├── bin
-│   └── start_ai_server.php
 ├── composer.json
 ├── composer.lock
 ├── config
-│   └── api_keys.php
+│   └── database.php
+├── console
 ├── css
 │   └── styles.css
 ├── database
@@ -67,72 +15,98 @@
 │   └── app.js
 ├── project.txt
 ├── public
-│   ├── ai_interface.php
-│   ├── cron_publish_scheduled_posts.php
 │   ├── css
 │   │   └── styles.css
-│   ├── edit_profile.php
-│   ├── follow_user.php
-│   ├── index.html
 │   ├── index.php
-│   ├── js
-│   │   ├── asset-library.js
-│   │   ├── markdown-editor.js
-│   │   └── message-composer.js
-│   ├── manage_portfolio.php
-│   ├── manage_post.php
-│   ├── messages.php
-│   ├── product.php
-│   ├── profile.php
-│   └── seller
-│       ├── manage_faq.php
-│       ├── manage_product.php
-│       ├── manage_services.php
-│       └── update_related_products.php
+│   └── js
+│       ├── asset-library.js
+│       ├── markdown-editor.js
+│       ├── message-composer.js
+│       └── websocket-client.js
 ├── roadmap.md
 ├── src
-│   ├── AIService
-│   │   ├── AIServer.php
-│   │   ├── OpenAIWrapper.php
-│   │   └── RequestQueue.php
 │   ├── Commands
+│   │   ├── PrecompileViewsCommand.php
+│   │   ├── ProcessAIRequests.php
 │   │   └── PublishScheduledPosts.php
 │   ├── Config
-│   │   ├── AssetConfig.php
-│   │   ├── Database.php
-│   │   ├── DatabaseConnection.php
-│   │   ├── DatabaseMigrations.php
-│   │   ├── Logger.php
-│   │   ├── MarketplaceSchema.php
-│   │   ├── RateLimiter.php
-│   │   ├── Router.php
+│   │   ├── Application.php
+│   │   ├── Dependencies.php
 │   │   ├── Routes.php
-│   │   └── Security.php
+│   │   └── WebSocketRoutes.php
 │   ├── Controllers
-│   │   ├── AIInferenceController.php
-│   │   ├── AccountSettingsController.php
-│   │   ├── ActivityController.php
+│   │   ├── AIController.php
+│   │   ├── AbstractWebSocketController.php
 │   │   ├── AdminController.php
 │   │   ├── AssetController.php
 │   │   ├── AuthController.php
-│   │   ├── DashboardController.php
+│   │   ├── BaseController.php
+│   │   ├── CommentController.php
 │   │   ├── FileDeliveryController.php
 │   │   ├── FollowController.php
 │   │   ├── HomeController.php
 │   │   ├── LicenseController.php
+│   │   ├── MarkdownController.php
 │   │   ├── MessageController.php
-│   │   ├── NotificationController.php
+│   │   ├── ModerationController.php
 │   │   ├── PortfolioController.php
 │   │   ├── PostController.php
 │   │   ├── ProductController.php
 │   │   ├── ProfileController.php
-│   │   ├── SellerDashboardController.php
-│   │   ├── SubscriptionController.php
-│   │   └── UserPanelController.php
+│   │   ├── SellerController.php
+│   │   ├── UserController.php
+│   │   └── WebSocketController.php
+│   ├── Core
+│   │   ├── CacheManager.php
+│   │   ├── Controller.php
+│   │   ├── ErrorHandler.php
+│   │   ├── Route.php
+│   │   ├── RouteCollection.php
+│   │   ├── Router.php
+│   │   ├── SessionManager.php
+│   │   ├── TwigRenderer.php
+│   │   ├── WebSocketRequest.php
+│   │   └── WebSocketRouteCollection.php
+│   ├── Database
+│   │   ├── CoroutineMySQLPool.php
+│   │   ├── Database.php
+│   │   ├── DatabaseProfiler.php
+│   │   └── QueryLogger.php
+│   ├── Exceptions
+│   │   ├── AuthenticationException.php
+│   │   └── DatabaseException.php
+│   ├── Interfaces
+│   │   ├── AIServiceInterface.php
+│   │   ├── AssetServiceInterface.php
+│   │   ├── AuthServiceInterface.php
+│   │   ├── CacheServiceInterface.php
+│   │   ├── CategoryServiceInterface.php
+│   │   ├── CommentServiceInterface.php
+│   │   ├── DatabaseServiceInterface.php
+│   │   ├── FileDeliveryServiceInterface.php
+│   │   ├── FollowServiceInterface.php
+│   │   ├── JWTServiceInterface.php
+│   │   ├── LicenseServiceInterface.php
+│   │   ├── MessageServiceInterface.php
+│   │   ├── ModerationServiceInterface.php
+│   │   ├── OfferServiceInterface.php
+│   │   ├── OrderServiceInterface.php
+│   │   ├── PortfolioServiceInterface.php
+│   │   ├── PostServiceInterface.php
+│   │   ├── ProductRepositoryInterface.php
+│   │   ├── ProductServiceInterface.php
+│   │   ├── ProfileServiceInterface.php
+│   │   ├── RequestQueueInterface.php
+│   │   ├── RequestQueueServiceInterface.php
+│   │   ├── SellerServiceInterface.php
+│   │   ├── ThemeServiceInterface.php
+│   │   ├── UserServiceInterface.php
+│   │   └── WebSocketControllerInterface.php
 │   ├── Middleware
+│   │   ├── CorsMiddleware.php
 │   │   ├── FileUploadMiddleware.php
 │   │   ├── HttpsRedirectMiddleware.php
-│   │   ├── JwtMiddleware.php
+│   │   ├── JWTMiddleware.php
 │   │   ├── LoginRateLimitMiddleware.php
 │   │   ├── RateLimitMiddleware.php
 │   │   ├── RoleMiddleware.php
@@ -141,25 +115,48 @@
 │   │   ├── SecurityLoggingMiddleware.php
 │   │   ├── SecurityMiddleware.php
 │   │   ├── SessionMiddleware.php
-│   │   └── ValidationSanitizationMiddleware.php
+│   │   ├── ValidationSanitizationMiddleware.php
+│   │   ├── WebSocketAuthMiddleware.php
+│   │   └── WebSocketMiddlewareInterface.php
 │   ├── Models
 │   │   ├── Asset.php
-│   │   ├── BaseModel.php
-│   │   ├── Category.php
-│   │   ├── CommentModel.php
+│   │   ├── Comment.php
+│   │   ├── Download.php
+│   │   ├── Follow.php
 │   │   ├── License.php
 │   │   ├── Message.php
-│   │   ├── Notification.php
-│   │   ├── Order.php
-│   │   ├── PostModel.php
+│   │   ├── Moderation.php
+│   │   ├── Offer.php
+│   │   ├── Portfolio.php
+│   │   ├── Post.php
 │   │   ├── Product.php
-│   │   ├── Subscription.php
-│   │   ├── Tag.php
-│   │   ├── User.php
-│   │   ├── UserActivity.php
-│   │   └── UserStatistics.php
+│   │   ├── Profile.php
+│   │   ├── Seller.php
+│   │   └── User.php
 │   ├── Services
-│   │   └── PiAPIClient.php
+│   │   ├── AIService.php
+│   │   ├── AssetService.php
+│   │   ├── AuthService.php
+│   │   ├── CategoryService.php
+│   │   ├── CommentService.php
+│   │   ├── DatabaseService.php
+│   │   ├── FileCacheService.php
+│   │   ├── FileDeliveryService.php
+│   │   ├── FollowService.php
+│   │   ├── JWTService.php
+│   │   ├── LicenseService.php
+│   │   ├── MessageService.php
+│   │   ├── ModerationService.php
+│   │   ├── OfferService.php
+│   │   ├── OrderService.php
+│   │   ├── PiAPIClient.php
+│   │   ├── PortfolioService.php
+│   │   ├── PostService.php
+│   │   ├── ProductService.php
+│   │   ├── RequestQueueService.php
+│   │   ├── SellerService.php
+│   │   ├── ThemeService.php
+│   │   └── UserService.php
 │   ├── Utils
 │   │   ├── CSRF.php
 │   │   ├── FileUploadHandler.php
@@ -169,22 +166,67 @@
 │   │   ├── SessionManager.php
 │   │   └── Validator.php
 │   └── Views
-│       ├── account_settings.php
-│       ├── activity_log.php
-│       ├── add_product.php
+│       ├── admin
+│       │   └── message_categories.php
+│       ├── ai
+│       │   └── interface.php
 │       ├── dashboard.php
-│       ├── home.php
-│       ├── login.php
-│       ├── messages.php
-│       ├── product_detail.php
-│       ├── product_listing.php
-│       ├── register.php
-│       ├── seller_dashboard.php
-│       ├── seller_product_list.php
-│       ├── subscription_management.php
-│       └── user_purchases.php
+│       ├── home
+│       │   └── index.php
+│       ├── layout.php
+│       ├── layouts
+│       │   └── main.php
+│       ├── message
+│       │   ├── compose.php
+│       │   ├── index.php
+│       │   └── view.php
+│       ├── messages
+│       │   └── index.php
+│       ├── moderation
+│       │   └── dashboard.php
+│       ├── offers
+│       │   └── index.php
+│       ├── partials
+│       │   ├── footer.php
+│       │   └── header.php
+│       ├── portfolio
+│       │   └── manage.php
+│       ├── posts
+│       │   ├── featured.php
+│       │   ├── index.php
+│       │   ├── search_results.php
+│       │   └── view.php
+│       ├── product
+│       │   └── detail.php
+│       ├── profile
+│       │   ├── edit.php
+│       │   └── show.php
+│       └── seller
+│           ├── manage_product.php
+│           └── manage_services.php
+├── swoole.md
 └── vendor
     ├── autoload.php
+    ├── bin
+    │   ├── carbon
+    │   ├── carbon.bat
+    │   ├── php-parse
+    │   └── php-parse.bat
+    ├── carbonphp
+    │   └── carbon-doctrine-types
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── composer.json
+    │       └── src
+    │           └── Carbon
+    │               └── Doctrine
+    │                   ├── CarbonDoctrineType.php
+    │                   ├── CarbonImmutableType.php
+    │                   ├── CarbonType.php
+    │                   ├── CarbonTypeConverter.php
+    │                   ├── DateTimeDefaultPrecision.php
+    │                   ├── DateTimeImmutableType.php
+    │                   └── DateTimeType.php
     ├── composer
     │   ├── ClassLoader.php
     │   ├── InstalledVersions.php
@@ -212,6 +254,93 @@
     │           │   ├── InvalidPathException.php
     │           │   └── MissingPathException.php
     │           └── Util.php
+    ├── doctrine
+    │   ├── inflector
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   ├── docs
+    │   │   │   └── en
+    │   │   │       └── index.rst
+    │   │   └── lib
+    │   │       └── Doctrine
+    │   │           └── Inflector
+    │   │               ├── CachedWordInflector.php
+    │   │               ├── GenericLanguageInflectorFactory.php
+    │   │               ├── Inflector.php
+    │   │               ├── InflectorFactory.php
+    │   │               ├── Language.php
+    │   │               ├── LanguageInflectorFactory.php
+    │   │               ├── NoopWordInflector.php
+    │   │               ├── Rules
+    │   │               │   ├── English
+    │   │               │   │   ├── Inflectible.php
+    │   │               │   │   ├── InflectorFactory.php
+    │   │               │   │   ├── Rules.php
+    │   │               │   │   └── Uninflected.php
+    │   │               │   ├── French
+    │   │               │   │   ├── Inflectible.php
+    │   │               │   │   ├── InflectorFactory.php
+    │   │               │   │   ├── Rules.php
+    │   │               │   │   └── Uninflected.php
+    │   │               │   ├── NorwegianBokmal
+    │   │               │   │   ├── Inflectible.php
+    │   │               │   │   ├── InflectorFactory.php
+    │   │               │   │   ├── Rules.php
+    │   │               │   │   └── Uninflected.php
+    │   │               │   ├── Pattern.php
+    │   │               │   ├── Patterns.php
+    │   │               │   ├── Portuguese
+    │   │               │   │   ├── Inflectible.php
+    │   │               │   │   ├── InflectorFactory.php
+    │   │               │   │   ├── Rules.php
+    │   │               │   │   └── Uninflected.php
+    │   │               │   ├── Ruleset.php
+    │   │               │   ├── Spanish
+    │   │               │   │   ├── Inflectible.php
+    │   │               │   │   ├── InflectorFactory.php
+    │   │               │   │   ├── Rules.php
+    │   │               │   │   └── Uninflected.php
+    │   │               │   ├── Substitution.php
+    │   │               │   ├── Substitutions.php
+    │   │               │   ├── Transformation.php
+    │   │               │   ├── Transformations.php
+    │   │               │   ├── Turkish
+    │   │               │   │   ├── Inflectible.php
+    │   │               │   │   ├── InflectorFactory.php
+    │   │               │   │   ├── Rules.php
+    │   │               │   │   └── Uninflected.php
+    │   │               │   └── Word.php
+    │   │               ├── RulesetInflector.php
+    │   │               └── WordInflector.php
+    │   └── instantiator
+    │       ├── CONTRIBUTING.md
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── composer.json
+    │       ├── docs
+    │       │   └── en
+    │       │       ├── index.rst
+    │       │       └── sidebar.rst
+    │       ├── psalm.xml
+    │       └── src
+    │           └── Doctrine
+    │               └── Instantiator
+    │                   ├── Exception
+    │                   │   ├── ExceptionInterface.php
+    │                   │   ├── InvalidArgumentException.php
+    │                   │   └── UnexpectedValueException.php
+    │                   ├── Instantiator.php
+    │                   └── InstantiatorInterface.php
+    ├── fig
+    │   └── http-message-util
+    │       ├── CHANGELOG.md
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── composer.json
+    │       └── src
+    │           ├── RequestMethodInterface.php
+    │           └── StatusCodeInterface.php
     ├── firebase
     │   └── php-jwt
     │       ├── CHANGELOG.md
@@ -227,6 +356,921 @@
     │           ├── JWTExceptionWithPayloadInterface.php
     │           ├── Key.php
     │           └── SignatureInvalidException.php
+    ├── graham-campbell
+    │   └── result-type
+    │       ├── LICENSE
+    │       ├── composer.json
+    │       └── src
+    │           ├── Error.php
+    │           ├── Result.php
+    │           └── Success.php
+    ├── hyperf
+    │   ├── cache
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   ├── publish
+    │   │   │   └── cache.php
+    │   │   └── src
+    │   │       ├── Annotation
+    │   │       │   ├── CacheAhead.php
+    │   │       │   ├── CacheEvict.php
+    │   │       │   ├── CachePut.php
+    │   │       │   ├── Cacheable.php
+    │   │       │   └── FailCache.php
+    │   │       ├── AnnotationManager.php
+    │   │       ├── Aspect
+    │   │       │   ├── CacheAheadAspect.php
+    │   │       │   ├── CacheEvictAspect.php
+    │   │       │   ├── CachePutAspect.php
+    │   │       │   ├── CacheableAspect.php
+    │   │       │   └── FailCacheAspect.php
+    │   │       ├── Cache.php
+    │   │       ├── CacheListenerCollector.php
+    │   │       ├── CacheManager.php
+    │   │       ├── Collector
+    │   │       │   ├── CoroutineMemory.php
+    │   │       │   ├── CoroutineMemoryKey.php
+    │   │       │   ├── FileStorage.php
+    │   │       │   └── Memory.php
+    │   │       ├── ConfigProvider.php
+    │   │       ├── Driver
+    │   │       │   ├── CoroutineMemoryDriver.php
+    │   │       │   ├── Driver.php
+    │   │       │   ├── DriverInterface.php
+    │   │       │   ├── FileSystemDriver.php
+    │   │       │   ├── KeyCollectorInterface.php
+    │   │       │   ├── MemoryDriver.php
+    │   │       │   ├── RedisDriver.php
+    │   │       │   └── SqliteDriver.php
+    │   │       ├── Exception
+    │   │       │   ├── CacheException.php
+    │   │       │   ├── InvalidArgumentException.php
+    │   │       │   └── OverflowException.php
+    │   │       ├── Helper
+    │   │       │   └── StringHelper.php
+    │   │       └── Listener
+    │   │           ├── DeleteEvent.php
+    │   │           ├── DeleteListener.php
+    │   │           └── DeleteListenerEvent.php
+    │   ├── code-parser
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── Exception
+    │   │       │   └── InvalidArgumentException.php
+    │   │       ├── Package.php
+    │   │       ├── PhpDocReader.php
+    │   │       ├── PhpDocReaderManager.php
+    │   │       ├── PhpParser.php
+    │   │       └── Project.php
+    │   ├── codec
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── Base62.php
+    │   │       ├── Exception
+    │   │       │   └── InvalidArgumentException.php
+    │   │       ├── Json.php
+    │   │       ├── Packer
+    │   │       │   ├── IgbinarySerializerPacker.php
+    │   │       │   ├── JsonPacker.php
+    │   │       │   └── PhpSerializerPacker.php
+    │   │       └── Xml.php
+    │   ├── collection
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── Arr.php
+    │   │       ├── Collection.php
+    │   │       ├── Enumerable.php
+    │   │       ├── Functions.php
+    │   │       ├── HigherOrderCollectionProxy.php
+    │   │       ├── ItemNotFoundException.php
+    │   │       ├── LazyCollection.php
+    │   │       ├── MultipleItemsFoundException.php
+    │   │       └── Traits
+    │   │           └── EnumeratesValues.php
+    │   ├── conditionable
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── Conditionable.php
+    │   │       └── HigherOrderWhenProxy.php
+    │   ├── context
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── ApplicationContext.php
+    │   │       ├── Context.php
+    │   │       ├── RequestContext.php
+    │   │       ├── ResponseContext.php
+    │   │       └── Traits
+    │   │           └── CoroutineProxy.php
+    │   ├── contract
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── ApplicationInterface.php
+    │   │       ├── Arrayable.php
+    │   │       ├── CanBeEscapedWhenCastToString.php
+    │   │       ├── Castable.php
+    │   │       ├── CastsAttributes.php
+    │   │       ├── CastsInboundAttributes.php
+    │   │       ├── CompressInterface.php
+    │   │       ├── ConfigInterface.php
+    │   │       ├── ConnectionInterface.php
+    │   │       ├── ContainerInterface.php
+    │   │       ├── DispatcherInterface.php
+    │   │       ├── FrequencyInterface.php
+    │   │       ├── IPReaderInterface.php
+    │   │       ├── IdGeneratorInterface.php
+    │   │       ├── JsonDeSerializable.php
+    │   │       ├── Jsonable.php
+    │   │       ├── LengthAwarePaginatorInterface.php
+    │   │       ├── MessageBag.php
+    │   │       ├── MessageProvider.php
+    │   │       ├── MiddlewareInitializerInterface.php
+    │   │       ├── NormalizerInterface.php
+    │   │       ├── OnCloseInterface.php
+    │   │       ├── OnHandShakeInterface.php
+    │   │       ├── OnMessageInterface.php
+    │   │       ├── OnOpenInterface.php
+    │   │       ├── OnPacketInterface.php
+    │   │       ├── OnReceiveInterface.php
+    │   │       ├── OnRequestInterface.php
+    │   │       ├── PackerInterface.php
+    │   │       ├── PaginatorInterface.php
+    │   │       ├── PoolInterface.php
+    │   │       ├── PoolOptionInterface.php
+    │   │       ├── ProcessInterface.php
+    │   │       ├── ResponseEmitterInterface.php
+    │   │       ├── SessionInterface.php
+    │   │       ├── StdoutLoggerInterface.php
+    │   │       ├── Synchronized.php
+    │   │       ├── TranslatorInterface.php
+    │   │       ├── TranslatorLoaderInterface.php
+    │   │       ├── UnCompressInterface.php
+    │   │       ├── ValidatorInterface.php
+    │   │       └── Xmlable.php
+    │   ├── coordinator
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── Constants.php
+    │   │       ├── Coordinator.php
+    │   │       ├── CoordinatorManager.php
+    │   │       ├── Functions.php
+    │   │       ├── Listener
+    │   │       │   └── ResumeExitCoordinatorListener.php
+    │   │       └── Timer.php
+    │   ├── coroutine
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── Channel
+    │   │       │   ├── Caller.php
+    │   │       │   ├── Manager.php
+    │   │       │   └── Pool.php
+    │   │       ├── Concurrent.php
+    │   │       ├── Coroutine.php
+    │   │       ├── Exception
+    │   │       │   ├── ChannelClosedException.php
+    │   │       │   ├── ExceptionThrower.php
+    │   │       │   ├── InvalidArgumentException.php
+    │   │       │   ├── ParallelExecutionException.php
+    │   │       │   ├── TimeoutException.php
+    │   │       │   └── WaitTimeoutException.php
+    │   │       ├── Functions.php
+    │   │       ├── Locker.php
+    │   │       ├── Parallel.php
+    │   │       ├── WaitGroup.php
+    │   │       └── Waiter.php
+    │   ├── crontab
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   ├── publish
+    │   │   │   └── crontab.php
+    │   │   └── src
+    │   │       ├── Annotation
+    │   │       │   └── Crontab.php
+    │   │       ├── Command
+    │   │       │   └── RunCommand.php
+    │   │       ├── ConfigProvider.php
+    │   │       ├── Crontab.php
+    │   │       ├── CrontabManager.php
+    │   │       ├── Event
+    │   │       │   ├── AfterExecute.php
+    │   │       │   ├── BeforeExecute.php
+    │   │       │   ├── CrontabDispatcherStarted.php
+    │   │       │   ├── Event.php
+    │   │       │   └── FailToExecute.php
+    │   │       ├── Exception
+    │   │       │   └── InvalidArgumentException.php
+    │   │       ├── Listener
+    │   │       │   ├── CrontabRegisterListener.php
+    │   │       │   └── OnPipeMessageListener.php
+    │   │       ├── LoggerInterface.php
+    │   │       ├── ManagesFrequencies.php
+    │   │       ├── Mutex
+    │   │       │   ├── RedisServerMutex.php
+    │   │       │   ├── RedisTaskMutex.php
+    │   │       │   ├── ServerMutex.php
+    │   │       │   ├── ServerNodeInterface.php
+    │   │       │   └── TaskMutex.php
+    │   │       ├── Parser.php
+    │   │       ├── PipeMessage.php
+    │   │       ├── Process
+    │   │       │   └── CrontabDispatcherProcess.php
+    │   │       ├── Schedule.php
+    │   │       ├── Scheduler.php
+    │   │       └── Strategy
+    │   │           ├── AbstractStrategy.php
+    │   │           ├── CoroutineStrategy.php
+    │   │           ├── Executor.php
+    │   │           ├── ProcessStrategy.php
+    │   │           ├── StrategyInterface.php
+    │   │           ├── TaskWorkerStrategy.php
+    │   │           └── WorkerStrategy.php
+    │   ├── database
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   ├── ide
+    │   │   │   └── ModelIDE.php
+    │   │   └── src
+    │   │       ├── Commands
+    │   │       │   ├── Annotations
+    │   │       │   │   └── RewriteReturnType.php
+    │   │       │   ├── Ast
+    │   │       │   │   ├── AbstractVisitor.php
+    │   │       │   │   ├── GenerateModelIDEVisitor.php
+    │   │       │   │   ├── ModelRewriteConnectionVisitor.php
+    │   │       │   │   ├── ModelRewriteGetterSetterVisitor.php
+    │   │       │   │   ├── ModelRewriteInheritanceVisitor.php
+    │   │       │   │   ├── ModelRewriteKeyInfoVisitor.php
+    │   │       │   │   ├── ModelRewriteSoftDeletesVisitor.php
+    │   │       │   │   ├── ModelRewriteTimestampsVisitor.php
+    │   │       │   │   └── ModelUpdateVisitor.php
+    │   │       │   ├── CommandCollector.php
+    │   │       │   ├── Migrations
+    │   │       │   │   ├── BaseCommand.php
+    │   │       │   │   ├── FreshCommand.php
+    │   │       │   │   ├── GenMigrateCommand.php
+    │   │       │   │   ├── InstallCommand.php
+    │   │       │   │   ├── MigrateCommand.php
+    │   │       │   │   ├── RefreshCommand.php
+    │   │       │   │   ├── ResetCommand.php
+    │   │       │   │   ├── RollbackCommand.php
+    │   │       │   │   ├── StatusCommand.php
+    │   │       │   │   └── TableGuesser.php
+    │   │       │   ├── ModelCommand.php
+    │   │       │   ├── ModelData.php
+    │   │       │   ├── ModelOption.php
+    │   │       │   ├── Seeders
+    │   │       │   │   ├── BaseCommand.php
+    │   │       │   │   ├── GenSeederCommand.php
+    │   │       │   │   └── SeedCommand.php
+    │   │       │   └── stubs
+    │   │       │       └── Model.stub
+    │   │       ├── Concerns
+    │   │       │   ├── BuildsQueries.php
+    │   │       │   ├── ExplainsQueries.php
+    │   │       │   └── ManagesTransactions.php
+    │   │       ├── Connection.php
+    │   │       ├── ConnectionInterface.php
+    │   │       ├── ConnectionResolver.php
+    │   │       ├── ConnectionResolverInterface.php
+    │   │       ├── Connectors
+    │   │       │   ├── ConnectionFactory.php
+    │   │       │   ├── Connector.php
+    │   │       │   ├── ConnectorInterface.php
+    │   │       │   └── MySqlConnector.php
+    │   │       ├── DBAL
+    │   │       │   ├── Concerns
+    │   │       │   │   └── ConnectsToDatabase.php
+    │   │       │   ├── Connection.php
+    │   │       │   └── MySqlDriver.php
+    │   │       ├── DetectsDeadlocks.php
+    │   │       ├── DetectsLostConnections.php
+    │   │       ├── Events
+    │   │       │   ├── ConnectionEvent.php
+    │   │       │   ├── QueryExecuted.php
+    │   │       │   ├── StatementPrepared.php
+    │   │       │   ├── TransactionBeginning.php
+    │   │       │   ├── TransactionCommitted.php
+    │   │       │   └── TransactionRolledBack.php
+    │   │       ├── Exception
+    │   │       │   ├── InvalidArgumentException.php
+    │   │       │   ├── InvalidBindingException.php
+    │   │       │   ├── InvalidCastException.php
+    │   │       │   └── QueryException.php
+    │   │       ├── Grammar.php
+    │   │       ├── Migrations
+    │   │       │   ├── DatabaseMigrationRepository.php
+    │   │       │   ├── Migration.php
+    │   │       │   ├── MigrationCreator.php
+    │   │       │   ├── MigrationRepositoryInterface.php
+    │   │       │   ├── Migrator.php
+    │   │       │   └── stubs
+    │   │       │       ├── blank.stub
+    │   │       │       ├── create.stub
+    │   │       │       └── update.stub
+    │   │       ├── Model
+    │   │       │   ├── Booted.php
+    │   │       │   ├── Builder.php
+    │   │       │   ├── CastsValue.php
+    │   │       │   ├── Collection.php
+    │   │       │   ├── CollectionMeta.php
+    │   │       │   ├── Concerns
+    │   │       │   │   ├── CamelCase.php
+    │   │       │   │   ├── GuardsAttributes.php
+    │   │       │   │   ├── HasAttributes.php
+    │   │       │   │   ├── HasEvents.php
+    │   │       │   │   ├── HasGlobalScopes.php
+    │   │       │   │   ├── HasRelationships.php
+    │   │       │   │   ├── HasTimestamps.php
+    │   │       │   │   ├── HasUlids.php
+    │   │       │   │   ├── HasUuids.php
+    │   │       │   │   ├── HidesAttributes.php
+    │   │       │   │   └── QueriesRelationships.php
+    │   │       │   ├── EnumCollector.php
+    │   │       │   ├── Events
+    │   │       │   │   ├── Booted.php
+    │   │       │   │   ├── Booting.php
+    │   │       │   │   ├── Created.php
+    │   │       │   │   ├── Creating.php
+    │   │       │   │   ├── Deleted.php
+    │   │       │   │   ├── Deleting.php
+    │   │       │   │   ├── Event.php
+    │   │       │   │   ├── ForceDeleted.php
+    │   │       │   │   ├── ForceDeleting.php
+    │   │       │   │   ├── Restored.php
+    │   │       │   │   ├── Restoring.php
+    │   │       │   │   ├── Retrieved.php
+    │   │       │   │   ├── Saved.php
+    │   │       │   │   ├── Saving.php
+    │   │       │   │   ├── Updated.php
+    │   │       │   │   └── Updating.php
+    │   │       │   ├── Factory.php
+    │   │       │   ├── FactoryBuilder.php
+    │   │       │   ├── GlobalScope.php
+    │   │       │   ├── IgnoreOnTouch.php
+    │   │       │   ├── JsonEncodingException.php
+    │   │       │   ├── MassAssignmentException.php
+    │   │       │   ├── Model.php
+    │   │       │   ├── ModelMeta.php
+    │   │       │   ├── ModelNotFoundException.php
+    │   │       │   ├── Register.php
+    │   │       │   ├── RelationNotFoundException.php
+    │   │       │   ├── Relations
+    │   │       │   │   ├── BelongsTo.php
+    │   │       │   │   ├── BelongsToMany.php
+    │   │       │   │   ├── Concerns
+    │   │       │   │   │   ├── AsPivot.php
+    │   │       │   │   │   ├── InteractsWithPivotTable.php
+    │   │       │   │   │   └── SupportsDefaultModels.php
+    │   │       │   │   ├── Constraint.php
+    │   │       │   │   ├── HasMany.php
+    │   │       │   │   ├── HasManyThrough.php
+    │   │       │   │   ├── HasOne.php
+    │   │       │   │   ├── HasOneOrMany.php
+    │   │       │   │   ├── HasOneThrough.php
+    │   │       │   │   ├── MorphMany.php
+    │   │       │   │   ├── MorphOne.php
+    │   │       │   │   ├── MorphOneOrMany.php
+    │   │       │   │   ├── MorphPivot.php
+    │   │       │   │   ├── MorphTo.php
+    │   │       │   │   ├── MorphToMany.php
+    │   │       │   │   ├── Pivot.php
+    │   │       │   │   └── Relation.php
+    │   │       │   ├── Scope.php
+    │   │       │   ├── SoftDeletes.php
+    │   │       │   ├── SoftDeletingScope.php
+    │   │       │   └── TraitInitializers.php
+    │   │       ├── MySqlBitConnection.php
+    │   │       ├── MySqlConnection.php
+    │   │       ├── Query
+    │   │       │   ├── Builder.php
+    │   │       │   ├── Expression.php
+    │   │       │   ├── Grammars
+    │   │       │   │   ├── Grammar.php
+    │   │       │   │   └── MySqlGrammar.php
+    │   │       │   ├── IndexHint.php
+    │   │       │   ├── JoinClause.php
+    │   │       │   ├── JoinLateralClause.php
+    │   │       │   ├── JsonExpression.php
+    │   │       │   └── Processors
+    │   │       │       ├── MySqlProcessor.php
+    │   │       │       └── Processor.php
+    │   │       ├── Schema
+    │   │       │   ├── Blueprint.php
+    │   │       │   ├── Builder.php
+    │   │       │   ├── Column.php
+    │   │       │   ├── ColumnDefinition.php
+    │   │       │   ├── ForeignIdColumnDefinition.php
+    │   │       │   ├── ForeignKeyDefinition.php
+    │   │       │   ├── Grammars
+    │   │       │   │   ├── ChangeColumn.php
+    │   │       │   │   ├── Grammar.php
+    │   │       │   │   ├── MySqlGrammar.php
+    │   │       │   │   └── RenameColumn.php
+    │   │       │   ├── MySqlBuilder.php
+    │   │       │   └── Schema.php
+    │   │       └── Seeders
+    │   │           ├── Seed.php
+    │   │           ├── Seeder.php
+    │   │           ├── SeederCreator.php
+    │   │           └── stubs
+    │   │               └── seeder.stub
+    │   ├── db-connection
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   ├── publish
+    │   │   │   ├── DbQueryExecutedListener.php
+    │   │   │   └── databases.php
+    │   │   └── src
+    │   │       ├── Annotation
+    │   │       │   └── Transactional.php
+    │   │       ├── Aspect
+    │   │       │   └── TransactionAspect.php
+    │   │       ├── Collector
+    │   │       │   └── TableCollector.php
+    │   │       ├── ConfigProvider.php
+    │   │       ├── Connection.php
+    │   │       ├── ConnectionResolver.php
+    │   │       ├── DatabaseMigrationRepositoryFactory.php
+    │   │       ├── Db.php
+    │   │       ├── Frequency.php
+    │   │       ├── Listener
+    │   │       │   ├── InitTableCollectorListener.php
+    │   │       │   ├── InitUidOnCreatingListener.php
+    │   │       │   ├── RegisterConnectionResolverListener.php
+    │   │       │   └── UnsetContextInTaskWorkerListener.php
+    │   │       ├── Model
+    │   │       │   ├── Model.php
+    │   │       │   └── Relations
+    │   │       │       ├── MorphPivot.php
+    │   │       │       └── Pivot.php
+    │   │       ├── Pool
+    │   │       │   ├── DbPool.php
+    │   │       │   └── PoolFactory.php
+    │   │       └── Traits
+    │   │           ├── DbConnection.php
+    │   │           ├── HasContainer.php
+    │   │           └── HasRepository.php
+    │   ├── di
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── AbstractCallableDefinitionCollector.php
+    │   │       ├── Annotation
+    │   │       │   ├── AbstractAnnotation.php
+    │   │       │   ├── AbstractMultipleAnnotation.php
+    │   │       │   ├── AnnotationCollector.php
+    │   │       │   ├── AnnotationInterface.php
+    │   │       │   ├── AnnotationReader.php
+    │   │       │   ├── Aspect.php
+    │   │       │   ├── AspectCollector.php
+    │   │       │   ├── AspectLoader.php
+    │   │       │   ├── Debug.php
+    │   │       │   ├── Inject.php
+    │   │       │   ├── InjectAspect.php
+    │   │       │   ├── MultipleAnnotation.php
+    │   │       │   ├── MultipleAnnotationInterface.php
+    │   │       │   ├── RelationCollector.php
+    │   │       │   ├── ScanConfig.php
+    │   │       │   └── Scanner.php
+    │   │       ├── Aop
+    │   │       │   ├── AbstractAspect.php
+    │   │       │   ├── AnnotationMetadata.php
+    │   │       │   ├── AroundInterface.php
+    │   │       │   ├── Aspect.php
+    │   │       │   ├── AspectManager.php
+    │   │       │   ├── Ast.php
+    │   │       │   ├── AstVisitorRegistry.php
+    │   │       │   ├── Pipeline.php
+    │   │       │   ├── ProceedingJoinPoint.php
+    │   │       │   ├── PropertyHandlerTrait.php
+    │   │       │   ├── PropertyHandlerVisitor.php
+    │   │       │   ├── ProxyCallVisitor.php
+    │   │       │   ├── ProxyManager.php
+    │   │       │   ├── ProxyTrait.php
+    │   │       │   ├── RegisterInjectPropertyHandler.php
+    │   │       │   ├── RewriteCollection.php
+    │   │       │   └── VisitorMetadata.php
+    │   │       ├── ClassLoader.php
+    │   │       ├── ClosureDefinitionCollector.php
+    │   │       ├── ClosureDefinitionCollectorInterface.php
+    │   │       ├── ConfigProvider.php
+    │   │       ├── Container.php
+    │   │       ├── Definition
+    │   │       │   ├── DefinitionInterface.php
+    │   │       │   ├── DefinitionSource.php
+    │   │       │   ├── DefinitionSourceFactory.php
+    │   │       │   ├── DefinitionSourceInterface.php
+    │   │       │   ├── FactoryDefinition.php
+    │   │       │   ├── MethodInjection.php
+    │   │       │   ├── ObjectDefinition.php
+    │   │       │   ├── PriorityDefinition.php
+    │   │       │   ├── PropertyDefinition.php
+    │   │       │   ├── PropertyHandlerManager.php
+    │   │       │   ├── Reference.php
+    │   │       │   └── SelfResolvingDefinitionInterface.php
+    │   │       ├── Exception
+    │   │       │   ├── AnnotationException.php
+    │   │       │   ├── CircularDependencyException.php
+    │   │       │   ├── ConflictAnnotationException.php
+    │   │       │   ├── DependencyException.php
+    │   │       │   ├── DirectoryNotExistException.php
+    │   │       │   ├── Exception.php
+    │   │       │   ├── InvalidArgumentException.php
+    │   │       │   ├── InvalidDefinitionException.php
+    │   │       │   ├── NotCallableException.php
+    │   │       │   └── NotFoundException.php
+    │   │       ├── LazyLoader
+    │   │       │   ├── AbstractLazyProxyBuilder.php
+    │   │       │   ├── ClassLazyProxyBuilder.php
+    │   │       │   ├── FallbackLazyProxyBuilder.php
+    │   │       │   ├── InterfaceLazyProxyBuilder.php
+    │   │       │   ├── LazyLoader.php
+    │   │       │   ├── LazyProxyTrait.php
+    │   │       │   └── PublicMethodVisitor.php
+    │   │       ├── MetadataCacheCollector.php
+    │   │       ├── MetadataCollector.php
+    │   │       ├── MetadataCollectorInterface.php
+    │   │       ├── MethodDefinitionCollector.php
+    │   │       ├── MethodDefinitionCollectorInterface.php
+    │   │       ├── ReflectionManager.php
+    │   │       ├── ReflectionType.php
+    │   │       ├── Resolver
+    │   │       │   ├── DepthGuard.php
+    │   │       │   ├── FactoryResolver.php
+    │   │       │   ├── ObjectResolver.php
+    │   │       │   ├── ParameterResolver.php
+    │   │       │   ├── ResolverDispatcher.php
+    │   │       │   └── ResolverInterface.php
+    │   │       └── ScanHandler
+    │   │           ├── NullScanHandler.php
+    │   │           ├── PcntlScanHandler.php
+    │   │           ├── ProcScanHandler.php
+    │   │           ├── ScanHandlerInterface.php
+    │   │           └── Scanned.php
+    │   ├── engine
+    │   │   ├── Dockerfile
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   ├── phpunit.xml
+    │   │   └── src
+    │   │       ├── Channel.php
+    │   │       ├── ConfigProvider.php
+    │   │       ├── Constant
+    │   │       │   └── SocketType.php
+    │   │       ├── Constant.php
+    │   │       ├── Coroutine.php
+    │   │       ├── DefaultOption.php
+    │   │       ├── Exception
+    │   │       │   ├── CoroutineDestroyedException.php
+    │   │       │   ├── HttpClientException.php
+    │   │       │   ├── InvalidArgumentException.php
+    │   │       │   ├── RunningInNonCoroutineException.php
+    │   │       │   ├── RuntimeException.php
+    │   │       │   ├── SocketClosedException.php
+    │   │       │   ├── SocketConnectException.php
+    │   │       │   └── SocketTimeoutException.php
+    │   │       ├── Extension.php
+    │   │       ├── Functions.php
+    │   │       ├── Http
+    │   │       │   ├── Client.php
+    │   │       │   ├── EventStream.php
+    │   │       │   ├── FdGetter.php
+    │   │       │   ├── Http.php
+    │   │       │   ├── RawResponse.php
+    │   │       │   ├── Server.php
+    │   │       │   ├── ServerFactory.php
+    │   │       │   ├── Stream.php
+    │   │       │   ├── V2
+    │   │       │   │   ├── Client.php
+    │   │       │   │   ├── ClientFactory.php
+    │   │       │   │   ├── Request.php
+    │   │       │   │   └── Response.php
+    │   │       │   └── WritableConnection.php
+    │   │       ├── ResponseEmitter.php
+    │   │       ├── SafeSocket.php
+    │   │       ├── Signal.php
+    │   │       ├── Socket
+    │   │       │   ├── SocketFactory.php
+    │   │       │   └── SocketOption.php
+    │   │       ├── Socket.php
+    │   │       └── WebSocket
+    │   │           ├── Frame.php
+    │   │           ├── Opcode.php
+    │   │           ├── Response.php
+    │   │           └── WebSocket.php
+    │   ├── engine-contract
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   ├── phpunit.xml
+    │   │   └── src
+    │   │       ├── ChannelInterface.php
+    │   │       ├── CoroutineInterface.php
+    │   │       ├── DefaultOptionInterface.php
+    │   │       ├── Http
+    │   │       │   ├── ClientInterface.php
+    │   │       │   ├── Http.php
+    │   │       │   ├── RawResponseInterface.php
+    │   │       │   ├── ServerFactoryInterface.php
+    │   │       │   ├── ServerInterface.php
+    │   │       │   ├── V2
+    │   │       │   │   ├── ClientFactoryInterface.php
+    │   │       │   │   ├── ClientInterface.php
+    │   │       │   │   ├── RequestInterface.php
+    │   │       │   │   └── ResponseInterface.php
+    │   │       │   └── Writable.php
+    │   │       ├── ResponseEmitterInterface.php
+    │   │       ├── SignalInterface.php
+    │   │       ├── Socket
+    │   │       │   ├── SocketFactoryInterface.php
+    │   │       │   └── SocketOptionInterface.php
+    │   │       ├── SocketInterface.php
+    │   │       └── WebSocket
+    │   │           ├── FrameInterface.php
+    │   │           ├── ResponseInterface.php
+    │   │           └── WebSocketInterface.php
+    │   ├── event
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── Annotation
+    │   │       │   └── Listener.php
+    │   │       ├── ConfigProvider.php
+    │   │       ├── Contract
+    │   │       │   └── ListenerInterface.php
+    │   │       ├── EventDispatcher.php
+    │   │       ├── EventDispatcherFactory.php
+    │   │       ├── ListenerData.php
+    │   │       ├── ListenerProvider.php
+    │   │       ├── ListenerProviderFactory.php
+    │   │       └── Stoppable.php
+    │   ├── framework
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── ApplicationFactory.php
+    │   │       ├── Bootstrap
+    │   │       │   ├── CloseCallback.php
+    │   │       │   ├── ConnectCallback.php
+    │   │       │   ├── FinishCallback.php
+    │   │       │   ├── ManagerStartCallback.php
+    │   │       │   ├── ManagerStopCallback.php
+    │   │       │   ├── PacketCallback.php
+    │   │       │   ├── PipeMessageCallback.php
+    │   │       │   ├── ReceiveCallback.php
+    │   │       │   ├── ServerStartCallback.php
+    │   │       │   ├── ShutdownCallback.php
+    │   │       │   ├── StartCallback.php
+    │   │       │   ├── TaskCallback.php
+    │   │       │   ├── WorkerErrorCallback.php
+    │   │       │   ├── WorkerExitCallback.php
+    │   │       │   ├── WorkerStartCallback.php
+    │   │       │   └── WorkerStopCallback.php
+    │   │       ├── ConfigProvider.php
+    │   │       ├── Event
+    │   │       │   ├── AfterWorkerStart.php
+    │   │       │   ├── BeforeMainServerStart.php
+    │   │       │   ├── BeforeServerStart.php
+    │   │       │   ├── BeforeWorkerStart.php
+    │   │       │   ├── BootApplication.php
+    │   │       │   ├── MainWorkerStart.php
+    │   │       │   ├── OnClose.php
+    │   │       │   ├── OnConnect.php
+    │   │       │   ├── OnFinish.php
+    │   │       │   ├── OnManagerStart.php
+    │   │       │   ├── OnManagerStop.php
+    │   │       │   ├── OnPacket.php
+    │   │       │   ├── OnPipeMessage.php
+    │   │       │   ├── OnReceive.php
+    │   │       │   ├── OnShutdown.php
+    │   │       │   ├── OnStart.php
+    │   │       │   ├── OnTask.php
+    │   │       │   ├── OnWorkerError.php
+    │   │       │   ├── OnWorkerExit.php
+    │   │       │   ├── OnWorkerStop.php
+    │   │       │   └── OtherWorkerStart.php
+    │   │       ├── Exception
+    │   │       │   └── NotImplementedException.php
+    │   │       ├── Logger
+    │   │       │   ├── ConsoleLogger.php
+    │   │       │   └── StdoutLogger.php
+    │   │       └── SymfonyEventDispatcher.php
+    │   ├── macroable
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       └── Macroable.php
+    │   ├── model-listener
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── AbstractListener.php
+    │   │       ├── Annotation
+    │   │       │   └── ModelListener.php
+    │   │       ├── Collector
+    │   │       │   └── ListenerCollector.php
+    │   │       ├── ConfigProvider.php
+    │   │       └── Listener
+    │   │           ├── ModelEventListener.php
+    │   │           └── ModelHookEventListener.php
+    │   ├── pipeline
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       └── Pipeline.php
+    │   ├── pool
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── Channel.php
+    │   │       ├── ConfigProvider.php
+    │   │       ├── Connection.php
+    │   │       ├── ConstantFrequency.php
+    │   │       ├── Context.php
+    │   │       ├── Event
+    │   │       │   └── ReleaseConnection.php
+    │   │       ├── Exception
+    │   │       │   ├── ConnectionException.php
+    │   │       │   ├── InvalidArgumentException.php
+    │   │       │   └── SocketPopException.php
+    │   │       ├── Frequency.php
+    │   │       ├── KeepaliveConnection.php
+    │   │       ├── LowFrequencyInterface.php
+    │   │       ├── Pool.php
+    │   │       ├── PoolOption.php
+    │   │       └── SimplePool
+    │   │           ├── Config.php
+    │   │           ├── Connection.php
+    │   │           ├── Pool.php
+    │   │           └── PoolFactory.php
+    │   ├── rate-limit
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   ├── publish
+    │   │   │   └── rate_limit.php
+    │   │   └── src
+    │   │       ├── Annotation
+    │   │       │   └── RateLimit.php
+    │   │       ├── Aspect
+    │   │       │   └── RateLimitAnnotationAspect.php
+    │   │       ├── ConfigProvider.php
+    │   │       ├── Exception
+    │   │       │   └── RateLimitException.php
+    │   │       ├── Handler
+    │   │       │   └── RateLimitHandler.php
+    │   │       └── Storage
+    │   │           ├── RedisStorage.php
+    │   │           └── StorageInterface.php
+    │   ├── serializer
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── ConfigProvider.php
+    │   │       ├── Contract
+    │   │       │   └── CacheableSupportsMethodInterface.php
+    │   │       ├── ExceptionNormalizer.php
+    │   │       ├── JsonDeNormalizer.php
+    │   │       ├── ScalarNormalizer.php
+    │   │       ├── Serializer.php
+    │   │       ├── SerializerFactory.php
+    │   │       ├── SimpleNormalizer.php
+    │   │       └── SymfonyNormalizer.php
+    │   ├── stdlib
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       └── SplPriorityQueue.php
+    │   ├── stringable
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── Functions.php
+    │   │       ├── Pluralizer.php
+    │   │       ├── Str.php
+    │   │       ├── StrCache.php
+    │   │       └── Stringable.php
+    │   ├── support
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── Backoff
+    │   │       │   └── ArrayBackoff.php
+    │   │       ├── Backoff.php
+    │   │       ├── ClearStatCache.php
+    │   │       ├── Composer.php
+    │   │       ├── DotenvManager.php
+    │   │       ├── Exception
+    │   │       │   ├── ExceptionThrower.php
+    │   │       │   ├── IPReadFailedException.php
+    │   │       │   └── InvalidArgumentException.php
+    │   │       ├── Filesystem
+    │   │       │   ├── FileNotFoundException.php
+    │   │       │   └── Filesystem.php
+    │   │       ├── Fluent.php
+    │   │       ├── Functions.php
+    │   │       ├── IPReader.php
+    │   │       ├── MessageBag.php
+    │   │       ├── MimeTypeExtensionGuesser.php
+    │   │       ├── Network.php
+    │   │       ├── Optional.php
+    │   │       ├── Pluralizer.php
+    │   │       ├── Reflection
+    │   │       │   └── ClassInvoker.php
+    │   │       ├── ResourceGenerator.php
+    │   │       ├── SafeCaller.php
+    │   │       ├── System.php
+    │   │       └── Traits
+    │   │           ├── Container.php
+    │   │           ├── ForwardsCalls.php
+    │   │           ├── InteractsWithTime.php
+    │   │           └── StaticInstance.php
+    │   ├── tappable
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── Functions.php
+    │   │       ├── HigherOrderTapProxy.php
+    │   │       └── Tappable.php
+    │   ├── task
+    │   │   ├── LICENSE
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── Annotation
+    │   │       │   └── Task.php
+    │   │       ├── Aspect
+    │   │       │   └── TaskAspect.php
+    │   │       ├── ChannelFactory.php
+    │   │       ├── ConfigProvider.php
+    │   │       ├── Exception
+    │   │       │   ├── TaskException.php
+    │   │       │   ├── TaskExecuteException.php
+    │   │       │   └── TaskExecuteTimeoutException.php
+    │   │       ├── Exception.php
+    │   │       ├── Finish.php
+    │   │       ├── Listener
+    │   │       │   ├── AfterWorkerStartListener.php
+    │   │       │   ├── InitServerListener.php
+    │   │       │   ├── OnFinishListener.php
+    │   │       │   └── OnTaskListener.php
+    │   │       ├── Task.php
+    │   │       ├── TaskData.php
+    │   │       └── TaskExecutor.php
+    │   ├── token-bucket
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── classes
+    │   │   │   ├── BlockingConsumer.php
+    │   │   │   ├── Rate.php
+    │   │   │   ├── TimeoutException.php
+    │   │   │   ├── TokenBucket.php
+    │   │   │   ├── TokenBucketException.php
+    │   │   │   ├── storage
+    │   │   │   │   ├── FileStorage.php
+    │   │   │   │   ├── IPCStorage.php
+    │   │   │   │   ├── MemcachedStorage.php
+    │   │   │   │   ├── PDOStorage.php
+    │   │   │   │   ├── PHPRedisStorage.php
+    │   │   │   │   ├── PredisStorage.php
+    │   │   │   │   ├── SessionStorage.php
+    │   │   │   │   ├── SingleProcessStorage.php
+    │   │   │   │   ├── Storage.php
+    │   │   │   │   ├── StorageException.php
+    │   │   │   │   └── scope
+    │   │   │   │       ├── GlobalScope.php
+    │   │   │   │       ├── RequestScope.php
+    │   │   │   │       └── SessionScope.php
+    │   │   │   └── util
+    │   │   │       ├── DoublePacker.php
+    │   │   │       └── TokenConverter.php
+    │   │   ├── composer.json
+    │   │   ├── phpunit.xml
+    │   │   └── tests
+    │   │       ├── BlockingConsumerTest.php
+    │   │       ├── RateTest.php
+    │   │       ├── TokenBucketTest.php
+    │   │       ├── php-travis.ini
+    │   │       ├── storage
+    │   │       │   ├── FileStorageTest.php
+    │   │       │   ├── IPCStorageTest.php
+    │   │       │   ├── MemcachedStorageTest.php
+    │   │       │   ├── PDOStorageTest.php
+    │   │       │   ├── PHPRedisStorageTest.php
+    │   │       │   ├── PredisStorageTest.php
+    │   │       │   ├── SharedStorageTest.php
+    │   │       │   └── StorageTest.php
+    │   │       └── util
+    │   │           ├── DoublePackerTest.php
+    │   │           └── TokenConverterTest.php
+    │   └── utils
+    │       ├── LICENSE
+    │       └── composer.json
     ├── intervention
     │   ├── gif
     │   │   ├── LICENSE
@@ -1060,6 +2104,973 @@
     │           ├── MutableConfigurationInterface.php
     │           ├── ReadOnlyConfiguration.php
     │           └── SchemaBuilderInterface.php
+    ├── malkusch
+    │   └── lock
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── classes
+    │       │   ├── exception
+    │       │   │   ├── DeadlineException.php
+    │       │   │   ├── ExecutionOutsideLockException.php
+    │       │   │   ├── LockAcquireException.php
+    │       │   │   ├── LockReleaseException.php
+    │       │   │   ├── MutexException.php
+    │       │   │   ├── PhpLockException.php
+    │       │   │   └── TimeoutException.php
+    │       │   ├── mutex
+    │       │   │   ├── CASMutex.php
+    │       │   │   ├── FlockMutex.php
+    │       │   │   ├── LockMutex.php
+    │       │   │   ├── MemcachedMutex.php
+    │       │   │   ├── Mutex.php
+    │       │   │   ├── MySQLMutex.php
+    │       │   │   ├── NoMutex.php
+    │       │   │   ├── PHPRedisMutex.php
+    │       │   │   ├── PgAdvisoryLockMutex.php
+    │       │   │   ├── PredisMutex.php
+    │       │   │   ├── RedisMutex.php
+    │       │   │   ├── SemaphoreMutex.php
+    │       │   │   ├── SpinlockMutex.php
+    │       │   │   └── TransactionalMutex.php
+    │       │   └── util
+    │       │       ├── DoubleCheckedLocking.php
+    │       │       ├── Loop.php
+    │       │       └── PcntlTimeout.php
+    │       ├── composer.json
+    │       └── phpstan.neon.dist
+    ├── nesbot
+    │   └── carbon
+    │       ├── LICENSE
+    │       ├── bin
+    │       │   ├── carbon
+    │       │   └── carbon.bat
+    │       ├── composer.json
+    │       ├── extension.neon
+    │       ├── lazy
+    │       │   └── Carbon
+    │       │       ├── MessageFormatter
+    │       │       │   ├── MessageFormatterMapperStrongType.php
+    │       │       │   └── MessageFormatterMapperWeakType.php
+    │       │       ├── PHPStan
+    │       │       │   ├── AbstractMacroBuiltin.php
+    │       │       │   ├── AbstractMacroStatic.php
+    │       │       │   ├── MacroStrongType.php
+    │       │       │   └── MacroWeakType.php
+    │       │       ├── TranslatorStrongType.php
+    │       │       └── TranslatorWeakType.php
+    │       ├── readme.md
+    │       ├── sponsors.php
+    │       └── src
+    │           └── Carbon
+    │               ├── AbstractTranslator.php
+    │               ├── Carbon.php
+    │               ├── CarbonConverterInterface.php
+    │               ├── CarbonImmutable.php
+    │               ├── CarbonInterface.php
+    │               ├── CarbonInterval.php
+    │               ├── CarbonPeriod.php
+    │               ├── CarbonPeriodImmutable.php
+    │               ├── CarbonTimeZone.php
+    │               ├── Cli
+    │               │   └── Invoker.php
+    │               ├── Exceptions
+    │               │   ├── BadComparisonUnitException.php
+    │               │   ├── BadFluentConstructorException.php
+    │               │   ├── BadFluentSetterException.php
+    │               │   ├── BadMethodCallException.php
+    │               │   ├── EndLessPeriodException.php
+    │               │   ├── Exception.php
+    │               │   ├── ImmutableException.php
+    │               │   ├── InvalidArgumentException.php
+    │               │   ├── InvalidCastException.php
+    │               │   ├── InvalidDateException.php
+    │               │   ├── InvalidFormatException.php
+    │               │   ├── InvalidIntervalException.php
+    │               │   ├── InvalidPeriodDateException.php
+    │               │   ├── InvalidPeriodParameterException.php
+    │               │   ├── InvalidTimeZoneException.php
+    │               │   ├── InvalidTypeException.php
+    │               │   ├── NotACarbonClassException.php
+    │               │   ├── NotAPeriodException.php
+    │               │   ├── NotLocaleAwareException.php
+    │               │   ├── OutOfRangeException.php
+    │               │   ├── ParseErrorException.php
+    │               │   ├── RuntimeException.php
+    │               │   ├── UnitException.php
+    │               │   ├── UnitNotConfiguredException.php
+    │               │   ├── UnknownGetterException.php
+    │               │   ├── UnknownMethodException.php
+    │               │   ├── UnknownSetterException.php
+    │               │   ├── UnknownUnitException.php
+    │               │   └── UnreachableException.php
+    │               ├── Factory.php
+    │               ├── FactoryImmutable.php
+    │               ├── Lang
+    │               │   ├── aa.php
+    │               │   ├── aa_DJ.php
+    │               │   ├── aa_ER.php
+    │               │   ├── aa_ER@saaho.php
+    │               │   ├── aa_ET.php
+    │               │   ├── af.php
+    │               │   ├── af_NA.php
+    │               │   ├── af_ZA.php
+    │               │   ├── agq.php
+    │               │   ├── agr.php
+    │               │   ├── agr_PE.php
+    │               │   ├── ak.php
+    │               │   ├── ak_GH.php
+    │               │   ├── am.php
+    │               │   ├── am_ET.php
+    │               │   ├── an.php
+    │               │   ├── an_ES.php
+    │               │   ├── anp.php
+    │               │   ├── anp_IN.php
+    │               │   ├── ar.php
+    │               │   ├── ar_AE.php
+    │               │   ├── ar_BH.php
+    │               │   ├── ar_DJ.php
+    │               │   ├── ar_DZ.php
+    │               │   ├── ar_EG.php
+    │               │   ├── ar_EH.php
+    │               │   ├── ar_ER.php
+    │               │   ├── ar_IL.php
+    │               │   ├── ar_IN.php
+    │               │   ├── ar_IQ.php
+    │               │   ├── ar_JO.php
+    │               │   ├── ar_KM.php
+    │               │   ├── ar_KW.php
+    │               │   ├── ar_LB.php
+    │               │   ├── ar_LY.php
+    │               │   ├── ar_MA.php
+    │               │   ├── ar_MR.php
+    │               │   ├── ar_OM.php
+    │               │   ├── ar_PS.php
+    │               │   ├── ar_QA.php
+    │               │   ├── ar_SA.php
+    │               │   ├── ar_SD.php
+    │               │   ├── ar_SO.php
+    │               │   ├── ar_SS.php
+    │               │   ├── ar_SY.php
+    │               │   ├── ar_Shakl.php
+    │               │   ├── ar_TD.php
+    │               │   ├── ar_TN.php
+    │               │   ├── ar_YE.php
+    │               │   ├── as.php
+    │               │   ├── as_IN.php
+    │               │   ├── asa.php
+    │               │   ├── ast.php
+    │               │   ├── ast_ES.php
+    │               │   ├── ayc.php
+    │               │   ├── ayc_PE.php
+    │               │   ├── az.php
+    │               │   ├── az_AZ.php
+    │               │   ├── az_Cyrl.php
+    │               │   ├── az_IR.php
+    │               │   ├── az_Latn.php
+    │               │   ├── bas.php
+    │               │   ├── be.php
+    │               │   ├── be_BY.php
+    │               │   ├── be_BY@latin.php
+    │               │   ├── bem.php
+    │               │   ├── bem_ZM.php
+    │               │   ├── ber.php
+    │               │   ├── ber_DZ.php
+    │               │   ├── ber_MA.php
+    │               │   ├── bez.php
+    │               │   ├── bg.php
+    │               │   ├── bg_BG.php
+    │               │   ├── bhb.php
+    │               │   ├── bhb_IN.php
+    │               │   ├── bho.php
+    │               │   ├── bho_IN.php
+    │               │   ├── bi.php
+    │               │   ├── bi_VU.php
+    │               │   ├── bm.php
+    │               │   ├── bn.php
+    │               │   ├── bn_BD.php
+    │               │   ├── bn_IN.php
+    │               │   ├── bo.php
+    │               │   ├── bo_CN.php
+    │               │   ├── bo_IN.php
+    │               │   ├── br.php
+    │               │   ├── br_FR.php
+    │               │   ├── brx.php
+    │               │   ├── brx_IN.php
+    │               │   ├── bs.php
+    │               │   ├── bs_BA.php
+    │               │   ├── bs_Cyrl.php
+    │               │   ├── bs_Latn.php
+    │               │   ├── byn.php
+    │               │   ├── byn_ER.php
+    │               │   ├── ca.php
+    │               │   ├── ca_AD.php
+    │               │   ├── ca_ES.php
+    │               │   ├── ca_ES_Valencia.php
+    │               │   ├── ca_FR.php
+    │               │   ├── ca_IT.php
+    │               │   ├── ccp.php
+    │               │   ├── ccp_IN.php
+    │               │   ├── ce.php
+    │               │   ├── ce_RU.php
+    │               │   ├── cgg.php
+    │               │   ├── chr.php
+    │               │   ├── chr_US.php
+    │               │   ├── ckb.php
+    │               │   ├── cmn.php
+    │               │   ├── cmn_TW.php
+    │               │   ├── crh.php
+    │               │   ├── crh_UA.php
+    │               │   ├── cs.php
+    │               │   ├── cs_CZ.php
+    │               │   ├── csb.php
+    │               │   ├── csb_PL.php
+    │               │   ├── cu.php
+    │               │   ├── cv.php
+    │               │   ├── cv_RU.php
+    │               │   ├── cy.php
+    │               │   ├── cy_GB.php
+    │               │   ├── da.php
+    │               │   ├── da_DK.php
+    │               │   ├── da_GL.php
+    │               │   ├── dav.php
+    │               │   ├── de.php
+    │               │   ├── de_AT.php
+    │               │   ├── de_BE.php
+    │               │   ├── de_CH.php
+    │               │   ├── de_DE.php
+    │               │   ├── de_IT.php
+    │               │   ├── de_LI.php
+    │               │   ├── de_LU.php
+    │               │   ├── dje.php
+    │               │   ├── doi.php
+    │               │   ├── doi_IN.php
+    │               │   ├── dsb.php
+    │               │   ├── dsb_DE.php
+    │               │   ├── dua.php
+    │               │   ├── dv.php
+    │               │   ├── dv_MV.php
+    │               │   ├── dyo.php
+    │               │   ├── dz.php
+    │               │   ├── dz_BT.php
+    │               │   ├── ebu.php
+    │               │   ├── ee.php
+    │               │   ├── ee_TG.php
+    │               │   ├── el.php
+    │               │   ├── el_CY.php
+    │               │   ├── el_GR.php
+    │               │   ├── en.php
+    │               │   ├── en_001.php
+    │               │   ├── en_150.php
+    │               │   ├── en_AG.php
+    │               │   ├── en_AI.php
+    │               │   ├── en_AS.php
+    │               │   ├── en_AT.php
+    │               │   ├── en_AU.php
+    │               │   ├── en_BB.php
+    │               │   ├── en_BE.php
+    │               │   ├── en_BI.php
+    │               │   ├── en_BM.php
+    │               │   ├── en_BS.php
+    │               │   ├── en_BW.php
+    │               │   ├── en_BZ.php
+    │               │   ├── en_CA.php
+    │               │   ├── en_CC.php
+    │               │   ├── en_CH.php
+    │               │   ├── en_CK.php
+    │               │   ├── en_CM.php
+    │               │   ├── en_CX.php
+    │               │   ├── en_CY.php
+    │               │   ├── en_DE.php
+    │               │   ├── en_DG.php
+    │               │   ├── en_DK.php
+    │               │   ├── en_DM.php
+    │               │   ├── en_ER.php
+    │               │   ├── en_FI.php
+    │               │   ├── en_FJ.php
+    │               │   ├── en_FK.php
+    │               │   ├── en_FM.php
+    │               │   ├── en_GB.php
+    │               │   ├── en_GD.php
+    │               │   ├── en_GG.php
+    │               │   ├── en_GH.php
+    │               │   ├── en_GI.php
+    │               │   ├── en_GM.php
+    │               │   ├── en_GU.php
+    │               │   ├── en_GY.php
+    │               │   ├── en_HK.php
+    │               │   ├── en_IE.php
+    │               │   ├── en_IL.php
+    │               │   ├── en_IM.php
+    │               │   ├── en_IN.php
+    │               │   ├── en_IO.php
+    │               │   ├── en_ISO.php
+    │               │   ├── en_JE.php
+    │               │   ├── en_JM.php
+    │               │   ├── en_KE.php
+    │               │   ├── en_KI.php
+    │               │   ├── en_KN.php
+    │               │   ├── en_KY.php
+    │               │   ├── en_LC.php
+    │               │   ├── en_LR.php
+    │               │   ├── en_LS.php
+    │               │   ├── en_MG.php
+    │               │   ├── en_MH.php
+    │               │   ├── en_MO.php
+    │               │   ├── en_MP.php
+    │               │   ├── en_MS.php
+    │               │   ├── en_MT.php
+    │               │   ├── en_MU.php
+    │               │   ├── en_MW.php
+    │               │   ├── en_MY.php
+    │               │   ├── en_NA.php
+    │               │   ├── en_NF.php
+    │               │   ├── en_NG.php
+    │               │   ├── en_NL.php
+    │               │   ├── en_NR.php
+    │               │   ├── en_NU.php
+    │               │   ├── en_NZ.php
+    │               │   ├── en_PG.php
+    │               │   ├── en_PH.php
+    │               │   ├── en_PK.php
+    │               │   ├── en_PN.php
+    │               │   ├── en_PR.php
+    │               │   ├── en_PW.php
+    │               │   ├── en_RW.php
+    │               │   ├── en_SB.php
+    │               │   ├── en_SC.php
+    │               │   ├── en_SD.php
+    │               │   ├── en_SE.php
+    │               │   ├── en_SG.php
+    │               │   ├── en_SH.php
+    │               │   ├── en_SI.php
+    │               │   ├── en_SL.php
+    │               │   ├── en_SS.php
+    │               │   ├── en_SX.php
+    │               │   ├── en_SZ.php
+    │               │   ├── en_TC.php
+    │               │   ├── en_TK.php
+    │               │   ├── en_TO.php
+    │               │   ├── en_TT.php
+    │               │   ├── en_TV.php
+    │               │   ├── en_TZ.php
+    │               │   ├── en_UG.php
+    │               │   ├── en_UM.php
+    │               │   ├── en_US.php
+    │               │   ├── en_US_Posix.php
+    │               │   ├── en_VC.php
+    │               │   ├── en_VG.php
+    │               │   ├── en_VI.php
+    │               │   ├── en_VU.php
+    │               │   ├── en_WS.php
+    │               │   ├── en_ZA.php
+    │               │   ├── en_ZM.php
+    │               │   ├── en_ZW.php
+    │               │   ├── eo.php
+    │               │   ├── es.php
+    │               │   ├── es_419.php
+    │               │   ├── es_AR.php
+    │               │   ├── es_BO.php
+    │               │   ├── es_BR.php
+    │               │   ├── es_BZ.php
+    │               │   ├── es_CL.php
+    │               │   ├── es_CO.php
+    │               │   ├── es_CR.php
+    │               │   ├── es_CU.php
+    │               │   ├── es_DO.php
+    │               │   ├── es_EA.php
+    │               │   ├── es_EC.php
+    │               │   ├── es_ES.php
+    │               │   ├── es_GQ.php
+    │               │   ├── es_GT.php
+    │               │   ├── es_HN.php
+    │               │   ├── es_IC.php
+    │               │   ├── es_MX.php
+    │               │   ├── es_NI.php
+    │               │   ├── es_PA.php
+    │               │   ├── es_PE.php
+    │               │   ├── es_PH.php
+    │               │   ├── es_PR.php
+    │               │   ├── es_PY.php
+    │               │   ├── es_SV.php
+    │               │   ├── es_US.php
+    │               │   ├── es_UY.php
+    │               │   ├── es_VE.php
+    │               │   ├── et.php
+    │               │   ├── et_EE.php
+    │               │   ├── eu.php
+    │               │   ├── eu_ES.php
+    │               │   ├── ewo.php
+    │               │   ├── fa.php
+    │               │   ├── fa_AF.php
+    │               │   ├── fa_IR.php
+    │               │   ├── ff.php
+    │               │   ├── ff_CM.php
+    │               │   ├── ff_GN.php
+    │               │   ├── ff_MR.php
+    │               │   ├── ff_SN.php
+    │               │   ├── fi.php
+    │               │   ├── fi_FI.php
+    │               │   ├── fil.php
+    │               │   ├── fil_PH.php
+    │               │   ├── fo.php
+    │               │   ├── fo_DK.php
+    │               │   ├── fo_FO.php
+    │               │   ├── fr.php
+    │               │   ├── fr_BE.php
+    │               │   ├── fr_BF.php
+    │               │   ├── fr_BI.php
+    │               │   ├── fr_BJ.php
+    │               │   ├── fr_BL.php
+    │               │   ├── fr_CA.php
+    │               │   ├── fr_CD.php
+    │               │   ├── fr_CF.php
+    │               │   ├── fr_CG.php
+    │               │   ├── fr_CH.php
+    │               │   ├── fr_CI.php
+    │               │   ├── fr_CM.php
+    │               │   ├── fr_DJ.php
+    │               │   ├── fr_DZ.php
+    │               │   ├── fr_FR.php
+    │               │   ├── fr_GA.php
+    │               │   ├── fr_GF.php
+    │               │   ├── fr_GN.php
+    │               │   ├── fr_GP.php
+    │               │   ├── fr_GQ.php
+    │               │   ├── fr_HT.php
+    │               │   ├── fr_KM.php
+    │               │   ├── fr_LU.php
+    │               │   ├── fr_MA.php
+    │               │   ├── fr_MC.php
+    │               │   ├── fr_MF.php
+    │               │   ├── fr_MG.php
+    │               │   ├── fr_ML.php
+    │               │   ├── fr_MQ.php
+    │               │   ├── fr_MR.php
+    │               │   ├── fr_MU.php
+    │               │   ├── fr_NC.php
+    │               │   ├── fr_NE.php
+    │               │   ├── fr_PF.php
+    │               │   ├── fr_PM.php
+    │               │   ├── fr_RE.php
+    │               │   ├── fr_RW.php
+    │               │   ├── fr_SC.php
+    │               │   ├── fr_SN.php
+    │               │   ├── fr_SY.php
+    │               │   ├── fr_TD.php
+    │               │   ├── fr_TG.php
+    │               │   ├── fr_TN.php
+    │               │   ├── fr_VU.php
+    │               │   ├── fr_WF.php
+    │               │   ├── fr_YT.php
+    │               │   ├── fur.php
+    │               │   ├── fur_IT.php
+    │               │   ├── fy.php
+    │               │   ├── fy_DE.php
+    │               │   ├── fy_NL.php
+    │               │   ├── ga.php
+    │               │   ├── ga_IE.php
+    │               │   ├── gd.php
+    │               │   ├── gd_GB.php
+    │               │   ├── gez.php
+    │               │   ├── gez_ER.php
+    │               │   ├── gez_ET.php
+    │               │   ├── gl.php
+    │               │   ├── gl_ES.php
+    │               │   ├── gom.php
+    │               │   ├── gom_Latn.php
+    │               │   ├── gsw.php
+    │               │   ├── gsw_CH.php
+    │               │   ├── gsw_FR.php
+    │               │   ├── gsw_LI.php
+    │               │   ├── gu.php
+    │               │   ├── gu_IN.php
+    │               │   ├── guz.php
+    │               │   ├── gv.php
+    │               │   ├── gv_GB.php
+    │               │   ├── ha.php
+    │               │   ├── ha_GH.php
+    │               │   ├── ha_NE.php
+    │               │   ├── ha_NG.php
+    │               │   ├── hak.php
+    │               │   ├── hak_TW.php
+    │               │   ├── haw.php
+    │               │   ├── he.php
+    │               │   ├── he_IL.php
+    │               │   ├── hi.php
+    │               │   ├── hi_IN.php
+    │               │   ├── hif.php
+    │               │   ├── hif_FJ.php
+    │               │   ├── hne.php
+    │               │   ├── hne_IN.php
+    │               │   ├── hr.php
+    │               │   ├── hr_BA.php
+    │               │   ├── hr_HR.php
+    │               │   ├── hsb.php
+    │               │   ├── hsb_DE.php
+    │               │   ├── ht.php
+    │               │   ├── ht_HT.php
+    │               │   ├── hu.php
+    │               │   ├── hu_HU.php
+    │               │   ├── hy.php
+    │               │   ├── hy_AM.php
+    │               │   ├── i18n.php
+    │               │   ├── ia.php
+    │               │   ├── ia_FR.php
+    │               │   ├── id.php
+    │               │   ├── id_ID.php
+    │               │   ├── ig.php
+    │               │   ├── ig_NG.php
+    │               │   ├── ii.php
+    │               │   ├── ik.php
+    │               │   ├── ik_CA.php
+    │               │   ├── in.php
+    │               │   ├── is.php
+    │               │   ├── is_IS.php
+    │               │   ├── it.php
+    │               │   ├── it_CH.php
+    │               │   ├── it_IT.php
+    │               │   ├── it_SM.php
+    │               │   ├── it_VA.php
+    │               │   ├── iu.php
+    │               │   ├── iu_CA.php
+    │               │   ├── iw.php
+    │               │   ├── ja.php
+    │               │   ├── ja_JP.php
+    │               │   ├── jgo.php
+    │               │   ├── jmc.php
+    │               │   ├── jv.php
+    │               │   ├── ka.php
+    │               │   ├── ka_GE.php
+    │               │   ├── kab.php
+    │               │   ├── kab_DZ.php
+    │               │   ├── kam.php
+    │               │   ├── kde.php
+    │               │   ├── kea.php
+    │               │   ├── khq.php
+    │               │   ├── ki.php
+    │               │   ├── kk.php
+    │               │   ├── kk_KZ.php
+    │               │   ├── kkj.php
+    │               │   ├── kl.php
+    │               │   ├── kl_GL.php
+    │               │   ├── kln.php
+    │               │   ├── km.php
+    │               │   ├── km_KH.php
+    │               │   ├── kn.php
+    │               │   ├── kn_IN.php
+    │               │   ├── ko.php
+    │               │   ├── ko_KP.php
+    │               │   ├── ko_KR.php
+    │               │   ├── kok.php
+    │               │   ├── kok_IN.php
+    │               │   ├── ks.php
+    │               │   ├── ks_IN.php
+    │               │   ├── ks_IN@devanagari.php
+    │               │   ├── ksb.php
+    │               │   ├── ksf.php
+    │               │   ├── ksh.php
+    │               │   ├── ku.php
+    │               │   ├── ku_TR.php
+    │               │   ├── kw.php
+    │               │   ├── kw_GB.php
+    │               │   ├── ky.php
+    │               │   ├── ky_KG.php
+    │               │   ├── lag.php
+    │               │   ├── lb.php
+    │               │   ├── lb_LU.php
+    │               │   ├── lg.php
+    │               │   ├── lg_UG.php
+    │               │   ├── li.php
+    │               │   ├── li_NL.php
+    │               │   ├── lij.php
+    │               │   ├── lij_IT.php
+    │               │   ├── lkt.php
+    │               │   ├── ln.php
+    │               │   ├── ln_AO.php
+    │               │   ├── ln_CD.php
+    │               │   ├── ln_CF.php
+    │               │   ├── ln_CG.php
+    │               │   ├── lo.php
+    │               │   ├── lo_LA.php
+    │               │   ├── lrc.php
+    │               │   ├── lrc_IQ.php
+    │               │   ├── lt.php
+    │               │   ├── lt_LT.php
+    │               │   ├── lu.php
+    │               │   ├── luo.php
+    │               │   ├── luy.php
+    │               │   ├── lv.php
+    │               │   ├── lv_LV.php
+    │               │   ├── lzh.php
+    │               │   ├── lzh_TW.php
+    │               │   ├── mag.php
+    │               │   ├── mag_IN.php
+    │               │   ├── mai.php
+    │               │   ├── mai_IN.php
+    │               │   ├── mas.php
+    │               │   ├── mas_TZ.php
+    │               │   ├── mer.php
+    │               │   ├── mfe.php
+    │               │   ├── mfe_MU.php
+    │               │   ├── mg.php
+    │               │   ├── mg_MG.php
+    │               │   ├── mgh.php
+    │               │   ├── mgo.php
+    │               │   ├── mhr.php
+    │               │   ├── mhr_RU.php
+    │               │   ├── mi.php
+    │               │   ├── mi_NZ.php
+    │               │   ├── miq.php
+    │               │   ├── miq_NI.php
+    │               │   ├── mjw.php
+    │               │   ├── mjw_IN.php
+    │               │   ├── mk.php
+    │               │   ├── mk_MK.php
+    │               │   ├── ml.php
+    │               │   ├── ml_IN.php
+    │               │   ├── mn.php
+    │               │   ├── mn_MN.php
+    │               │   ├── mni.php
+    │               │   ├── mni_IN.php
+    │               │   ├── mo.php
+    │               │   ├── mr.php
+    │               │   ├── mr_IN.php
+    │               │   ├── ms.php
+    │               │   ├── ms_BN.php
+    │               │   ├── ms_MY.php
+    │               │   ├── ms_SG.php
+    │               │   ├── mt.php
+    │               │   ├── mt_MT.php
+    │               │   ├── mua.php
+    │               │   ├── my.php
+    │               │   ├── my_MM.php
+    │               │   ├── mzn.php
+    │               │   ├── nan.php
+    │               │   ├── nan_TW.php
+    │               │   ├── nan_TW@latin.php
+    │               │   ├── naq.php
+    │               │   ├── nb.php
+    │               │   ├── nb_NO.php
+    │               │   ├── nb_SJ.php
+    │               │   ├── nd.php
+    │               │   ├── nds.php
+    │               │   ├── nds_DE.php
+    │               │   ├── nds_NL.php
+    │               │   ├── ne.php
+    │               │   ├── ne_IN.php
+    │               │   ├── ne_NP.php
+    │               │   ├── nhn.php
+    │               │   ├── nhn_MX.php
+    │               │   ├── niu.php
+    │               │   ├── niu_NU.php
+    │               │   ├── nl.php
+    │               │   ├── nl_AW.php
+    │               │   ├── nl_BE.php
+    │               │   ├── nl_BQ.php
+    │               │   ├── nl_CW.php
+    │               │   ├── nl_NL.php
+    │               │   ├── nl_SR.php
+    │               │   ├── nl_SX.php
+    │               │   ├── nmg.php
+    │               │   ├── nn.php
+    │               │   ├── nn_NO.php
+    │               │   ├── nnh.php
+    │               │   ├── no.php
+    │               │   ├── nr.php
+    │               │   ├── nr_ZA.php
+    │               │   ├── nso.php
+    │               │   ├── nso_ZA.php
+    │               │   ├── nus.php
+    │               │   ├── nyn.php
+    │               │   ├── oc.php
+    │               │   ├── oc_FR.php
+    │               │   ├── om.php
+    │               │   ├── om_ET.php
+    │               │   ├── om_KE.php
+    │               │   ├── or.php
+    │               │   ├── or_IN.php
+    │               │   ├── os.php
+    │               │   ├── os_RU.php
+    │               │   ├── pa.php
+    │               │   ├── pa_Arab.php
+    │               │   ├── pa_Guru.php
+    │               │   ├── pa_IN.php
+    │               │   ├── pa_PK.php
+    │               │   ├── pap.php
+    │               │   ├── pap_AW.php
+    │               │   ├── pap_CW.php
+    │               │   ├── pl.php
+    │               │   ├── pl_PL.php
+    │               │   ├── prg.php
+    │               │   ├── ps.php
+    │               │   ├── ps_AF.php
+    │               │   ├── pt.php
+    │               │   ├── pt_AO.php
+    │               │   ├── pt_BR.php
+    │               │   ├── pt_CH.php
+    │               │   ├── pt_CV.php
+    │               │   ├── pt_GQ.php
+    │               │   ├── pt_GW.php
+    │               │   ├── pt_LU.php
+    │               │   ├── pt_MO.php
+    │               │   ├── pt_MZ.php
+    │               │   ├── pt_PT.php
+    │               │   ├── pt_ST.php
+    │               │   ├── pt_TL.php
+    │               │   ├── qu.php
+    │               │   ├── qu_BO.php
+    │               │   ├── qu_EC.php
+    │               │   ├── quz.php
+    │               │   ├── quz_PE.php
+    │               │   ├── raj.php
+    │               │   ├── raj_IN.php
+    │               │   ├── rm.php
+    │               │   ├── rn.php
+    │               │   ├── ro.php
+    │               │   ├── ro_MD.php
+    │               │   ├── ro_RO.php
+    │               │   ├── rof.php
+    │               │   ├── ru.php
+    │               │   ├── ru_BY.php
+    │               │   ├── ru_KG.php
+    │               │   ├── ru_KZ.php
+    │               │   ├── ru_MD.php
+    │               │   ├── ru_RU.php
+    │               │   ├── ru_UA.php
+    │               │   ├── rw.php
+    │               │   ├── rw_RW.php
+    │               │   ├── rwk.php
+    │               │   ├── sa.php
+    │               │   ├── sa_IN.php
+    │               │   ├── sah.php
+    │               │   ├── sah_RU.php
+    │               │   ├── saq.php
+    │               │   ├── sat.php
+    │               │   ├── sat_IN.php
+    │               │   ├── sbp.php
+    │               │   ├── sc.php
+    │               │   ├── sc_IT.php
+    │               │   ├── sd.php
+    │               │   ├── sd_IN.php
+    │               │   ├── sd_IN@devanagari.php
+    │               │   ├── se.php
+    │               │   ├── se_FI.php
+    │               │   ├── se_NO.php
+    │               │   ├── se_SE.php
+    │               │   ├── seh.php
+    │               │   ├── ses.php
+    │               │   ├── sg.php
+    │               │   ├── sgs.php
+    │               │   ├── sgs_LT.php
+    │               │   ├── sh.php
+    │               │   ├── shi.php
+    │               │   ├── shi_Latn.php
+    │               │   ├── shi_Tfng.php
+    │               │   ├── shn.php
+    │               │   ├── shn_MM.php
+    │               │   ├── shs.php
+    │               │   ├── shs_CA.php
+    │               │   ├── si.php
+    │               │   ├── si_LK.php
+    │               │   ├── sid.php
+    │               │   ├── sid_ET.php
+    │               │   ├── sk.php
+    │               │   ├── sk_SK.php
+    │               │   ├── sl.php
+    │               │   ├── sl_SI.php
+    │               │   ├── sm.php
+    │               │   ├── sm_WS.php
+    │               │   ├── smn.php
+    │               │   ├── sn.php
+    │               │   ├── so.php
+    │               │   ├── so_DJ.php
+    │               │   ├── so_ET.php
+    │               │   ├── so_KE.php
+    │               │   ├── so_SO.php
+    │               │   ├── sq.php
+    │               │   ├── sq_AL.php
+    │               │   ├── sq_MK.php
+    │               │   ├── sq_XK.php
+    │               │   ├── sr.php
+    │               │   ├── sr_Cyrl.php
+    │               │   ├── sr_Cyrl_BA.php
+    │               │   ├── sr_Cyrl_ME.php
+    │               │   ├── sr_Cyrl_XK.php
+    │               │   ├── sr_Latn.php
+    │               │   ├── sr_Latn_BA.php
+    │               │   ├── sr_Latn_ME.php
+    │               │   ├── sr_Latn_XK.php
+    │               │   ├── sr_ME.php
+    │               │   ├── sr_RS.php
+    │               │   ├── sr_RS@latin.php
+    │               │   ├── ss.php
+    │               │   ├── ss_ZA.php
+    │               │   ├── st.php
+    │               │   ├── st_ZA.php
+    │               │   ├── sv.php
+    │               │   ├── sv_AX.php
+    │               │   ├── sv_FI.php
+    │               │   ├── sv_SE.php
+    │               │   ├── sw.php
+    │               │   ├── sw_CD.php
+    │               │   ├── sw_KE.php
+    │               │   ├── sw_TZ.php
+    │               │   ├── sw_UG.php
+    │               │   ├── szl.php
+    │               │   ├── szl_PL.php
+    │               │   ├── ta.php
+    │               │   ├── ta_IN.php
+    │               │   ├── ta_LK.php
+    │               │   ├── ta_MY.php
+    │               │   ├── ta_SG.php
+    │               │   ├── tcy.php
+    │               │   ├── tcy_IN.php
+    │               │   ├── te.php
+    │               │   ├── te_IN.php
+    │               │   ├── teo.php
+    │               │   ├── teo_KE.php
+    │               │   ├── tet.php
+    │               │   ├── tg.php
+    │               │   ├── tg_TJ.php
+    │               │   ├── th.php
+    │               │   ├── th_TH.php
+    │               │   ├── the.php
+    │               │   ├── the_NP.php
+    │               │   ├── ti.php
+    │               │   ├── ti_ER.php
+    │               │   ├── ti_ET.php
+    │               │   ├── tig.php
+    │               │   ├── tig_ER.php
+    │               │   ├── tk.php
+    │               │   ├── tk_TM.php
+    │               │   ├── tl.php
+    │               │   ├── tl_PH.php
+    │               │   ├── tlh.php
+    │               │   ├── tn.php
+    │               │   ├── tn_ZA.php
+    │               │   ├── to.php
+    │               │   ├── to_TO.php
+    │               │   ├── tpi.php
+    │               │   ├── tpi_PG.php
+    │               │   ├── tr.php
+    │               │   ├── tr_CY.php
+    │               │   ├── tr_TR.php
+    │               │   ├── ts.php
+    │               │   ├── ts_ZA.php
+    │               │   ├── tt.php
+    │               │   ├── tt_RU.php
+    │               │   ├── tt_RU@iqtelif.php
+    │               │   ├── twq.php
+    │               │   ├── tzl.php
+    │               │   ├── tzm.php
+    │               │   ├── tzm_Latn.php
+    │               │   ├── ug.php
+    │               │   ├── ug_CN.php
+    │               │   ├── uk.php
+    │               │   ├── uk_UA.php
+    │               │   ├── unm.php
+    │               │   ├── unm_US.php
+    │               │   ├── ur.php
+    │               │   ├── ur_IN.php
+    │               │   ├── ur_PK.php
+    │               │   ├── uz.php
+    │               │   ├── uz_Arab.php
+    │               │   ├── uz_Cyrl.php
+    │               │   ├── uz_Latn.php
+    │               │   ├── uz_UZ.php
+    │               │   ├── uz_UZ@cyrillic.php
+    │               │   ├── vai.php
+    │               │   ├── vai_Latn.php
+    │               │   ├── vai_Vaii.php
+    │               │   ├── ve.php
+    │               │   ├── ve_ZA.php
+    │               │   ├── vi.php
+    │               │   ├── vi_VN.php
+    │               │   ├── vo.php
+    │               │   ├── vun.php
+    │               │   ├── wa.php
+    │               │   ├── wa_BE.php
+    │               │   ├── wae.php
+    │               │   ├── wae_CH.php
+    │               │   ├── wal.php
+    │               │   ├── wal_ET.php
+    │               │   ├── wo.php
+    │               │   ├── wo_SN.php
+    │               │   ├── xh.php
+    │               │   ├── xh_ZA.php
+    │               │   ├── xog.php
+    │               │   ├── yav.php
+    │               │   ├── yi.php
+    │               │   ├── yi_US.php
+    │               │   ├── yo.php
+    │               │   ├── yo_BJ.php
+    │               │   ├── yo_NG.php
+    │               │   ├── yue.php
+    │               │   ├── yue_HK.php
+    │               │   ├── yue_Hans.php
+    │               │   ├── yue_Hant.php
+    │               │   ├── yuw.php
+    │               │   ├── yuw_PG.php
+    │               │   ├── zgh.php
+    │               │   ├── zh.php
+    │               │   ├── zh_CN.php
+    │               │   ├── zh_HK.php
+    │               │   ├── zh_Hans.php
+    │               │   ├── zh_Hans_HK.php
+    │               │   ├── zh_Hans_MO.php
+    │               │   ├── zh_Hans_SG.php
+    │               │   ├── zh_Hant.php
+    │               │   ├── zh_Hant_HK.php
+    │               │   ├── zh_Hant_MO.php
+    │               │   ├── zh_Hant_TW.php
+    │               │   ├── zh_MO.php
+    │               │   ├── zh_SG.php
+    │               │   ├── zh_TW.php
+    │               │   ├── zh_YUE.php
+    │               │   ├── zu.php
+    │               │   └── zu_ZA.php
+    │               ├── Language.php
+    │               ├── Laravel
+    │               │   └── ServiceProvider.php
+    │               ├── List
+    │               │   ├── languages.php
+    │               │   └── regions.php
+    │               ├── MessageFormatter
+    │               │   └── MessageFormatterMapper.php
+    │               ├── PHPStan
+    │               │   ├── AbstractMacro.php
+    │               │   ├── Macro.php
+    │               │   ├── MacroExtension.php
+    │               │   └── MacroScanner.php
+    │               ├── Traits
+    │               │   ├── Boundaries.php
+    │               │   ├── Cast.php
+    │               │   ├── Comparison.php
+    │               │   ├── Converter.php
+    │               │   ├── Creator.php
+    │               │   ├── Date.php
+    │               │   ├── DeprecatedProperties.php
+    │               │   ├── Difference.php
+    │               │   ├── IntervalRounding.php
+    │               │   ├── IntervalStep.php
+    │               │   ├── Localization.php
+    │               │   ├── Macro.php
+    │               │   ├── MagicParameter.php
+    │               │   ├── Mixin.php
+    │               │   ├── Modifiers.php
+    │               │   ├── Mutability.php
+    │               │   ├── ObjectInitialisation.php
+    │               │   ├── Options.php
+    │               │   ├── Rounding.php
+    │               │   ├── Serialization.php
+    │               │   ├── Test.php
+    │               │   ├── Timestamp.php
+    │               │   ├── ToStringFormat.php
+    │               │   ├── Units.php
+    │               │   └── Week.php
+    │               ├── Translator.php
+    │               ├── TranslatorImmutable.php
+    │               └── TranslatorStrongTypeInterface.php
     ├── nette
     │   ├── schema
     │   │   ├── composer.json
@@ -1076,6 +3087,7 @@
     │   │           │   └── Type.php
     │   │           ├── Expect.php
     │   │           ├── Helpers.php
+    │   │           ├── MergeMode.php
     │   │           ├── Message.php
     │   │           ├── Processor.php
     │   │           ├── Schema.php
@@ -1120,15 +3132,351 @@
     │           │   └── exceptions.php
     │           ├── compatibility.php
     │           └── exceptions.php
-    ├── psr
-    │   └── event-dispatcher
+    ├── nikic
+    │   └── php-parser
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── bin
+    │       │   └── php-parse
+    │       ├── composer.json
+    │       └── lib
+    │           └── PhpParser
+    │               ├── Builder
+    │               │   ├── ClassConst.php
+    │               │   ├── Class_.php
+    │               │   ├── Declaration.php
+    │               │   ├── EnumCase.php
+    │               │   ├── Enum_.php
+    │               │   ├── FunctionLike.php
+    │               │   ├── Function_.php
+    │               │   ├── Interface_.php
+    │               │   ├── Method.php
+    │               │   ├── Namespace_.php
+    │               │   ├── Param.php
+    │               │   ├── Property.php
+    │               │   ├── TraitUse.php
+    │               │   ├── TraitUseAdaptation.php
+    │               │   ├── Trait_.php
+    │               │   └── Use_.php
+    │               ├── Builder.php
+    │               ├── BuilderFactory.php
+    │               ├── BuilderHelpers.php
+    │               ├── Comment
+    │               │   └── Doc.php
+    │               ├── Comment.php
+    │               ├── ConstExprEvaluationException.php
+    │               ├── ConstExprEvaluator.php
+    │               ├── Error.php
+    │               ├── ErrorHandler
+    │               │   ├── Collecting.php
+    │               │   └── Throwing.php
+    │               ├── ErrorHandler.php
+    │               ├── Internal
+    │               │   ├── DiffElem.php
+    │               │   ├── Differ.php
+    │               │   ├── PrintableNewAnonClassNode.php
+    │               │   └── TokenStream.php
+    │               ├── JsonDecoder.php
+    │               ├── Lexer
+    │               │   ├── Emulative.php
+    │               │   └── TokenEmulator
+    │               │       ├── AttributeEmulator.php
+    │               │       ├── CoaleseEqualTokenEmulator.php
+    │               │       ├── EnumTokenEmulator.php
+    │               │       ├── ExplicitOctalEmulator.php
+    │               │       ├── FlexibleDocStringEmulator.php
+    │               │       ├── FnTokenEmulator.php
+    │               │       ├── KeywordEmulator.php
+    │               │       ├── MatchTokenEmulator.php
+    │               │       ├── NullsafeTokenEmulator.php
+    │               │       ├── NumericLiteralSeparatorEmulator.php
+    │               │       ├── ReadonlyFunctionTokenEmulator.php
+    │               │       ├── ReadonlyTokenEmulator.php
+    │               │       ├── ReverseEmulator.php
+    │               │       └── TokenEmulator.php
+    │               ├── Lexer.php
+    │               ├── NameContext.php
+    │               ├── Node
+    │               │   ├── Arg.php
+    │               │   ├── Attribute.php
+    │               │   ├── AttributeGroup.php
+    │               │   ├── ComplexType.php
+    │               │   ├── Const_.php
+    │               │   ├── Expr
+    │               │   │   ├── ArrayDimFetch.php
+    │               │   │   ├── ArrayItem.php
+    │               │   │   ├── Array_.php
+    │               │   │   ├── ArrowFunction.php
+    │               │   │   ├── Assign.php
+    │               │   │   ├── AssignOp
+    │               │   │   │   ├── BitwiseAnd.php
+    │               │   │   │   ├── BitwiseOr.php
+    │               │   │   │   ├── BitwiseXor.php
+    │               │   │   │   ├── Coalesce.php
+    │               │   │   │   ├── Concat.php
+    │               │   │   │   ├── Div.php
+    │               │   │   │   ├── Minus.php
+    │               │   │   │   ├── Mod.php
+    │               │   │   │   ├── Mul.php
+    │               │   │   │   ├── Plus.php
+    │               │   │   │   ├── Pow.php
+    │               │   │   │   ├── ShiftLeft.php
+    │               │   │   │   └── ShiftRight.php
+    │               │   │   ├── AssignOp.php
+    │               │   │   ├── AssignRef.php
+    │               │   │   ├── BinaryOp
+    │               │   │   │   ├── BitwiseAnd.php
+    │               │   │   │   ├── BitwiseOr.php
+    │               │   │   │   ├── BitwiseXor.php
+    │               │   │   │   ├── BooleanAnd.php
+    │               │   │   │   ├── BooleanOr.php
+    │               │   │   │   ├── Coalesce.php
+    │               │   │   │   ├── Concat.php
+    │               │   │   │   ├── Div.php
+    │               │   │   │   ├── Equal.php
+    │               │   │   │   ├── Greater.php
+    │               │   │   │   ├── GreaterOrEqual.php
+    │               │   │   │   ├── Identical.php
+    │               │   │   │   ├── LogicalAnd.php
+    │               │   │   │   ├── LogicalOr.php
+    │               │   │   │   ├── LogicalXor.php
+    │               │   │   │   ├── Minus.php
+    │               │   │   │   ├── Mod.php
+    │               │   │   │   ├── Mul.php
+    │               │   │   │   ├── NotEqual.php
+    │               │   │   │   ├── NotIdentical.php
+    │               │   │   │   ├── Plus.php
+    │               │   │   │   ├── Pow.php
+    │               │   │   │   ├── ShiftLeft.php
+    │               │   │   │   ├── ShiftRight.php
+    │               │   │   │   ├── Smaller.php
+    │               │   │   │   ├── SmallerOrEqual.php
+    │               │   │   │   └── Spaceship.php
+    │               │   │   ├── BinaryOp.php
+    │               │   │   ├── BitwiseNot.php
+    │               │   │   ├── BooleanNot.php
+    │               │   │   ├── CallLike.php
+    │               │   │   ├── Cast
+    │               │   │   │   ├── Array_.php
+    │               │   │   │   ├── Bool_.php
+    │               │   │   │   ├── Double.php
+    │               │   │   │   ├── Int_.php
+    │               │   │   │   ├── Object_.php
+    │               │   │   │   ├── String_.php
+    │               │   │   │   └── Unset_.php
+    │               │   │   ├── Cast.php
+    │               │   │   ├── ClassConstFetch.php
+    │               │   │   ├── Clone_.php
+    │               │   │   ├── Closure.php
+    │               │   │   ├── ClosureUse.php
+    │               │   │   ├── ConstFetch.php
+    │               │   │   ├── Empty_.php
+    │               │   │   ├── Error.php
+    │               │   │   ├── ErrorSuppress.php
+    │               │   │   ├── Eval_.php
+    │               │   │   ├── Exit_.php
+    │               │   │   ├── FuncCall.php
+    │               │   │   ├── Include_.php
+    │               │   │   ├── Instanceof_.php
+    │               │   │   ├── Isset_.php
+    │               │   │   ├── List_.php
+    │               │   │   ├── Match_.php
+    │               │   │   ├── MethodCall.php
+    │               │   │   ├── New_.php
+    │               │   │   ├── NullsafeMethodCall.php
+    │               │   │   ├── NullsafePropertyFetch.php
+    │               │   │   ├── PostDec.php
+    │               │   │   ├── PostInc.php
+    │               │   │   ├── PreDec.php
+    │               │   │   ├── PreInc.php
+    │               │   │   ├── Print_.php
+    │               │   │   ├── PropertyFetch.php
+    │               │   │   ├── ShellExec.php
+    │               │   │   ├── StaticCall.php
+    │               │   │   ├── StaticPropertyFetch.php
+    │               │   │   ├── Ternary.php
+    │               │   │   ├── Throw_.php
+    │               │   │   ├── UnaryMinus.php
+    │               │   │   ├── UnaryPlus.php
+    │               │   │   ├── Variable.php
+    │               │   │   ├── YieldFrom.php
+    │               │   │   └── Yield_.php
+    │               │   ├── Expr.php
+    │               │   ├── FunctionLike.php
+    │               │   ├── Identifier.php
+    │               │   ├── IntersectionType.php
+    │               │   ├── MatchArm.php
+    │               │   ├── Name
+    │               │   │   ├── FullyQualified.php
+    │               │   │   └── Relative.php
+    │               │   ├── Name.php
+    │               │   ├── NullableType.php
+    │               │   ├── Param.php
+    │               │   ├── Scalar
+    │               │   │   ├── DNumber.php
+    │               │   │   ├── Encapsed.php
+    │               │   │   ├── EncapsedStringPart.php
+    │               │   │   ├── LNumber.php
+    │               │   │   ├── MagicConst
+    │               │   │   │   ├── Class_.php
+    │               │   │   │   ├── Dir.php
+    │               │   │   │   ├── File.php
+    │               │   │   │   ├── Function_.php
+    │               │   │   │   ├── Line.php
+    │               │   │   │   ├── Method.php
+    │               │   │   │   ├── Namespace_.php
+    │               │   │   │   └── Trait_.php
+    │               │   │   ├── MagicConst.php
+    │               │   │   └── String_.php
+    │               │   ├── Scalar.php
+    │               │   ├── Stmt
+    │               │   │   ├── Break_.php
+    │               │   │   ├── Case_.php
+    │               │   │   ├── Catch_.php
+    │               │   │   ├── ClassConst.php
+    │               │   │   ├── ClassLike.php
+    │               │   │   ├── ClassMethod.php
+    │               │   │   ├── Class_.php
+    │               │   │   ├── Const_.php
+    │               │   │   ├── Continue_.php
+    │               │   │   ├── DeclareDeclare.php
+    │               │   │   ├── Declare_.php
+    │               │   │   ├── Do_.php
+    │               │   │   ├── Echo_.php
+    │               │   │   ├── ElseIf_.php
+    │               │   │   ├── Else_.php
+    │               │   │   ├── EnumCase.php
+    │               │   │   ├── Enum_.php
+    │               │   │   ├── Expression.php
+    │               │   │   ├── Finally_.php
+    │               │   │   ├── For_.php
+    │               │   │   ├── Foreach_.php
+    │               │   │   ├── Function_.php
+    │               │   │   ├── Global_.php
+    │               │   │   ├── Goto_.php
+    │               │   │   ├── GroupUse.php
+    │               │   │   ├── HaltCompiler.php
+    │               │   │   ├── If_.php
+    │               │   │   ├── InlineHTML.php
+    │               │   │   ├── Interface_.php
+    │               │   │   ├── Label.php
+    │               │   │   ├── Namespace_.php
+    │               │   │   ├── Nop.php
+    │               │   │   ├── Property.php
+    │               │   │   ├── PropertyProperty.php
+    │               │   │   ├── Return_.php
+    │               │   │   ├── StaticVar.php
+    │               │   │   ├── Static_.php
+    │               │   │   ├── Switch_.php
+    │               │   │   ├── Throw_.php
+    │               │   │   ├── TraitUse.php
+    │               │   │   ├── TraitUseAdaptation
+    │               │   │   │   ├── Alias.php
+    │               │   │   │   └── Precedence.php
+    │               │   │   ├── TraitUseAdaptation.php
+    │               │   │   ├── Trait_.php
+    │               │   │   ├── TryCatch.php
+    │               │   │   ├── Unset_.php
+    │               │   │   ├── UseUse.php
+    │               │   │   ├── Use_.php
+    │               │   │   └── While_.php
+    │               │   ├── Stmt.php
+    │               │   ├── UnionType.php
+    │               │   ├── VarLikeIdentifier.php
+    │               │   └── VariadicPlaceholder.php
+    │               ├── Node.php
+    │               ├── NodeAbstract.php
+    │               ├── NodeDumper.php
+    │               ├── NodeFinder.php
+    │               ├── NodeTraverser.php
+    │               ├── NodeTraverserInterface.php
+    │               ├── NodeVisitor
+    │               │   ├── CloningVisitor.php
+    │               │   ├── FindingVisitor.php
+    │               │   ├── FirstFindingVisitor.php
+    │               │   ├── NameResolver.php
+    │               │   ├── NodeConnectingVisitor.php
+    │               │   └── ParentConnectingVisitor.php
+    │               ├── NodeVisitor.php
+    │               ├── NodeVisitorAbstract.php
+    │               ├── Parser
+    │               │   ├── Multiple.php
+    │               │   ├── Php5.php
+    │               │   ├── Php7.php
+    │               │   └── Tokens.php
+    │               ├── Parser.php
+    │               ├── ParserAbstract.php
+    │               ├── ParserFactory.php
+    │               ├── PrettyPrinter
+    │               │   └── Standard.php
+    │               └── PrettyPrinterAbstract.php
+    ├── php-di
+    │   └── phpdoc-reader
     │       ├── LICENSE
     │       ├── README.md
     │       ├── composer.json
     │       └── src
-    │           ├── EventDispatcherInterface.php
-    │           ├── ListenerProviderInterface.php
-    │           └── StoppableEventInterface.php
+    │           └── PhpDocReader
+    │               ├── AnnotationException.php
+    │               ├── PhpDocReader.php
+    │               └── PhpParser
+    │                   ├── TokenParser.php
+    │                   └── UseStatementParser.php
+    ├── phpoption
+    │   └── phpoption
+    │       ├── LICENSE
+    │       ├── composer.json
+    │       └── src
+    │           └── PhpOption
+    │               ├── LazyOption.php
+    │               ├── None.php
+    │               ├── Option.php
+    │               └── Some.php
+    ├── psr
+    │   ├── clock
+    │   │   ├── CHANGELOG.md
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       └── ClockInterface.php
+    │   ├── container
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── ContainerExceptionInterface.php
+    │   │       ├── ContainerInterface.php
+    │   │       └── NotFoundExceptionInterface.php
+    │   ├── event-dispatcher
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── EventDispatcherInterface.php
+    │   │       ├── ListenerProviderInterface.php
+    │   │       └── StoppableEventInterface.php
+    │   ├── log
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── AbstractLogger.php
+    │   │       ├── InvalidArgumentException.php
+    │   │       ├── LogLevel.php
+    │   │       ├── LoggerAwareInterface.php
+    │   │       ├── LoggerAwareTrait.php
+    │   │       ├── LoggerInterface.php
+    │   │       ├── LoggerTrait.php
+    │   │       └── NullLogger.php
+    │   └── simple-cache
+    │       ├── LICENSE.md
+    │       ├── README.md
+    │       ├── composer.json
+    │       └── src
+    │           ├── CacheException.php
+    │           ├── CacheInterface.php
+    │           └── InvalidArgumentException.php
     ├── robthree
     │   └── twofactorauth
     │       ├── LICENSE
@@ -1209,51 +3557,1531 @@
     │       └── testsDependency
     │           ├── BaconQRCodeTest.php
     │           └── EndroidQRCodeTest.php
-    └── symfony
-        ├── asset
-        │   ├── CHANGELOG.md
-        │   ├── Context
-        │   │   ├── ContextInterface.php
-        │   │   ├── NullContext.php
-        │   │   └── RequestStackContext.php
-        │   ├── Exception
-        │   │   ├── AssetNotFoundException.php
-        │   │   ├── ExceptionInterface.php
-        │   │   ├── InvalidArgumentException.php
-        │   │   ├── LogicException.php
-        │   │   └── RuntimeException.php
-        │   ├── LICENSE
-        │   ├── Package.php
-        │   ├── PackageInterface.php
-        │   ├── Packages.php
-        │   ├── PathPackage.php
-        │   ├── README.md
-        │   ├── UrlPackage.php
-        │   ├── VersionStrategy
-        │   │   ├── EmptyVersionStrategy.php
-        │   │   ├── JsonManifestVersionStrategy.php
-        │   │   ├── StaticVersionStrategy.php
-        │   │   └── VersionStrategyInterface.php
-        │   └── composer.json
-        ├── deprecation-contracts
-        │   ├── CHANGELOG.md
-        │   ├── LICENSE
-        │   ├── README.md
-        │   ├── composer.json
-        │   └── function.php
-        └── polyfill-php80
+    ├── swoole
+    │   └── ide-helper
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── composer.json
+    │       └── src
+    │           ├── swoole
+    │           │   ├── Swoole
+    │           │   │   ├── Atomic
+    │           │   │   │   └── Long.php
+    │           │   │   ├── Atomic.php
+    │           │   │   ├── Client
+    │           │   │   │   └── Exception.php
+    │           │   │   ├── Client.php
+    │           │   │   ├── Connection
+    │           │   │   │   └── Iterator.php
+    │           │   │   ├── Coroutine
+    │           │   │   │   ├── Channel.php
+    │           │   │   │   ├── Client.php
+    │           │   │   │   ├── Context.php
+    │           │   │   │   ├── Curl
+    │           │   │   │   │   └── Exception.php
+    │           │   │   │   ├── Http
+    │           │   │   │   │   ├── Client
+    │           │   │   │   │   │   └── Exception.php
+    │           │   │   │   │   ├── Client.php
+    │           │   │   │   │   └── Server.php
+    │           │   │   │   ├── Http2
+    │           │   │   │   │   ├── Client
+    │           │   │   │   │   │   └── Exception.php
+    │           │   │   │   │   └── Client.php
+    │           │   │   │   ├── Iterator.php
+    │           │   │   │   ├── MySQL
+    │           │   │   │   │   ├── Exception.php
+    │           │   │   │   │   └── Statement.php
+    │           │   │   │   ├── MySQL.php
+    │           │   │   │   ├── PostgreSQL.php
+    │           │   │   │   ├── PostgreSQLStatement.php
+    │           │   │   │   ├── Redis.php
+    │           │   │   │   ├── Scheduler.php
+    │           │   │   │   ├── Socket
+    │           │   │   │   │   └── Exception.php
+    │           │   │   │   ├── Socket.php
+    │           │   │   │   └── System.php
+    │           │   │   ├── Coroutine.php
+    │           │   │   ├── Error.php
+    │           │   │   ├── Event.php
+    │           │   │   ├── Exception.php
+    │           │   │   ├── ExitException.php
+    │           │   │   ├── Http
+    │           │   │   │   ├── Request.php
+    │           │   │   │   ├── Response.php
+    │           │   │   │   └── Server.php
+    │           │   │   ├── Http2
+    │           │   │   │   ├── Request.php
+    │           │   │   │   └── Response.php
+    │           │   │   ├── Lock.php
+    │           │   │   ├── NameResolver
+    │           │   │   │   └── Context.php
+    │           │   │   ├── Process
+    │           │   │   │   └── Pool.php
+    │           │   │   ├── Process.php
+    │           │   │   ├── Redis
+    │           │   │   │   └── Server.php
+    │           │   │   ├── Runtime.php
+    │           │   │   ├── Server
+    │           │   │   │   ├── Event.php
+    │           │   │   │   ├── Packet.php
+    │           │   │   │   ├── PipeMessage.php
+    │           │   │   │   ├── Port.php
+    │           │   │   │   ├── StatusInfo.php
+    │           │   │   │   ├── Task.php
+    │           │   │   │   └── TaskResult.php
+    │           │   │   ├── Server.php
+    │           │   │   ├── Table.php
+    │           │   │   ├── Timer
+    │           │   │   │   └── Iterator.php
+    │           │   │   ├── Timer.php
+    │           │   │   └── WebSocket
+    │           │   │       ├── CloseFrame.php
+    │           │   │       ├── Frame.php
+    │           │   │       └── Server.php
+    │           │   ├── constants.php
+    │           │   ├── functions.php
+    │           │   └── shortnames.php
+    │           └── swoole_library
+    │               └── src
+    │                   ├── __init__.php
+    │                   ├── alias.php
+    │                   ├── alias_ns.php
+    │                   ├── core
+    │                   │   ├── ArrayObject.php
+    │                   │   ├── ConnectionPool.php
+    │                   │   ├── Constant.php
+    │                   │   ├── Coroutine
+    │                   │   │   ├── Barrier.php
+    │                   │   │   ├── FastCGI
+    │                   │   │   │   ├── Client
+    │                   │   │   │   │   └── Exception.php
+    │                   │   │   │   ├── Client.php
+    │                   │   │   │   └── Proxy.php
+    │                   │   │   ├── Http
+    │                   │   │   │   ├── ClientProxy.php
+    │                   │   │   │   └── functions.php
+    │                   │   │   ├── Server
+    │                   │   │   │   └── Connection.php
+    │                   │   │   ├── Server.php
+    │                   │   │   ├── WaitGroup.php
+    │                   │   │   └── functions.php
+    │                   │   ├── Curl
+    │                   │   │   ├── Exception.php
+    │                   │   │   └── Handler.php
+    │                   │   ├── Database
+    │                   │   │   ├── MysqliConfig.php
+    │                   │   │   ├── MysqliException.php
+    │                   │   │   ├── MysqliPool.php
+    │                   │   │   ├── MysqliProxy.php
+    │                   │   │   ├── MysqliStatementProxy.php
+    │                   │   │   ├── ObjectProxy.php
+    │                   │   │   ├── PDOConfig.php
+    │                   │   │   ├── PDOPool.php
+    │                   │   │   ├── PDOProxy.php
+    │                   │   │   ├── PDOStatementProxy.php
+    │                   │   │   ├── RedisConfig.php
+    │                   │   │   └── RedisPool.php
+    │                   │   ├── Exception
+    │                   │   │   └── ArrayKeyNotExists.php
+    │                   │   ├── FastCGI
+    │                   │   │   ├── FrameParser.php
+    │                   │   │   ├── HttpRequest.php
+    │                   │   │   ├── HttpResponse.php
+    │                   │   │   ├── Message.php
+    │                   │   │   ├── Record
+    │                   │   │   │   ├── AbortRequest.php
+    │                   │   │   │   ├── BeginRequest.php
+    │                   │   │   │   ├── Data.php
+    │                   │   │   │   ├── EndRequest.php
+    │                   │   │   │   ├── GetValues.php
+    │                   │   │   │   ├── GetValuesResult.php
+    │                   │   │   │   ├── Params.php
+    │                   │   │   │   ├── Stderr.php
+    │                   │   │   │   ├── Stdin.php
+    │                   │   │   │   ├── Stdout.php
+    │                   │   │   │   └── UnknownType.php
+    │                   │   │   ├── Record.php
+    │                   │   │   ├── Request.php
+    │                   │   │   └── Response.php
+    │                   │   ├── FastCGI.php
+    │                   │   ├── Http
+    │                   │   │   └── Status.php
+    │                   │   ├── MultibyteStringObject.php
+    │                   │   ├── NameResolver
+    │                   │   │   ├── Cluster.php
+    │                   │   │   ├── Consul.php
+    │                   │   │   ├── Exception.php
+    │                   │   │   ├── Nacos.php
+    │                   │   │   └── Redis.php
+    │                   │   ├── NameResolver.php
+    │                   │   ├── ObjectProxy.php
+    │                   │   ├── Process
+    │                   │   │   └── Manager.php
+    │                   │   ├── Server
+    │                   │   │   ├── Admin.php
+    │                   │   │   └── Helper.php
+    │                   │   └── StringObject.php
+    │                   └── functions.php
+    ├── symfony
+    │   ├── asset
+    │   │   ├── CHANGELOG.md
+    │   │   ├── Context
+    │   │   │   ├── ContextInterface.php
+    │   │   │   ├── NullContext.php
+    │   │   │   └── RequestStackContext.php
+    │   │   ├── Exception
+    │   │   │   ├── AssetNotFoundException.php
+    │   │   │   ├── ExceptionInterface.php
+    │   │   │   ├── InvalidArgumentException.php
+    │   │   │   ├── LogicException.php
+    │   │   │   └── RuntimeException.php
+    │   │   ├── LICENSE
+    │   │   ├── Package.php
+    │   │   ├── PackageInterface.php
+    │   │   ├── Packages.php
+    │   │   ├── PathPackage.php
+    │   │   ├── README.md
+    │   │   ├── UrlPackage.php
+    │   │   ├── VersionStrategy
+    │   │   │   ├── EmptyVersionStrategy.php
+    │   │   │   ├── JsonManifestVersionStrategy.php
+    │   │   │   ├── StaticVersionStrategy.php
+    │   │   │   └── VersionStrategyInterface.php
+    │   │   └── composer.json
+    │   ├── config
+    │   │   ├── Builder
+    │   │   │   ├── ClassBuilder.php
+    │   │   │   ├── ConfigBuilderGenerator.php
+    │   │   │   ├── ConfigBuilderGeneratorInterface.php
+    │   │   │   ├── ConfigBuilderInterface.php
+    │   │   │   ├── Method.php
+    │   │   │   └── Property.php
+    │   │   ├── CHANGELOG.md
+    │   │   ├── ConfigCache.php
+    │   │   ├── ConfigCacheFactory.php
+    │   │   ├── ConfigCacheFactoryInterface.php
+    │   │   ├── ConfigCacheInterface.php
+    │   │   ├── Definition
+    │   │   │   ├── ArrayNode.php
+    │   │   │   ├── BaseNode.php
+    │   │   │   ├── BooleanNode.php
+    │   │   │   ├── Builder
+    │   │   │   │   ├── ArrayNodeDefinition.php
+    │   │   │   │   ├── BooleanNodeDefinition.php
+    │   │   │   │   ├── BuilderAwareInterface.php
+    │   │   │   │   ├── EnumNodeDefinition.php
+    │   │   │   │   ├── ExprBuilder.php
+    │   │   │   │   ├── FloatNodeDefinition.php
+    │   │   │   │   ├── IntegerNodeDefinition.php
+    │   │   │   │   ├── MergeBuilder.php
+    │   │   │   │   ├── NodeBuilder.php
+    │   │   │   │   ├── NodeDefinition.php
+    │   │   │   │   ├── NodeParentInterface.php
+    │   │   │   │   ├── NormalizationBuilder.php
+    │   │   │   │   ├── NumericNodeDefinition.php
+    │   │   │   │   ├── ParentNodeDefinitionInterface.php
+    │   │   │   │   ├── ScalarNodeDefinition.php
+    │   │   │   │   ├── TreeBuilder.php
+    │   │   │   │   ├── ValidationBuilder.php
+    │   │   │   │   └── VariableNodeDefinition.php
+    │   │   │   ├── ConfigurableInterface.php
+    │   │   │   ├── Configuration.php
+    │   │   │   ├── ConfigurationInterface.php
+    │   │   │   ├── Configurator
+    │   │   │   │   └── DefinitionConfigurator.php
+    │   │   │   ├── Dumper
+    │   │   │   │   ├── XmlReferenceDumper.php
+    │   │   │   │   └── YamlReferenceDumper.php
+    │   │   │   ├── EnumNode.php
+    │   │   │   ├── Exception
+    │   │   │   │   ├── DuplicateKeyException.php
+    │   │   │   │   ├── Exception.php
+    │   │   │   │   ├── ForbiddenOverwriteException.php
+    │   │   │   │   ├── InvalidConfigurationException.php
+    │   │   │   │   ├── InvalidDefinitionException.php
+    │   │   │   │   ├── InvalidTypeException.php
+    │   │   │   │   └── UnsetKeyException.php
+    │   │   │   ├── FloatNode.php
+    │   │   │   ├── IntegerNode.php
+    │   │   │   ├── Loader
+    │   │   │   │   └── DefinitionFileLoader.php
+    │   │   │   ├── NodeInterface.php
+    │   │   │   ├── NumericNode.php
+    │   │   │   ├── Processor.php
+    │   │   │   ├── PrototypeNodeInterface.php
+    │   │   │   ├── PrototypedArrayNode.php
+    │   │   │   ├── ScalarNode.php
+    │   │   │   └── VariableNode.php
+    │   │   ├── Exception
+    │   │   │   ├── FileLoaderImportCircularReferenceException.php
+    │   │   │   ├── FileLocatorFileNotFoundException.php
+    │   │   │   ├── LoaderLoadException.php
+    │   │   │   └── LogicException.php
+    │   │   ├── FileLocator.php
+    │   │   ├── FileLocatorInterface.php
+    │   │   ├── LICENSE
+    │   │   ├── Loader
+    │   │   │   ├── DelegatingLoader.php
+    │   │   │   ├── DirectoryAwareLoaderInterface.php
+    │   │   │   ├── FileLoader.php
+    │   │   │   ├── GlobFileLoader.php
+    │   │   │   ├── Loader.php
+    │   │   │   ├── LoaderInterface.php
+    │   │   │   ├── LoaderResolver.php
+    │   │   │   ├── LoaderResolverInterface.php
+    │   │   │   └── ParamConfigurator.php
+    │   │   ├── README.md
+    │   │   ├── Resource
+    │   │   │   ├── ClassExistenceResource.php
+    │   │   │   ├── ComposerResource.php
+    │   │   │   ├── DirectoryResource.php
+    │   │   │   ├── FileExistenceResource.php
+    │   │   │   ├── FileResource.php
+    │   │   │   ├── GlobResource.php
+    │   │   │   ├── ReflectionClassResource.php
+    │   │   │   ├── ResourceInterface.php
+    │   │   │   ├── SelfCheckingResourceChecker.php
+    │   │   │   └── SelfCheckingResourceInterface.php
+    │   │   ├── ResourceCheckerConfigCache.php
+    │   │   ├── ResourceCheckerConfigCacheFactory.php
+    │   │   ├── ResourceCheckerInterface.php
+    │   │   ├── Util
+    │   │   │   ├── Exception
+    │   │   │   │   ├── InvalidXmlException.php
+    │   │   │   │   └── XmlParsingException.php
+    │   │   │   └── XmlUtils.php
+    │   │   └── composer.json
+    │   ├── console
+    │   │   ├── Application.php
+    │   │   ├── Attribute
+    │   │   │   └── AsCommand.php
+    │   │   ├── CHANGELOG.md
+    │   │   ├── CI
+    │   │   │   └── GithubActionReporter.php
+    │   │   ├── Color.php
+    │   │   ├── Command
+    │   │   │   ├── Command.php
+    │   │   │   ├── CompleteCommand.php
+    │   │   │   ├── DumpCompletionCommand.php
+    │   │   │   ├── HelpCommand.php
+    │   │   │   ├── LazyCommand.php
+    │   │   │   ├── ListCommand.php
+    │   │   │   ├── LockableTrait.php
+    │   │   │   ├── SignalableCommandInterface.php
+    │   │   │   └── TraceableCommand.php
+    │   │   ├── CommandLoader
+    │   │   │   ├── CommandLoaderInterface.php
+    │   │   │   ├── ContainerCommandLoader.php
+    │   │   │   └── FactoryCommandLoader.php
+    │   │   ├── Completion
+    │   │   │   ├── CompletionInput.php
+    │   │   │   ├── CompletionSuggestions.php
+    │   │   │   ├── Output
+    │   │   │   │   ├── BashCompletionOutput.php
+    │   │   │   │   ├── CompletionOutputInterface.php
+    │   │   │   │   ├── FishCompletionOutput.php
+    │   │   │   │   └── ZshCompletionOutput.php
+    │   │   │   └── Suggestion.php
+    │   │   ├── ConsoleEvents.php
+    │   │   ├── Cursor.php
+    │   │   ├── DataCollector
+    │   │   │   └── CommandDataCollector.php
+    │   │   ├── Debug
+    │   │   │   └── CliRequest.php
+    │   │   ├── DependencyInjection
+    │   │   │   └── AddConsoleCommandPass.php
+    │   │   ├── Descriptor
+    │   │   │   ├── ApplicationDescription.php
+    │   │   │   ├── Descriptor.php
+    │   │   │   ├── DescriptorInterface.php
+    │   │   │   ├── JsonDescriptor.php
+    │   │   │   ├── MarkdownDescriptor.php
+    │   │   │   ├── ReStructuredTextDescriptor.php
+    │   │   │   ├── TextDescriptor.php
+    │   │   │   └── XmlDescriptor.php
+    │   │   ├── Event
+    │   │   │   ├── ConsoleCommandEvent.php
+    │   │   │   ├── ConsoleErrorEvent.php
+    │   │   │   ├── ConsoleEvent.php
+    │   │   │   ├── ConsoleSignalEvent.php
+    │   │   │   └── ConsoleTerminateEvent.php
+    │   │   ├── EventListener
+    │   │   │   └── ErrorListener.php
+    │   │   ├── Exception
+    │   │   │   ├── CommandNotFoundException.php
+    │   │   │   ├── ExceptionInterface.php
+    │   │   │   ├── InvalidArgumentException.php
+    │   │   │   ├── InvalidOptionException.php
+    │   │   │   ├── LogicException.php
+    │   │   │   ├── MissingInputException.php
+    │   │   │   ├── NamespaceNotFoundException.php
+    │   │   │   ├── RunCommandFailedException.php
+    │   │   │   └── RuntimeException.php
+    │   │   ├── Formatter
+    │   │   │   ├── NullOutputFormatter.php
+    │   │   │   ├── NullOutputFormatterStyle.php
+    │   │   │   ├── OutputFormatter.php
+    │   │   │   ├── OutputFormatterInterface.php
+    │   │   │   ├── OutputFormatterStyle.php
+    │   │   │   ├── OutputFormatterStyleInterface.php
+    │   │   │   ├── OutputFormatterStyleStack.php
+    │   │   │   └── WrappableOutputFormatterInterface.php
+    │   │   ├── Helper
+    │   │   │   ├── DebugFormatterHelper.php
+    │   │   │   ├── DescriptorHelper.php
+    │   │   │   ├── Dumper.php
+    │   │   │   ├── FormatterHelper.php
+    │   │   │   ├── Helper.php
+    │   │   │   ├── HelperInterface.php
+    │   │   │   ├── HelperSet.php
+    │   │   │   ├── InputAwareHelper.php
+    │   │   │   ├── OutputWrapper.php
+    │   │   │   ├── ProcessHelper.php
+    │   │   │   ├── ProgressBar.php
+    │   │   │   ├── ProgressIndicator.php
+    │   │   │   ├── QuestionHelper.php
+    │   │   │   ├── SymfonyQuestionHelper.php
+    │   │   │   ├── Table.php
+    │   │   │   ├── TableCell.php
+    │   │   │   ├── TableCellStyle.php
+    │   │   │   ├── TableRows.php
+    │   │   │   ├── TableSeparator.php
+    │   │   │   └── TableStyle.php
+    │   │   ├── Input
+    │   │   │   ├── ArgvInput.php
+    │   │   │   ├── ArrayInput.php
+    │   │   │   ├── Input.php
+    │   │   │   ├── InputArgument.php
+    │   │   │   ├── InputAwareInterface.php
+    │   │   │   ├── InputDefinition.php
+    │   │   │   ├── InputInterface.php
+    │   │   │   ├── InputOption.php
+    │   │   │   ├── StreamableInputInterface.php
+    │   │   │   └── StringInput.php
+    │   │   ├── LICENSE
+    │   │   ├── Logger
+    │   │   │   └── ConsoleLogger.php
+    │   │   ├── Messenger
+    │   │   │   ├── RunCommandContext.php
+    │   │   │   ├── RunCommandMessage.php
+    │   │   │   └── RunCommandMessageHandler.php
+    │   │   ├── Output
+    │   │   │   ├── AnsiColorMode.php
+    │   │   │   ├── BufferedOutput.php
+    │   │   │   ├── ConsoleOutput.php
+    │   │   │   ├── ConsoleOutputInterface.php
+    │   │   │   ├── ConsoleSectionOutput.php
+    │   │   │   ├── NullOutput.php
+    │   │   │   ├── Output.php
+    │   │   │   ├── OutputInterface.php
+    │   │   │   ├── StreamOutput.php
+    │   │   │   └── TrimmedBufferOutput.php
+    │   │   ├── Question
+    │   │   │   ├── ChoiceQuestion.php
+    │   │   │   ├── ConfirmationQuestion.php
+    │   │   │   └── Question.php
+    │   │   ├── README.md
+    │   │   ├── Resources
+    │   │   │   ├── bin
+    │   │   │   │   └── hiddeninput.exe
+    │   │   │   ├── completion.bash
+    │   │   │   ├── completion.fish
+    │   │   │   └── completion.zsh
+    │   │   ├── SignalRegistry
+    │   │   │   ├── SignalMap.php
+    │   │   │   └── SignalRegistry.php
+    │   │   ├── SingleCommandApplication.php
+    │   │   ├── Style
+    │   │   │   ├── OutputStyle.php
+    │   │   │   ├── StyleInterface.php
+    │   │   │   └── SymfonyStyle.php
+    │   │   ├── Terminal.php
+    │   │   ├── Tester
+    │   │   │   ├── ApplicationTester.php
+    │   │   │   ├── CommandCompletionTester.php
+    │   │   │   ├── CommandTester.php
+    │   │   │   ├── Constraint
+    │   │   │   │   └── CommandIsSuccessful.php
+    │   │   │   └── TesterTrait.php
+    │   │   └── composer.json
+    │   ├── dependency-injection
+    │   │   ├── Alias.php
+    │   │   ├── Argument
+    │   │   │   ├── AbstractArgument.php
+    │   │   │   ├── ArgumentInterface.php
+    │   │   │   ├── BoundArgument.php
+    │   │   │   ├── IteratorArgument.php
+    │   │   │   ├── LazyClosure.php
+    │   │   │   ├── RewindableGenerator.php
+    │   │   │   ├── ServiceClosureArgument.php
+    │   │   │   ├── ServiceLocator.php
+    │   │   │   ├── ServiceLocatorArgument.php
+    │   │   │   └── TaggedIteratorArgument.php
+    │   │   ├── Attribute
+    │   │   │   ├── AsAlias.php
+    │   │   │   ├── AsDecorator.php
+    │   │   │   ├── AsTaggedItem.php
+    │   │   │   ├── Autoconfigure.php
+    │   │   │   ├── AutoconfigureTag.php
+    │   │   │   ├── Autowire.php
+    │   │   │   ├── AutowireCallable.php
+    │   │   │   ├── AutowireDecorated.php
+    │   │   │   ├── AutowireInline.php
+    │   │   │   ├── AutowireIterator.php
+    │   │   │   ├── AutowireLocator.php
+    │   │   │   ├── AutowireMethodOf.php
+    │   │   │   ├── AutowireServiceClosure.php
+    │   │   │   ├── Exclude.php
+    │   │   │   ├── Lazy.php
+    │   │   │   ├── TaggedIterator.php
+    │   │   │   ├── TaggedLocator.php
+    │   │   │   ├── Target.php
+    │   │   │   └── When.php
+    │   │   ├── CHANGELOG.md
+    │   │   ├── ChildDefinition.php
+    │   │   ├── Compiler
+    │   │   │   ├── AbstractRecursivePass.php
+    │   │   │   ├── AliasDeprecatedPublicServicesPass.php
+    │   │   │   ├── AnalyzeServiceReferencesPass.php
+    │   │   │   ├── AttributeAutoconfigurationPass.php
+    │   │   │   ├── AutoAliasServicePass.php
+    │   │   │   ├── AutowireAsDecoratorPass.php
+    │   │   │   ├── AutowirePass.php
+    │   │   │   ├── AutowireRequiredMethodsPass.php
+    │   │   │   ├── AutowireRequiredPropertiesPass.php
+    │   │   │   ├── CheckAliasValidityPass.php
+    │   │   │   ├── CheckArgumentsValidityPass.php
+    │   │   │   ├── CheckCircularReferencesPass.php
+    │   │   │   ├── CheckDefinitionValidityPass.php
+    │   │   │   ├── CheckExceptionOnInvalidReferenceBehaviorPass.php
+    │   │   │   ├── CheckReferenceValidityPass.php
+    │   │   │   ├── CheckTypeDeclarationsPass.php
+    │   │   │   ├── Compiler.php
+    │   │   │   ├── CompilerPassInterface.php
+    │   │   │   ├── DecoratorServicePass.php
+    │   │   │   ├── DefinitionErrorExceptionPass.php
+    │   │   │   ├── ExtensionCompilerPass.php
+    │   │   │   ├── InlineServiceDefinitionsPass.php
+    │   │   │   ├── MergeExtensionConfigurationPass.php
+    │   │   │   ├── PassConfig.php
+    │   │   │   ├── PriorityTaggedServiceTrait.php
+    │   │   │   ├── RegisterAutoconfigureAttributesPass.php
+    │   │   │   ├── RegisterEnvVarProcessorsPass.php
+    │   │   │   ├── RegisterReverseContainerPass.php
+    │   │   │   ├── RegisterServiceSubscribersPass.php
+    │   │   │   ├── RemoveAbstractDefinitionsPass.php
+    │   │   │   ├── RemoveBuildParametersPass.php
+    │   │   │   ├── RemovePrivateAliasesPass.php
+    │   │   │   ├── RemoveUnusedDefinitionsPass.php
+    │   │   │   ├── ReplaceAliasByActualDefinitionPass.php
+    │   │   │   ├── ResolveAutowireInlineAttributesPass.php
+    │   │   │   ├── ResolveBindingsPass.php
+    │   │   │   ├── ResolveChildDefinitionsPass.php
+    │   │   │   ├── ResolveClassPass.php
+    │   │   │   ├── ResolveDecoratorStackPass.php
+    │   │   │   ├── ResolveEnvPlaceholdersPass.php
+    │   │   │   ├── ResolveFactoryClassPass.php
+    │   │   │   ├── ResolveHotPathPass.php
+    │   │   │   ├── ResolveInstanceofConditionalsPass.php
+    │   │   │   ├── ResolveInvalidReferencesPass.php
+    │   │   │   ├── ResolveNamedArgumentsPass.php
+    │   │   │   ├── ResolveNoPreloadPass.php
+    │   │   │   ├── ResolveParameterPlaceHoldersPass.php
+    │   │   │   ├── ResolveReferencesToAliasesPass.php
+    │   │   │   ├── ResolveServiceSubscribersPass.php
+    │   │   │   ├── ResolveTaggedIteratorArgumentPass.php
+    │   │   │   ├── ServiceLocatorTagPass.php
+    │   │   │   ├── ServiceReferenceGraph.php
+    │   │   │   ├── ServiceReferenceGraphEdge.php
+    │   │   │   ├── ServiceReferenceGraphNode.php
+    │   │   │   └── ValidateEnvPlaceholdersPass.php
+    │   │   ├── Config
+    │   │   │   ├── ContainerParametersResource.php
+    │   │   │   └── ContainerParametersResourceChecker.php
+    │   │   ├── Container.php
+    │   │   ├── ContainerBuilder.php
+    │   │   ├── ContainerInterface.php
+    │   │   ├── Definition.php
+    │   │   ├── Dumper
+    │   │   │   ├── Dumper.php
+    │   │   │   ├── DumperInterface.php
+    │   │   │   ├── GraphvizDumper.php
+    │   │   │   ├── PhpDumper.php
+    │   │   │   ├── Preloader.php
+    │   │   │   ├── XmlDumper.php
+    │   │   │   └── YamlDumper.php
+    │   │   ├── EnvVarLoaderInterface.php
+    │   │   ├── EnvVarProcessor.php
+    │   │   ├── EnvVarProcessorInterface.php
+    │   │   ├── Exception
+    │   │   │   ├── AutoconfigureFailedException.php
+    │   │   │   ├── AutowiringFailedException.php
+    │   │   │   ├── BadMethodCallException.php
+    │   │   │   ├── EnvNotFoundException.php
+    │   │   │   ├── EnvParameterException.php
+    │   │   │   ├── ExceptionInterface.php
+    │   │   │   ├── InvalidArgumentException.php
+    │   │   │   ├── InvalidParameterTypeException.php
+    │   │   │   ├── LogicException.php
+    │   │   │   ├── OutOfBoundsException.php
+    │   │   │   ├── ParameterCircularReferenceException.php
+    │   │   │   ├── ParameterNotFoundException.php
+    │   │   │   ├── RuntimeException.php
+    │   │   │   ├── ServiceCircularReferenceException.php
+    │   │   │   └── ServiceNotFoundException.php
+    │   │   ├── ExpressionLanguage.php
+    │   │   ├── ExpressionLanguageProvider.php
+    │   │   ├── Extension
+    │   │   │   ├── AbstractExtension.php
+    │   │   │   ├── ConfigurableExtensionInterface.php
+    │   │   │   ├── ConfigurationExtensionInterface.php
+    │   │   │   ├── Extension.php
+    │   │   │   ├── ExtensionInterface.php
+    │   │   │   ├── ExtensionTrait.php
+    │   │   │   └── PrependExtensionInterface.php
+    │   │   ├── LICENSE
+    │   │   ├── LazyProxy
+    │   │   │   ├── Instantiator
+    │   │   │   │   ├── InstantiatorInterface.php
+    │   │   │   │   ├── LazyServiceInstantiator.php
+    │   │   │   │   └── RealServiceInstantiator.php
+    │   │   │   └── PhpDumper
+    │   │   │       ├── DumperInterface.php
+    │   │   │       ├── LazyServiceDumper.php
+    │   │   │       └── NullDumper.php
+    │   │   ├── Loader
+    │   │   │   ├── ClosureLoader.php
+    │   │   │   ├── Configurator
+    │   │   │   │   ├── AbstractConfigurator.php
+    │   │   │   │   ├── AbstractServiceConfigurator.php
+    │   │   │   │   ├── AliasConfigurator.php
+    │   │   │   │   ├── ClosureReferenceConfigurator.php
+    │   │   │   │   ├── ContainerConfigurator.php
+    │   │   │   │   ├── DefaultsConfigurator.php
+    │   │   │   │   ├── EnvConfigurator.php
+    │   │   │   │   ├── FromCallableConfigurator.php
+    │   │   │   │   ├── InlineServiceConfigurator.php
+    │   │   │   │   ├── InstanceofConfigurator.php
+    │   │   │   │   ├── ParametersConfigurator.php
+    │   │   │   │   ├── PrototypeConfigurator.php
+    │   │   │   │   ├── ReferenceConfigurator.php
+    │   │   │   │   ├── ServiceConfigurator.php
+    │   │   │   │   ├── ServicesConfigurator.php
+    │   │   │   │   └── Traits
+    │   │   │   │       ├── AbstractTrait.php
+    │   │   │   │       ├── ArgumentTrait.php
+    │   │   │   │       ├── AutoconfigureTrait.php
+    │   │   │   │       ├── AutowireTrait.php
+    │   │   │   │       ├── BindTrait.php
+    │   │   │   │       ├── CallTrait.php
+    │   │   │   │       ├── ClassTrait.php
+    │   │   │   │       ├── ConfiguratorTrait.php
+    │   │   │   │       ├── ConstructorTrait.php
+    │   │   │   │       ├── DecorateTrait.php
+    │   │   │   │       ├── DeprecateTrait.php
+    │   │   │   │       ├── FactoryTrait.php
+    │   │   │   │       ├── FileTrait.php
+    │   │   │   │       ├── FromCallableTrait.php
+    │   │   │   │       ├── LazyTrait.php
+    │   │   │   │       ├── ParentTrait.php
+    │   │   │   │       ├── PropertyTrait.php
+    │   │   │   │       ├── PublicTrait.php
+    │   │   │   │       ├── ShareTrait.php
+    │   │   │   │       ├── SyntheticTrait.php
+    │   │   │   │       └── TagTrait.php
+    │   │   │   ├── DirectoryLoader.php
+    │   │   │   ├── FileLoader.php
+    │   │   │   ├── GlobFileLoader.php
+    │   │   │   ├── IniFileLoader.php
+    │   │   │   ├── PhpFileLoader.php
+    │   │   │   ├── UndefinedExtensionHandler.php
+    │   │   │   ├── XmlFileLoader.php
+    │   │   │   ├── YamlFileLoader.php
+    │   │   │   └── schema
+    │   │   │       └── dic
+    │   │   │           └── services
+    │   │   │               └── services-1.0.xsd
+    │   │   ├── Parameter.php
+    │   │   ├── ParameterBag
+    │   │   │   ├── ContainerBag.php
+    │   │   │   ├── ContainerBagInterface.php
+    │   │   │   ├── EnvPlaceholderParameterBag.php
+    │   │   │   ├── FrozenParameterBag.php
+    │   │   │   ├── ParameterBag.php
+    │   │   │   └── ParameterBagInterface.php
+    │   │   ├── README.md
+    │   │   ├── Reference.php
+    │   │   ├── ReverseContainer.php
+    │   │   ├── ServiceLocator.php
+    │   │   ├── StaticEnvVarLoader.php
+    │   │   ├── TaggedContainerInterface.php
+    │   │   ├── TypedReference.php
+    │   │   ├── Variable.php
+    │   │   └── composer.json
+    │   ├── deprecation-contracts
+    │   │   ├── CHANGELOG.md
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   └── function.php
+    │   ├── filesystem
+    │   │   ├── CHANGELOG.md
+    │   │   ├── Exception
+    │   │   │   ├── ExceptionInterface.php
+    │   │   │   ├── FileNotFoundException.php
+    │   │   │   ├── IOException.php
+    │   │   │   ├── IOExceptionInterface.php
+    │   │   │   ├── InvalidArgumentException.php
+    │   │   │   └── RuntimeException.php
+    │   │   ├── Filesystem.php
+    │   │   ├── LICENSE
+    │   │   ├── Path.php
+    │   │   ├── README.md
+    │   │   └── composer.json
+    │   ├── finder
+    │   │   ├── CHANGELOG.md
+    │   │   ├── Comparator
+    │   │   │   ├── Comparator.php
+    │   │   │   ├── DateComparator.php
+    │   │   │   └── NumberComparator.php
+    │   │   ├── Exception
+    │   │   │   ├── AccessDeniedException.php
+    │   │   │   └── DirectoryNotFoundException.php
+    │   │   ├── Finder.php
+    │   │   ├── Gitignore.php
+    │   │   ├── Glob.php
+    │   │   ├── Iterator
+    │   │   │   ├── CustomFilterIterator.php
+    │   │   │   ├── DateRangeFilterIterator.php
+    │   │   │   ├── DepthRangeFilterIterator.php
+    │   │   │   ├── ExcludeDirectoryFilterIterator.php
+    │   │   │   ├── FileTypeFilterIterator.php
+    │   │   │   ├── FilecontentFilterIterator.php
+    │   │   │   ├── FilenameFilterIterator.php
+    │   │   │   ├── LazyIterator.php
+    │   │   │   ├── MultiplePcreFilterIterator.php
+    │   │   │   ├── PathFilterIterator.php
+    │   │   │   ├── RecursiveDirectoryIterator.php
+    │   │   │   ├── SizeRangeFilterIterator.php
+    │   │   │   ├── SortableIterator.php
+    │   │   │   └── VcsIgnoredFilterIterator.php
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── SplFileInfo.php
+    │   │   └── composer.json
+    │   ├── polyfill-ctype
+    │   │   ├── Ctype.php
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── bootstrap.php
+    │   │   ├── bootstrap80.php
+    │   │   └── composer.json
+    │   ├── polyfill-intl-grapheme
+    │   │   ├── Grapheme.php
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── bootstrap.php
+    │   │   ├── bootstrap80.php
+    │   │   └── composer.json
+    │   ├── polyfill-intl-normalizer
+    │   │   ├── LICENSE
+    │   │   ├── Normalizer.php
+    │   │   ├── README.md
+    │   │   ├── Resources
+    │   │   │   ├── stubs
+    │   │   │   │   └── Normalizer.php
+    │   │   │   └── unidata
+    │   │   │       ├── canonicalComposition.php
+    │   │   │       ├── canonicalDecomposition.php
+    │   │   │       ├── combiningClass.php
+    │   │   │       └── compatibilityDecomposition.php
+    │   │   ├── bootstrap.php
+    │   │   ├── bootstrap80.php
+    │   │   └── composer.json
+    │   ├── polyfill-mbstring
+    │   │   ├── LICENSE
+    │   │   ├── Mbstring.php
+    │   │   ├── README.md
+    │   │   ├── Resources
+    │   │   │   └── unidata
+    │   │   │       ├── caseFolding.php
+    │   │   │       ├── lowerCase.php
+    │   │   │       ├── titleCaseRegexp.php
+    │   │   │       └── upperCase.php
+    │   │   ├── bootstrap.php
+    │   │   ├── bootstrap80.php
+    │   │   └── composer.json
+    │   ├── polyfill-php80
+    │   │   ├── LICENSE
+    │   │   ├── Php80.php
+    │   │   ├── PhpToken.php
+    │   │   ├── README.md
+    │   │   ├── Resources
+    │   │   │   └── stubs
+    │   │   │       ├── Attribute.php
+    │   │   │       ├── PhpToken.php
+    │   │   │       ├── Stringable.php
+    │   │   │       ├── UnhandledMatchError.php
+    │   │   │       └── ValueError.php
+    │   │   ├── bootstrap.php
+    │   │   └── composer.json
+    │   ├── polyfill-php81
+    │   │   ├── LICENSE
+    │   │   ├── Php81.php
+    │   │   ├── README.md
+    │   │   ├── Resources
+    │   │   │   └── stubs
+    │   │   │       ├── CURLStringFile.php
+    │   │   │       └── ReturnTypeWillChange.php
+    │   │   ├── bootstrap.php
+    │   │   └── composer.json
+    │   ├── property-access
+    │   │   ├── CHANGELOG.md
+    │   │   ├── Exception
+    │   │   │   ├── AccessException.php
+    │   │   │   ├── ExceptionInterface.php
+    │   │   │   ├── InvalidArgumentException.php
+    │   │   │   ├── InvalidPropertyPathException.php
+    │   │   │   ├── NoSuchIndexException.php
+    │   │   │   ├── NoSuchPropertyException.php
+    │   │   │   ├── OutOfBoundsException.php
+    │   │   │   ├── RuntimeException.php
+    │   │   │   ├── UnexpectedTypeException.php
+    │   │   │   └── UninitializedPropertyException.php
+    │   │   ├── LICENSE
+    │   │   ├── PropertyAccess.php
+    │   │   ├── PropertyAccessor.php
+    │   │   ├── PropertyAccessorBuilder.php
+    │   │   ├── PropertyAccessorInterface.php
+    │   │   ├── PropertyPath.php
+    │   │   ├── PropertyPathBuilder.php
+    │   │   ├── PropertyPathInterface.php
+    │   │   ├── PropertyPathIterator.php
+    │   │   ├── PropertyPathIteratorInterface.php
+    │   │   ├── README.md
+    │   │   └── composer.json
+    │   ├── property-info
+    │   │   ├── CHANGELOG.md
+    │   │   ├── DependencyInjection
+    │   │   │   ├── PropertyInfoConstructorPass.php
+    │   │   │   └── PropertyInfoPass.php
+    │   │   ├── Extractor
+    │   │   │   ├── ConstructorArgumentTypeExtractorInterface.php
+    │   │   │   ├── ConstructorExtractor.php
+    │   │   │   ├── PhpDocExtractor.php
+    │   │   │   ├── PhpStanExtractor.php
+    │   │   │   ├── ReflectionExtractor.php
+    │   │   │   └── SerializerExtractor.php
+    │   │   ├── LICENSE
+    │   │   ├── PhpStan
+    │   │   │   ├── NameScope.php
+    │   │   │   └── NameScopeFactory.php
+    │   │   ├── PropertyAccessExtractorInterface.php
+    │   │   ├── PropertyDescriptionExtractorInterface.php
+    │   │   ├── PropertyDocBlockExtractorInterface.php
+    │   │   ├── PropertyInfoCacheExtractor.php
+    │   │   ├── PropertyInfoExtractor.php
+    │   │   ├── PropertyInfoExtractorInterface.php
+    │   │   ├── PropertyInitializableExtractorInterface.php
+    │   │   ├── PropertyListExtractorInterface.php
+    │   │   ├── PropertyReadInfo.php
+    │   │   ├── PropertyReadInfoExtractorInterface.php
+    │   │   ├── PropertyTypeExtractorInterface.php
+    │   │   ├── PropertyWriteInfo.php
+    │   │   ├── PropertyWriteInfoExtractorInterface.php
+    │   │   ├── README.md
+    │   │   ├── Type.php
+    │   │   ├── Util
+    │   │   │   ├── PhpDocTypeHelper.php
+    │   │   │   └── PhpStanTypeHelper.php
+    │   │   └── composer.json
+    │   ├── serializer
+    │   │   ├── Annotation
+    │   │   │   ├── Context.php
+    │   │   │   ├── DiscriminatorMap.php
+    │   │   │   ├── Groups.php
+    │   │   │   ├── Ignore.php
+    │   │   │   ├── MaxDepth.php
+    │   │   │   ├── SerializedName.php
+    │   │   │   └── SerializedPath.php
+    │   │   ├── Attribute
+    │   │   │   ├── Context.php
+    │   │   │   ├── DiscriminatorMap.php
+    │   │   │   ├── Groups.php
+    │   │   │   ├── Ignore.php
+    │   │   │   ├── MaxDepth.php
+    │   │   │   ├── SerializedName.php
+    │   │   │   └── SerializedPath.php
+    │   │   ├── CHANGELOG.md
+    │   │   ├── CacheWarmer
+    │   │   │   └── CompiledClassMetadataCacheWarmer.php
+    │   │   ├── Command
+    │   │   │   └── DebugCommand.php
+    │   │   ├── Context
+    │   │   │   ├── ContextBuilderInterface.php
+    │   │   │   ├── ContextBuilderTrait.php
+    │   │   │   ├── Encoder
+    │   │   │   │   ├── CsvEncoderContextBuilder.php
+    │   │   │   │   ├── JsonEncoderContextBuilder.php
+    │   │   │   │   ├── XmlEncoderContextBuilder.php
+    │   │   │   │   └── YamlEncoderContextBuilder.php
+    │   │   │   ├── Normalizer
+    │   │   │   │   ├── AbstractNormalizerContextBuilder.php
+    │   │   │   │   ├── AbstractObjectNormalizerContextBuilder.php
+    │   │   │   │   ├── BackedEnumNormalizerContextBuilder.php
+    │   │   │   │   ├── ConstraintViolationListNormalizerContextBuilder.php
+    │   │   │   │   ├── DateIntervalNormalizerContextBuilder.php
+    │   │   │   │   ├── DateTimeNormalizerContextBuilder.php
+    │   │   │   │   ├── FormErrorNormalizerContextBuilder.php
+    │   │   │   │   ├── GetSetMethodNormalizerContextBuilder.php
+    │   │   │   │   ├── JsonSerializableNormalizerContextBuilder.php
+    │   │   │   │   ├── ObjectNormalizerContextBuilder.php
+    │   │   │   │   ├── ProblemNormalizerContextBuilder.php
+    │   │   │   │   ├── PropertyNormalizerContextBuilder.php
+    │   │   │   │   ├── UidNormalizerContextBuilder.php
+    │   │   │   │   └── UnwrappingDenormalizerContextBuilder.php
+    │   │   │   └── SerializerContextBuilder.php
+    │   │   ├── DataCollector
+    │   │   │   └── SerializerDataCollector.php
+    │   │   ├── Debug
+    │   │   │   ├── TraceableEncoder.php
+    │   │   │   ├── TraceableNormalizer.php
+    │   │   │   └── TraceableSerializer.php
+    │   │   ├── DependencyInjection
+    │   │   │   └── SerializerPass.php
+    │   │   ├── Encoder
+    │   │   │   ├── ChainDecoder.php
+    │   │   │   ├── ChainEncoder.php
+    │   │   │   ├── ContextAwareDecoderInterface.php
+    │   │   │   ├── ContextAwareEncoderInterface.php
+    │   │   │   ├── CsvEncoder.php
+    │   │   │   ├── DecoderInterface.php
+    │   │   │   ├── EncoderInterface.php
+    │   │   │   ├── JsonDecode.php
+    │   │   │   ├── JsonEncode.php
+    │   │   │   ├── JsonEncoder.php
+    │   │   │   ├── NormalizationAwareInterface.php
+    │   │   │   ├── XmlEncoder.php
+    │   │   │   └── YamlEncoder.php
+    │   │   ├── Exception
+    │   │   │   ├── BadMethodCallException.php
+    │   │   │   ├── CircularReferenceException.php
+    │   │   │   ├── ExceptionInterface.php
+    │   │   │   ├── ExtraAttributesException.php
+    │   │   │   ├── InvalidArgumentException.php
+    │   │   │   ├── LogicException.php
+    │   │   │   ├── MappingException.php
+    │   │   │   ├── MissingConstructorArgumentsException.php
+    │   │   │   ├── NotEncodableValueException.php
+    │   │   │   ├── NotNormalizableValueException.php
+    │   │   │   ├── PartialDenormalizationException.php
+    │   │   │   ├── RuntimeException.php
+    │   │   │   ├── UnexpectedValueException.php
+    │   │   │   ├── UnsupportedException.php
+    │   │   │   └── UnsupportedFormatException.php
+    │   │   ├── Extractor
+    │   │   │   ├── ObjectPropertyListExtractor.php
+    │   │   │   └── ObjectPropertyListExtractorInterface.php
+    │   │   ├── LICENSE
+    │   │   ├── Mapping
+    │   │   │   ├── AttributeMetadata.php
+    │   │   │   ├── AttributeMetadataInterface.php
+    │   │   │   ├── ClassDiscriminatorFromClassMetadata.php
+    │   │   │   ├── ClassDiscriminatorMapping.php
+    │   │   │   ├── ClassDiscriminatorResolverInterface.php
+    │   │   │   ├── ClassMetadata.php
+    │   │   │   ├── ClassMetadataInterface.php
+    │   │   │   ├── Factory
+    │   │   │   │   ├── CacheClassMetadataFactory.php
+    │   │   │   │   ├── ClassMetadataFactory.php
+    │   │   │   │   ├── ClassMetadataFactoryCompiler.php
+    │   │   │   │   ├── ClassMetadataFactoryInterface.php
+    │   │   │   │   ├── ClassResolverTrait.php
+    │   │   │   │   └── CompiledClassMetadataFactory.php
+    │   │   │   └── Loader
+    │   │   │       ├── AnnotationLoader.php
+    │   │   │       ├── AttributeLoader.php
+    │   │   │       ├── FileLoader.php
+    │   │   │       ├── LoaderChain.php
+    │   │   │       ├── LoaderInterface.php
+    │   │   │       ├── XmlFileLoader.php
+    │   │   │       ├── YamlFileLoader.php
+    │   │   │       └── schema
+    │   │   │           └── dic
+    │   │   │               └── serializer-mapping
+    │   │   │                   └── serializer-mapping-1.0.xsd
+    │   │   ├── NameConverter
+    │   │   │   ├── AdvancedNameConverterInterface.php
+    │   │   │   ├── CamelCaseToSnakeCaseNameConverter.php
+    │   │   │   ├── MetadataAwareNameConverter.php
+    │   │   │   └── NameConverterInterface.php
+    │   │   ├── Normalizer
+    │   │   │   ├── AbstractNormalizer.php
+    │   │   │   ├── AbstractObjectNormalizer.php
+    │   │   │   ├── ArrayDenormalizer.php
+    │   │   │   ├── BackedEnumNormalizer.php
+    │   │   │   ├── CacheableSupportsMethodInterface.php
+    │   │   │   ├── ConstraintViolationListNormalizer.php
+    │   │   │   ├── ContextAwareDenormalizerInterface.php
+    │   │   │   ├── ContextAwareNormalizerInterface.php
+    │   │   │   ├── CustomNormalizer.php
+    │   │   │   ├── DataUriNormalizer.php
+    │   │   │   ├── DateIntervalNormalizer.php
+    │   │   │   ├── DateTimeNormalizer.php
+    │   │   │   ├── DateTimeZoneNormalizer.php
+    │   │   │   ├── DenormalizableInterface.php
+    │   │   │   ├── DenormalizerAwareInterface.php
+    │   │   │   ├── DenormalizerAwareTrait.php
+    │   │   │   ├── DenormalizerInterface.php
+    │   │   │   ├── FormErrorNormalizer.php
+    │   │   │   ├── GetSetMethodNormalizer.php
+    │   │   │   ├── JsonSerializableNormalizer.php
+    │   │   │   ├── MimeMessageNormalizer.php
+    │   │   │   ├── NormalizableInterface.php
+    │   │   │   ├── NormalizerAwareInterface.php
+    │   │   │   ├── NormalizerAwareTrait.php
+    │   │   │   ├── NormalizerInterface.php
+    │   │   │   ├── ObjectNormalizer.php
+    │   │   │   ├── ObjectToPopulateTrait.php
+    │   │   │   ├── ProblemNormalizer.php
+    │   │   │   ├── PropertyNormalizer.php
+    │   │   │   ├── TranslatableNormalizer.php
+    │   │   │   ├── UidNormalizer.php
+    │   │   │   └── UnwrappingDenormalizer.php
+    │   │   ├── README.md
+    │   │   ├── Serializer.php
+    │   │   ├── SerializerAwareInterface.php
+    │   │   ├── SerializerAwareTrait.php
+    │   │   ├── SerializerInterface.php
+    │   │   └── composer.json
+    │   ├── service-contracts
+    │   │   ├── Attribute
+    │   │   │   ├── Required.php
+    │   │   │   └── SubscribedService.php
+    │   │   ├── CHANGELOG.md
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── ResetInterface.php
+    │   │   ├── ServiceCollectionInterface.php
+    │   │   ├── ServiceLocatorTrait.php
+    │   │   ├── ServiceMethodsSubscriberTrait.php
+    │   │   ├── ServiceProviderInterface.php
+    │   │   ├── ServiceSubscriberInterface.php
+    │   │   ├── ServiceSubscriberTrait.php
+    │   │   ├── Test
+    │   │   │   ├── ServiceLocatorTest.php
+    │   │   │   └── ServiceLocatorTestCase.php
+    │   │   └── composer.json
+    │   ├── string
+    │   │   ├── AbstractString.php
+    │   │   ├── AbstractUnicodeString.php
+    │   │   ├── ByteString.php
+    │   │   ├── CHANGELOG.md
+    │   │   ├── CodePointString.php
+    │   │   ├── Exception
+    │   │   │   ├── ExceptionInterface.php
+    │   │   │   ├── InvalidArgumentException.php
+    │   │   │   └── RuntimeException.php
+    │   │   ├── Inflector
+    │   │   │   ├── EnglishInflector.php
+    │   │   │   ├── FrenchInflector.php
+    │   │   │   └── InflectorInterface.php
+    │   │   ├── LICENSE
+    │   │   ├── LazyString.php
+    │   │   ├── README.md
+    │   │   ├── Resources
+    │   │   │   ├── bin
+    │   │   │   ├── data
+    │   │   │   │   ├── wcswidth_table_wide.php
+    │   │   │   │   └── wcswidth_table_zero.php
+    │   │   │   └── functions.php
+    │   │   ├── Slugger
+    │   │   │   ├── AsciiSlugger.php
+    │   │   │   └── SluggerInterface.php
+    │   │   ├── UnicodeString.php
+    │   │   └── composer.json
+    │   ├── translation
+    │   │   ├── CHANGELOG.md
+    │   │   ├── Catalogue
+    │   │   │   ├── AbstractOperation.php
+    │   │   │   ├── MergeOperation.php
+    │   │   │   ├── OperationInterface.php
+    │   │   │   └── TargetOperation.php
+    │   │   ├── CatalogueMetadataAwareInterface.php
+    │   │   ├── Command
+    │   │   │   ├── TranslationPullCommand.php
+    │   │   │   ├── TranslationPushCommand.php
+    │   │   │   ├── TranslationTrait.php
+    │   │   │   └── XliffLintCommand.php
+    │   │   ├── DataCollector
+    │   │   │   └── TranslationDataCollector.php
+    │   │   ├── DataCollectorTranslator.php
+    │   │   ├── DependencyInjection
+    │   │   │   ├── DataCollectorTranslatorPass.php
+    │   │   │   ├── LoggingTranslatorPass.php
+    │   │   │   ├── TranslationDumperPass.php
+    │   │   │   ├── TranslationExtractorPass.php
+    │   │   │   ├── TranslatorPass.php
+    │   │   │   └── TranslatorPathsPass.php
+    │   │   ├── Dumper
+    │   │   │   ├── CsvFileDumper.php
+    │   │   │   ├── DumperInterface.php
+    │   │   │   ├── FileDumper.php
+    │   │   │   ├── IcuResFileDumper.php
+    │   │   │   ├── IniFileDumper.php
+    │   │   │   ├── JsonFileDumper.php
+    │   │   │   ├── MoFileDumper.php
+    │   │   │   ├── PhpFileDumper.php
+    │   │   │   ├── PoFileDumper.php
+    │   │   │   ├── QtFileDumper.php
+    │   │   │   ├── XliffFileDumper.php
+    │   │   │   └── YamlFileDumper.php
+    │   │   ├── Exception
+    │   │   │   ├── ExceptionInterface.php
+    │   │   │   ├── IncompleteDsnException.php
+    │   │   │   ├── InvalidArgumentException.php
+    │   │   │   ├── InvalidResourceException.php
+    │   │   │   ├── LogicException.php
+    │   │   │   ├── MissingRequiredOptionException.php
+    │   │   │   ├── NotFoundResourceException.php
+    │   │   │   ├── ProviderException.php
+    │   │   │   ├── ProviderExceptionInterface.php
+    │   │   │   ├── RuntimeException.php
+    │   │   │   └── UnsupportedSchemeException.php
+    │   │   ├── Extractor
+    │   │   │   ├── AbstractFileExtractor.php
+    │   │   │   ├── ChainExtractor.php
+    │   │   │   ├── ExtractorInterface.php
+    │   │   │   ├── PhpAstExtractor.php
+    │   │   │   ├── PhpExtractor.php
+    │   │   │   ├── PhpStringTokenParser.php
+    │   │   │   └── Visitor
+    │   │   │       ├── AbstractVisitor.php
+    │   │   │       ├── ConstraintVisitor.php
+    │   │   │       ├── TransMethodVisitor.php
+    │   │   │       └── TranslatableMessageVisitor.php
+    │   │   ├── Formatter
+    │   │   │   ├── IntlFormatter.php
+    │   │   │   ├── IntlFormatterInterface.php
+    │   │   │   ├── MessageFormatter.php
+    │   │   │   └── MessageFormatterInterface.php
+    │   │   ├── IdentityTranslator.php
+    │   │   ├── LICENSE
+    │   │   ├── Loader
+    │   │   │   ├── ArrayLoader.php
+    │   │   │   ├── CsvFileLoader.php
+    │   │   │   ├── FileLoader.php
+    │   │   │   ├── IcuDatFileLoader.php
+    │   │   │   ├── IcuResFileLoader.php
+    │   │   │   ├── IniFileLoader.php
+    │   │   │   ├── JsonFileLoader.php
+    │   │   │   ├── LoaderInterface.php
+    │   │   │   ├── MoFileLoader.php
+    │   │   │   ├── PhpFileLoader.php
+    │   │   │   ├── PoFileLoader.php
+    │   │   │   ├── QtFileLoader.php
+    │   │   │   ├── XliffFileLoader.php
+    │   │   │   └── YamlFileLoader.php
+    │   │   ├── LocaleSwitcher.php
+    │   │   ├── LoggingTranslator.php
+    │   │   ├── MessageCatalogue.php
+    │   │   ├── MessageCatalogueInterface.php
+    │   │   ├── MetadataAwareInterface.php
+    │   │   ├── Provider
+    │   │   │   ├── AbstractProviderFactory.php
+    │   │   │   ├── Dsn.php
+    │   │   │   ├── FilteringProvider.php
+    │   │   │   ├── NullProvider.php
+    │   │   │   ├── NullProviderFactory.php
+    │   │   │   ├── ProviderFactoryInterface.php
+    │   │   │   ├── ProviderInterface.php
+    │   │   │   ├── TranslationProviderCollection.php
+    │   │   │   └── TranslationProviderCollectionFactory.php
+    │   │   ├── PseudoLocalizationTranslator.php
+    │   │   ├── README.md
+    │   │   ├── Reader
+    │   │   │   ├── TranslationReader.php
+    │   │   │   └── TranslationReaderInterface.php
+    │   │   ├── Resources
+    │   │   │   ├── bin
+    │   │   │   │   └── translation-status.php
+    │   │   │   ├── data
+    │   │   │   │   └── parents.json
+    │   │   │   ├── functions.php
+    │   │   │   └── schemas
+    │   │   │       ├── xliff-core-1.2-transitional.xsd
+    │   │   │       ├── xliff-core-2.0.xsd
+    │   │   │       └── xml.xsd
+    │   │   ├── Test
+    │   │   │   ├── ProviderFactoryTestCase.php
+    │   │   │   └── ProviderTestCase.php
+    │   │   ├── TranslatableMessage.php
+    │   │   ├── Translator.php
+    │   │   ├── TranslatorBag.php
+    │   │   ├── TranslatorBagInterface.php
+    │   │   ├── Util
+    │   │   │   ├── ArrayConverter.php
+    │   │   │   └── XliffUtils.php
+    │   │   ├── Writer
+    │   │   │   ├── TranslationWriter.php
+    │   │   │   └── TranslationWriterInterface.php
+    │   │   └── composer.json
+    │   ├── translation-contracts
+    │   │   ├── CHANGELOG.md
+    │   │   ├── LICENSE
+    │   │   ├── LocaleAwareInterface.php
+    │   │   ├── README.md
+    │   │   ├── Test
+    │   │   │   └── TranslatorTest.php
+    │   │   ├── TranslatableInterface.php
+    │   │   ├── TranslatorInterface.php
+    │   │   ├── TranslatorTrait.php
+    │   │   └── composer.json
+    │   ├── type-info
+    │   │   ├── CHANGELOG.md
+    │   │   ├── Exception
+    │   │   │   ├── ExceptionInterface.php
+    │   │   │   ├── InvalidArgumentException.php
+    │   │   │   ├── LogicException.php
+    │   │   │   ├── RuntimeException.php
+    │   │   │   └── UnsupportedException.php
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── Type
+    │   │   │   ├── BackedEnumType.php
+    │   │   │   ├── BuiltinType.php
+    │   │   │   ├── CollectionType.php
+    │   │   │   ├── CompositeTypeTrait.php
+    │   │   │   ├── EnumType.php
+    │   │   │   ├── GenericType.php
+    │   │   │   ├── IntersectionType.php
+    │   │   │   ├── ObjectType.php
+    │   │   │   ├── TemplateType.php
+    │   │   │   └── UnionType.php
+    │   │   ├── Type.php
+    │   │   ├── TypeContext
+    │   │   │   ├── TypeContext.php
+    │   │   │   └── TypeContextFactory.php
+    │   │   ├── TypeFactoryTrait.php
+    │   │   ├── TypeIdentifier.php
+    │   │   ├── TypeResolver
+    │   │   │   ├── ReflectionParameterTypeResolver.php
+    │   │   │   ├── ReflectionPropertyTypeResolver.php
+    │   │   │   ├── ReflectionReturnTypeResolver.php
+    │   │   │   ├── ReflectionTypeResolver.php
+    │   │   │   ├── StringTypeResolver.php
+    │   │   │   ├── TypeResolver.php
+    │   │   │   └── TypeResolverInterface.php
+    │   │   └── composer.json
+    │   └── var-exporter
+    │       ├── CHANGELOG.md
+    │       ├── Exception
+    │       │   ├── ClassNotFoundException.php
+    │       │   ├── ExceptionInterface.php
+    │       │   ├── LogicException.php
+    │       │   └── NotInstantiableTypeException.php
+    │       ├── Hydrator.php
+    │       ├── Instantiator.php
+    │       ├── Internal
+    │       │   ├── Exporter.php
+    │       │   ├── Hydrator.php
+    │       │   ├── LazyObjectRegistry.php
+    │       │   ├── LazyObjectState.php
+    │       │   ├── LazyObjectTrait.php
+    │       │   ├── Reference.php
+    │       │   ├── Registry.php
+    │       │   └── Values.php
+    │       ├── LICENSE
+    │       ├── LazyGhostTrait.php
+    │       ├── LazyObjectInterface.php
+    │       ├── LazyProxyTrait.php
+    │       ├── ProxyHelper.php
+    │       ├── README.md
+    │       ├── VarExporter.php
+    │       └── composer.json
+    ├── twig
+    │   └── twig
+    │       ├── CHANGELOG
+    │       ├── LICENSE
+    │       ├── README.rst
+    │       ├── composer.json
+    │       └── src
+    │           ├── AbstractTwigCallable.php
+    │           ├── Attribute
+    │           │   ├── FirstClassTwigCallableReady.php
+    │           │   └── YieldReady.php
+    │           ├── Cache
+    │           │   ├── CacheInterface.php
+    │           │   ├── ChainCache.php
+    │           │   ├── FilesystemCache.php
+    │           │   ├── NullCache.php
+    │           │   └── ReadOnlyFilesystemCache.php
+    │           ├── Compiler.php
+    │           ├── Environment.php
+    │           ├── Error
+    │           │   ├── Error.php
+    │           │   ├── LoaderError.php
+    │           │   ├── RuntimeError.php
+    │           │   └── SyntaxError.php
+    │           ├── ExpressionParser.php
+    │           ├── Extension
+    │           │   ├── AbstractExtension.php
+    │           │   ├── CoreExtension.php
+    │           │   ├── DebugExtension.php
+    │           │   ├── EscaperExtension.php
+    │           │   ├── ExtensionInterface.php
+    │           │   ├── GlobalsInterface.php
+    │           │   ├── OptimizerExtension.php
+    │           │   ├── ProfilerExtension.php
+    │           │   ├── RuntimeExtensionInterface.php
+    │           │   ├── SandboxExtension.php
+    │           │   ├── StagingExtension.php
+    │           │   ├── StringLoaderExtension.php
+    │           │   └── YieldNotReadyExtension.php
+    │           ├── ExtensionSet.php
+    │           ├── FileExtensionEscapingStrategy.php
+    │           ├── Lexer.php
+    │           ├── Loader
+    │           │   ├── ArrayLoader.php
+    │           │   ├── ChainLoader.php
+    │           │   ├── FilesystemLoader.php
+    │           │   └── LoaderInterface.php
+    │           ├── Markup.php
+    │           ├── Node
+    │           │   ├── AutoEscapeNode.php
+    │           │   ├── BlockNode.php
+    │           │   ├── BlockReferenceNode.php
+    │           │   ├── BodyNode.php
+    │           │   ├── CaptureNode.php
+    │           │   ├── CheckSecurityCallNode.php
+    │           │   ├── CheckSecurityNode.php
+    │           │   ├── CheckToStringNode.php
+    │           │   ├── DeprecatedNode.php
+    │           │   ├── DoNode.php
+    │           │   ├── EmbedNode.php
+    │           │   ├── Expression
+    │           │   │   ├── AbstractExpression.php
+    │           │   │   ├── ArrayExpression.php
+    │           │   │   ├── ArrowFunctionExpression.php
+    │           │   │   ├── AssignNameExpression.php
+    │           │   │   ├── Binary
+    │           │   │   │   ├── AbstractBinary.php
+    │           │   │   │   ├── AddBinary.php
+    │           │   │   │   ├── AndBinary.php
+    │           │   │   │   ├── BitwiseAndBinary.php
+    │           │   │   │   ├── BitwiseOrBinary.php
+    │           │   │   │   ├── BitwiseXorBinary.php
+    │           │   │   │   ├── ConcatBinary.php
+    │           │   │   │   ├── DivBinary.php
+    │           │   │   │   ├── EndsWithBinary.php
+    │           │   │   │   ├── EqualBinary.php
+    │           │   │   │   ├── FloorDivBinary.php
+    │           │   │   │   ├── GreaterBinary.php
+    │           │   │   │   ├── GreaterEqualBinary.php
+    │           │   │   │   ├── HasEveryBinary.php
+    │           │   │   │   ├── HasSomeBinary.php
+    │           │   │   │   ├── InBinary.php
+    │           │   │   │   ├── LessBinary.php
+    │           │   │   │   ├── LessEqualBinary.php
+    │           │   │   │   ├── MatchesBinary.php
+    │           │   │   │   ├── ModBinary.php
+    │           │   │   │   ├── MulBinary.php
+    │           │   │   │   ├── NotEqualBinary.php
+    │           │   │   │   ├── NotInBinary.php
+    │           │   │   │   ├── OrBinary.php
+    │           │   │   │   ├── PowerBinary.php
+    │           │   │   │   ├── RangeBinary.php
+    │           │   │   │   ├── SpaceshipBinary.php
+    │           │   │   │   ├── StartsWithBinary.php
+    │           │   │   │   └── SubBinary.php
+    │           │   │   ├── BlockReferenceExpression.php
+    │           │   │   ├── CallExpression.php
+    │           │   │   ├── ConditionalExpression.php
+    │           │   │   ├── ConstantExpression.php
+    │           │   │   ├── Filter
+    │           │   │   │   ├── DefaultFilter.php
+    │           │   │   │   └── RawFilter.php
+    │           │   │   ├── FilterExpression.php
+    │           │   │   ├── FunctionExpression.php
+    │           │   │   ├── FunctionNode
+    │           │   │   │   └── EnumCasesFunction.php
+    │           │   │   ├── GetAttrExpression.php
+    │           │   │   ├── InlinePrint.php
+    │           │   │   ├── MethodCallExpression.php
+    │           │   │   ├── NameExpression.php
+    │           │   │   ├── NullCoalesceExpression.php
+    │           │   │   ├── ParentExpression.php
+    │           │   │   ├── TempNameExpression.php
+    │           │   │   ├── Test
+    │           │   │   │   ├── ConstantTest.php
+    │           │   │   │   ├── DefinedTest.php
+    │           │   │   │   ├── DivisiblebyTest.php
+    │           │   │   │   ├── EvenTest.php
+    │           │   │   │   ├── NullTest.php
+    │           │   │   │   ├── OddTest.php
+    │           │   │   │   └── SameasTest.php
+    │           │   │   ├── TestExpression.php
+    │           │   │   ├── Unary
+    │           │   │   │   ├── AbstractUnary.php
+    │           │   │   │   ├── NegUnary.php
+    │           │   │   │   ├── NotUnary.php
+    │           │   │   │   └── PosUnary.php
+    │           │   │   └── VariadicExpression.php
+    │           │   ├── FlushNode.php
+    │           │   ├── ForLoopNode.php
+    │           │   ├── ForNode.php
+    │           │   ├── IfNode.php
+    │           │   ├── ImportNode.php
+    │           │   ├── IncludeNode.php
+    │           │   ├── MacroNode.php
+    │           │   ├── ModuleNode.php
+    │           │   ├── NameDeprecation.php
+    │           │   ├── Node.php
+    │           │   ├── NodeCaptureInterface.php
+    │           │   ├── NodeOutputInterface.php
+    │           │   ├── PrintNode.php
+    │           │   ├── SandboxNode.php
+    │           │   ├── SetNode.php
+    │           │   ├── TextNode.php
+    │           │   ├── TypesNode.php
+    │           │   └── WithNode.php
+    │           ├── NodeTraverser.php
+    │           ├── NodeVisitor
+    │           │   ├── AbstractNodeVisitor.php
+    │           │   ├── EscaperNodeVisitor.php
+    │           │   ├── MacroAutoImportNodeVisitor.php
+    │           │   ├── NodeVisitorInterface.php
+    │           │   ├── OptimizerNodeVisitor.php
+    │           │   ├── SafeAnalysisNodeVisitor.php
+    │           │   ├── SandboxNodeVisitor.php
+    │           │   └── YieldNotReadyNodeVisitor.php
+    │           ├── Parser.php
+    │           ├── Profiler
+    │           │   ├── Dumper
+    │           │   │   ├── BaseDumper.php
+    │           │   │   ├── BlackfireDumper.php
+    │           │   │   ├── HtmlDumper.php
+    │           │   │   └── TextDumper.php
+    │           │   ├── Node
+    │           │   │   ├── EnterProfileNode.php
+    │           │   │   └── LeaveProfileNode.php
+    │           │   ├── NodeVisitor
+    │           │   │   └── ProfilerNodeVisitor.php
+    │           │   └── Profile.php
+    │           ├── Resources
+    │           │   ├── core.php
+    │           │   ├── debug.php
+    │           │   ├── escaper.php
+    │           │   └── string_loader.php
+    │           ├── Runtime
+    │           │   └── EscaperRuntime.php
+    │           ├── RuntimeLoader
+    │           │   ├── ContainerRuntimeLoader.php
+    │           │   ├── FactoryRuntimeLoader.php
+    │           │   └── RuntimeLoaderInterface.php
+    │           ├── Sandbox
+    │           │   ├── SecurityError.php
+    │           │   ├── SecurityNotAllowedFilterError.php
+    │           │   ├── SecurityNotAllowedFunctionError.php
+    │           │   ├── SecurityNotAllowedMethodError.php
+    │           │   ├── SecurityNotAllowedPropertyError.php
+    │           │   ├── SecurityNotAllowedTagError.php
+    │           │   ├── SecurityPolicy.php
+    │           │   ├── SecurityPolicyInterface.php
+    │           │   └── SourcePolicyInterface.php
+    │           ├── Source.php
+    │           ├── Template.php
+    │           ├── TemplateWrapper.php
+    │           ├── Test
+    │           │   ├── IntegrationTestCase.php
+    │           │   └── NodeTestCase.php
+    │           ├── Token.php
+    │           ├── TokenParser
+    │           │   ├── AbstractTokenParser.php
+    │           │   ├── ApplyTokenParser.php
+    │           │   ├── AutoEscapeTokenParser.php
+    │           │   ├── BlockTokenParser.php
+    │           │   ├── DeprecatedTokenParser.php
+    │           │   ├── DoTokenParser.php
+    │           │   ├── EmbedTokenParser.php
+    │           │   ├── ExtendsTokenParser.php
+    │           │   ├── FlushTokenParser.php
+    │           │   ├── ForTokenParser.php
+    │           │   ├── FromTokenParser.php
+    │           │   ├── IfTokenParser.php
+    │           │   ├── ImportTokenParser.php
+    │           │   ├── IncludeTokenParser.php
+    │           │   ├── MacroTokenParser.php
+    │           │   ├── SandboxTokenParser.php
+    │           │   ├── SetTokenParser.php
+    │           │   ├── TokenParserInterface.php
+    │           │   ├── TypesTokenParser.php
+    │           │   ├── UseTokenParser.php
+    │           │   └── WithTokenParser.php
+    │           ├── TokenStream.php
+    │           ├── TwigCallableInterface.php
+    │           ├── TwigFilter.php
+    │           ├── TwigFunction.php
+    │           ├── TwigTest.php
+    │           └── Util
+    │               ├── CallableArgumentsExtractor.php
+    │               ├── DeprecationCollector.php
+    │               ├── ReflectionCallable.php
+    │               └── TemplateDirIterator.php
+    └── vlucas
+        └── phpdotenv
             ├── LICENSE
-            ├── Php80.php
-            ├── PhpToken.php
-            ├── README.md
-            ├── Resources
-            │   └── stubs
-            │       ├── Attribute.php
-            │       ├── PhpToken.php
-            │       ├── Stringable.php
-            │       ├── UnhandledMatchError.php
-            │       └── ValueError.php
-            ├── bootstrap.php
-            └── composer.json
+            ├── composer.json
+            └── src
+                ├── Dotenv.php
+                ├── Exception
+                │   ├── ExceptionInterface.php
+                │   ├── InvalidEncodingException.php
+                │   ├── InvalidFileException.php
+                │   ├── InvalidPathException.php
+                │   └── ValidationException.php
+                ├── Loader
+                │   ├── Loader.php
+                │   ├── LoaderInterface.php
+                │   └── Resolver.php
+                ├── Parser
+                │   ├── Entry.php
+                │   ├── EntryParser.php
+                │   ├── Lexer.php
+                │   ├── Lines.php
+                │   ├── Parser.php
+                │   ├── ParserInterface.php
+                │   └── Value.php
+                ├── Repository
+                │   ├── Adapter
+                │   │   ├── AdapterInterface.php
+                │   │   ├── ApacheAdapter.php
+                │   │   ├── ArrayAdapter.php
+                │   │   ├── EnvConstAdapter.php
+                │   │   ├── GuardedWriter.php
+                │   │   ├── ImmutableWriter.php
+                │   │   ├── MultiReader.php
+                │   │   ├── MultiWriter.php
+                │   │   ├── PutenvAdapter.php
+                │   │   ├── ReaderInterface.php
+                │   │   ├── ReplacingWriter.php
+                │   │   ├── ServerConstAdapter.php
+                │   │   └── WriterInterface.php
+                │   ├── AdapterRepository.php
+                │   ├── RepositoryBuilder.php
+                │   └── RepositoryInterface.php
+                ├── Store
+                │   ├── File
+                │   │   ├── Paths.php
+                │   │   └── Reader.php
+                │   ├── FileStore.php
+                │   ├── StoreBuilder.php
+                │   ├── StoreInterface.php
+                │   └── StringStore.php
+                ├── Util
+                │   ├── Regex.php
+                │   └── Str.php
+                └── Validator.php
 
-213 directories, 1043 files
+701 directories, 4383 files

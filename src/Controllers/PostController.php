@@ -1,133 +1,117 @@
 <?php
 
-declare(strict_types=1);
+namespace App\Controllers;
 
-namespace Src\Controllers;
-
-use Src\Interfaces\PostServiceInterface;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
-use Src\Exceptions\ValidationException;
+use Twig\Environment;
+use App\Services\PostService;
+use App\Services\AuthService;
 
 class PostController extends BaseController
 {
-    public function __construct(
-        private readonly PostServiceInterface $postService
-    ) {}
+    protected $twig;
+    protected $postService;
+    protected $authService;
 
-    public function index(Request $request, Response $response): void
+    public function __construct(Environment $twig, PostService $postService, AuthService $authService)
     {
-        $page = (int) ($request->get['page'] ?? 1);
-        $limit = (int) ($request->get['limit'] ?? 20);
-
-        $posts = $this->postService->getPosts($page, $limit);
-        $this->jsonResponse($response, ['success' => true, 'posts' => $posts]);
+        $this->twig = $twig;
+        $this->postService = $postService;
+        $this->authService = $authService;
     }
 
-    public function view(Request $request, Response $response, array $args): void
+    public function index()
     {
-        $postId = (int) $args['id'];
-        $post = $this->postService->getPostById($postId);
+        $posts = $this->postService->getAllPosts();
+        return $this->twig->render('post/index.twig', ['posts' => $posts]);
+    }
 
-        if ($post) {
-            $this->jsonResponse($response, ['success' => true, 'post' => $post]);
+    public function create()
+    {
+        return $this->twig->render('post/create.twig');
+    }
+
+    public function store()
+    {
+        $user = $this->authService->getUser();
+        $data = $this->request->getPost();
+        $data['user_id'] = $user->id;
+
+        $result = $this->postService->createPost($data);
+
+        if ($result) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Post created successfully']);
         } else {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'Post not found'], 404);
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to create post']);
         }
     }
 
-    public function create(Request $request, Response $response): void
+    public function view($id)
     {
-        try {
-            $postData = $request->post;
-            $postData['user_id'] = $request->user->id; // Assuming user is set by middleware
+        $post = $this->postService->getPostById($id);
+        if (!$post) {
+            return $this->response->setStatusCode(404)->setBody('Post not found');
+        }
+        return $this->twig->render('post/view.twig', ['post' => $post]);
+    }
 
-            $postId = $this->postService->createPost($postData);
-            $this->jsonResponse($response, ['success' => true, 'message' => 'Post created successfully', 'post_id' => $postId]);
-        } catch (ValidationException $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => $e->getMessage()], 400);
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred while creating the post'], 500);
+    public function edit($id)
+    {
+        $user = $this->authService->getUser();
+        $post = $this->postService->getPostById($id);
+
+        if (!$post) {
+            return $this->response->setStatusCode(404)->setBody('Post not found');
+        }
+
+        if ($post->user_id != $user->id && !$user->isAdmin()) {
+            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+        }
+
+        return $this->twig->render('post/edit.twig', ['post' => $post]);
+    }
+
+    public function update($id)
+    {
+        $user = $this->authService->getUser();
+        $post = $this->postService->getPostById($id);
+
+        if (!$post) {
+            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Post not found']);
+        }
+
+        if ($post->user_id != $user->id && !$user->isAdmin()) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Unauthorized']);
+        }
+
+        $data = $this->request->getPost();
+        $result = $this->postService->updatePost($id, $data);
+
+        if ($result) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Post updated successfully']);
+        } else {
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to update post']);
         }
     }
 
-    public function update(Request $request, Response $response, array $args): void
+    public function delete($id)
     {
-        try {
-            $postId = (int) $args['id'];
-            $postData = $request->post;
+        $user = $this->authService->getUser();
+        $post = $this->postService->getPostById($id);
 
-            $success = $this->postService->updatePost($postId, $postData);
-            if ($success) {
-                $this->jsonResponse($response, ['success' => true, 'message' => 'Post updated successfully']);
-            } else {
-                $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to update post'], 400);
-            }
-        } catch (ValidationException $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => $e->getMessage()], 400);
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred while updating the post'], 500);
+        if (!$post) {
+            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Post not found']);
         }
-    }
 
-    public function delete(Request $request, Response $response, array $args): void
-    {
-        try {
-            $postId = (int) $args['id'];
-            $success = $this->postService->deletePost($postId);
-            if ($success) {
-                $this->jsonResponse($response, ['success' => true, 'message' => 'Post deleted successfully']);
-            } else {
-                $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to delete post'], 400);
-            }
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred while deleting the post'], 500);
+        if ($post->user_id != $user->id && !$user->isAdmin()) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Unauthorized']);
         }
-    }
 
-    public function search(Request $request, Response $response): void
-    {
-        $filters = $request->get;
-        $results = $this->postService->searchPosts($filters);
-        $this->jsonResponse($response, ['success' => true, 'results' => $results]);
-    }
+        $result = $this->postService->deletePost($id);
 
-    public function schedule(Request $request, Response $response, array $args): void
-    {
-        try {
-            $postId = (int) $args['id'];
-            $scheduledAt = $request->post['scheduled_at'];
-            $success = $this->postService->schedulePost($postId, $scheduledAt);
-            if ($success) {
-                $this->jsonResponse($response, ['success' => true, 'message' => 'Post scheduled successfully']);
-            } else {
-                $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to schedule post'], 400);
-            }
-        } catch (ValidationException $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => $e->getMessage()], 400);
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred while scheduling the post'], 500);
+        if ($result) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Post deleted successfully']);
+        } else {
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to delete post']);
         }
-    }
-
-    public function toggleFeatured(Request $request, Response $response, array $args): void
-    {
-        try {
-            $postId = (int) $args['id'];
-            $success = $this->postService->toggleFeatured($postId);
-            if ($success) {
-                $this->jsonResponse($response, ['success' => true, 'message' => 'Post featured status updated successfully']);
-            } else {
-                $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to update post featured status'], 400);
-            }
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred while updating post featured status'], 500);
-        }
-    }
-
-    public function featuredPosts(Request $request, Response $response): void
-    {
-        $featuredPosts = $this->postService->getFeaturedPosts();
-        $this->jsonResponse($response, ['success' => true, 'featured_posts' => $featuredPosts]);
     }
 }

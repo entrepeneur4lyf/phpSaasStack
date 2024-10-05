@@ -1,0 +1,12 @@
+{% for message in messages %}
+    <sl-card class="message-card">
+        <strong slot="header" x-text="message.subject"></strong>
+        <div>
+            <p>From: <span x-text="message.sender_name"></span></p>
+            <p>Date: <span x-text="formatDate(message.created_at)"></span></p>
+        </div>
+        <sl-button slot="footer" @click="viewMessage(message.id)">
+            View Message
+        </sl-button>
+    </sl-card>
+{% endfor %}

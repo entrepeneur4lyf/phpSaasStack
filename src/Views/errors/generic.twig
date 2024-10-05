@@ -1,0 +1,14 @@
+{% extends "layouts/error.twig" %}
+
+{% block title %}{{ status_code }} - {{ status_text }}{% endblock %}
+
+{% block content %}
+    <h1>{{ status_code }} - {{ status_text }}</h1>
+    <p>We're sorry, but something went wrong on our end. Please try again later.</p>
+    {% if debug %}
+        <h2>Error Details:</h2>
+        <pre>{{ exception.message }}</pre>
+        <h2>Stack Trace:</h2>
+        <pre>{{ exception.traceAsString }}</pre>
+    {% endif %}
+{% endblock %}

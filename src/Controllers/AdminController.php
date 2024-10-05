@@ -1,118 +1,100 @@
 <?php
-declare(strict_types=1);
 
-namespace Src\Controllers;
+namespace App\Controllers;
 
-use App\Models\User;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
+use Twig\Environment;
+use App\Services\AdminService;
+use App\Services\AuthService;
 
-class AdminController
+class AdminController extends BaseController
 {
-    private User $userModel;
+    protected $twig;
+    protected $adminService;
+    protected $authService;
 
-    public function __construct()
+    public function __construct(Environment $twig, AdminService $adminService, AuthService $authService)
     {
-        $this->userModel = new User();
+        $this->twig = $twig;
+        $this->adminService = $adminService;
+        $this->authService = $authService;
     }
 
-    public function dashboard(Request $request, Response $response): void
+    public function dashboard()
     {
-        $stats = $this->getSystemStats();
-        $recentUsers = $this->userModel->getRecentUsers(10);
-        $recentActivity = $this->getRecentActivity();
-
-        $dashboardData = [
-            'stats' => $stats,
-            'recentUsers' => $recentUsers,
-            'recentActivity' => $recentActivity,
-        ];
-
-        $response->header('Content-Type', 'application/json');
-        $response->end(json_encode($dashboardData));
-    }
-
-    public function userList(Request $request, Response $response): void
-    {
-        $page = (int)($request->get['page'] ?? 1);
-        $limit = (int)($request->get['limit'] ?? 20);
-
-        $users = $this->userModel->getPaginatedUsers($page, $limit);
-        $totalUsers = $this->userModel->getTotalUsers();
-
-        $response->header('Content-Type', 'application/json');
-        $response->end(json_encode([
-            'users' => $users,
-            'totalUsers' => $totalUsers,
-            'currentPage' => $page,
-            'totalPages' => ceil($totalUsers / $limit),
-        ]));
-    }
-
-    public function updateUserRole(Request $request, Response $response): void
-    {
-        $data = json_decode($request->getContent(), true);
-
-        if (!$data || !isset($data['userId']) || !isset($data['roleId'])) {
-            $response->status(400);
-            $response->end(json_encode(['error' => 'Invalid input']));
-            return;
+        $user = $this->authService->getUser();
+        if (!$user->isAdmin()) {
+            return $this->response->setStatusCode(403)->setBody('Unauthorized');
         }
 
-        $result = $this->userModel->updateRole($data['userId'], $data['roleId']);
+        $stats = $this->adminService->getDashboardStats();
+        return $this->twig->render('admin/dashboard.twig', ['stats' => $stats]);
+    }
+
+    public function users()
+    {
+        $user = $this->authService->getUser();
+        if (!$user->isAdmin()) {
+            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+        }
+
+        $users = $this->adminService->getAllUsers();
+        return $this->twig->render('admin/users.twig', ['users' => $users]);
+    }
+
+    public function editUser($id)
+    {
+        $user = $this->authService->getUser();
+        if (!$user->isAdmin()) {
+            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+        }
+
+        $editUser = $this->adminService->getUserById($id);
+        return $this->twig->render('admin/edit_user.twig', ['editUser' => $editUser]);
+    }
+
+    public function updateUser($id)
+    {
+        $user = $this->authService->getUser();
+        if (!$user->isAdmin()) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Unauthorized']);
+        }
+
+        $data = $this->request->getPost();
+        $result = $this->adminService->updateUser($id, $data);
 
         if ($result) {
-            $response->end(json_encode(['message' => 'User role updated successfully']));
+            return $this->response->setJSON(['success' => true, 'message' => 'User updated successfully']);
         } else {
-            $response->status(500);
-            $response->end(json_encode(['error' => 'Failed to update user role']));
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to update user']);
         }
     }
 
-    public function getSystemStats(): array
-    {
-        // Implement logic to fetch system-wide statistics
-        // This is a placeholder implementation
-        return [
-            'totalUsers' => $this->userModel->getTotalUsers(),
-            'activeUsers' => $this->userModel->getActiveUsers(),
-            'totalInferences' => 1000,
-            'averageResponseTime' => '200ms',
-        ];
-    }
-
-    public function getRecentActivity(): array
-    {
-        // Implement logic to fetch recent system-wide activity
-        // This is a placeholder implementation
-        return [
-            ['type' => 'new_user', 'date' => '2023-05-01 10:00:00'],
-            ['type' => 'inference', 'date' => '2023-05-01 09:55:00'],
-            ['type' => 'subscription_upgrade', 'date' => '2023-05-01 09:30:00'],
-        ];
-    }
-
-    
     public function messageCategories()
     {
-        $categories = $this->userModel->getMessageCategories();
-        return view('admin/message_categories', ['categories' => $categories]);
+        $user = $this->authService->getUser();
+        if (!$user->isAdmin()) {
+            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+        }
+
+        $categories = $this->adminService->getMessageCategories();
+        return $this->twig->render('admin/message_categories.twig', ['categories' => $categories]);
     }
 
-    public function addMessageCategory()
+    public function updateMessageCategory()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name = $_POST['name'] ?? '';
-            if ($name) {
-                $db = Database::getInstance();
-                $stmt = $db->prepare("INSERT INTO message_categories (name) VALUES (?)");
-                if ($stmt->execute([$name])) {
-                    $_SESSION['success_message'] = "Category added successfully.";
-                } else {
-                    $_SESSION['error_message'] = "Failed to add category.";
-                }
-            }
+        $user = $this->authService->getUser();
+        if (!$user->isAdmin()) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Unauthorized']);
         }
-        return redirect('/admin/message-categories');
+
+        $categoryId = $this->request->getPost('category_id');
+        $data = $this->request->getPost();
+        $result = $this->adminService->updateMessageCategory($categoryId, $data);
+
+        if ($result) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Category updated successfully']);
+        } else {
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to update category']);
+        }
     }
 }

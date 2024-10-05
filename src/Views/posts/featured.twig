@@ -1,0 +1,47 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="featuredPosts()" class="featured-posts">
+    <h1>Featured Posts</h1>
+
+    {% if posts is empty %}
+        <p>No featured posts available.</p>
+    {% else %}
+        <div class="post-grid">
+            {% for post in posts %}
+                <sl-card class="post-card featured">
+                    <h2 slot="header"><a href="{{ site_url('posts/view/' ~ post.id) }}">{{ post.title }}</a></h2>
+                    <div x-html="renderMarkdown('{{ post.content|striptags|slice(0, 200)|e('js') }}...')"></div>
+                    <div slot="footer" class="post-meta">
+                        <span>Posted on: {{ post.created_at|date("F j, Y") }}</span>
+                        <span>Views: {{ post.views }}</span>
+                        <span>Likes: {{ post.likes }}</span>
+                    </div>
+                </sl-card>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function featuredPosts() {
+    return {
+        async renderMarkdown(content) {
+            const response = await fetch('/api/render-markdown', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ markdown: content })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                return result.html;
+            }
+            return content;
+        }
+    }
+}
+</script>
+{% endblock %}

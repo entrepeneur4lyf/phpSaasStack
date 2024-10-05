@@ -1,0 +1,143 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="offers()" class="offers-container">
+    <h1>Offers</h1>
+
+    <sl-button @click="showCreateOfferModal = true">Create New Offer</sl-button>
+
+    <div class="offers-list">
+        <template x-for="offer in offers" :key="offer.id">
+            <sl-card class="offer-card">
+                <h2 slot="header" x-text="offer.name"></h2>
+                <div x-html="renderMarkdown(offer.description)"></div>
+                <div slot="footer">
+                    <sl-button @click="editOffer(offer)">Edit</sl-button>
+                    <sl-button @click="deleteOffer(offer.id)" variant="danger">Delete</sl-button>
+                </div>
+            </sl-card>
+        </template>
+    </div>
+
+    <sl-dialog label="Create New Offer" :open="showCreateOfferModal">
+        <sl-form @submit.prevent="createOffer">
+            <sl-input name="name" label="Offer Name" required></sl-input>
+            <sl-textarea name="description" label="Description" required></sl-textarea>
+            <sl-input type="number" name="price" label="Price" required></sl-input>
+            <sl-select name="product_id" label="Product" required>
+                <template x-for="product in products" :key="product.id">
+                    <sl-menu-item :value="product.id" x-text="product.name"></sl-menu-item>
+                </template>
+            </sl-select>
+            <sl-button type="submit" variant="primary">Create Offer</sl-button>
+            <sl-button @click="showCreateOfferModal = false" variant="default">Cancel</sl-button>
+        </sl-form>
+    </sl-dialog>
+
+    <sl-dialog label="Edit Offer" :open="showEditOfferModal">
+        <sl-form @submit.prevent="updateOffer">
+            <sl-input name="name" label="Offer Name" x-model="editingOffer.name" required></sl-input>
+            <sl-textarea name="description" label="Description" x-model="editingOffer.description" required></sl-textarea>
+            <sl-input type="number" name="price" label="Price" x-model="editingOffer.price" required></sl-input>
+            <sl-select name="product_id" label="Product" x-model="editingOffer.product_id" required>
+                <template x-for="product in products" :key="product.id">
+                    <sl-menu-item :value="product.id" x-text="product.name"></sl-menu-item>
+                </template>
+            </sl-select>
+            <sl-button type="submit" variant="primary">Update Offer</sl-button>
+            <sl-button @click="showEditOfferModal = false" variant="default">Cancel</sl-button>
+        </sl-form>
+    </sl-dialog>
+</div>
+
+<script>
+function offers() {
+    return {
+        offers: {{ offers|json_encode|raw }},
+        products: {{ products|json_encode|raw }},
+        showCreateOfferModal: false,
+        showEditOfferModal: false,
+        editingOffer: null,
+
+        async renderMarkdown(content) {
+            const response = await fetch('/api/render-markdown', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ markdown: content })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                return result.html;
+            }
+            return content;
+        },
+
+        createOffer(event) {
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch('/offers/create', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.offers.push(data.offer);
+                    this.showCreateOfferModal = false;
+                    form.reset();
+                } else {
+                    alert('Failed to create offer');
+                }
+            });
+        },
+
+        editOffer(offer) {
+            this.editingOffer = { ...offer };
+            this.showEditOfferModal = true;
+        },
+
+        updateOffer(event) {
+            const form = event.target;
+            const formData = new FormData(form);
+            formData.append('id', this.editingOffer.id);
+
+            fetch(`/offers/update/${this.editingOffer.id}`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const index = this.offers.findIndex(o => o.id === data.offer.id);
+                    this.offers[index] = data.offer;
+                    this.showEditOfferModal = false;
+                    this.editingOffer = null;
+                } else {
+                    alert('Failed to update offer');
+                }
+            });
+        },
+
+        deleteOffer(offerId) {
+            if (confirm('Are you sure you want to delete this offer?')) {
+                fetch(`/offers/delete/${offerId}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.offers = this.offers.filter(o => o.id !== offerId);
+                    } else {
+                        alert('Failed to delete offer');
+                    }
+                });
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

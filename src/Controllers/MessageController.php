@@ -9,28 +9,40 @@ use Src\Interfaces\UserServiceInterface;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Src\Exceptions\ValidationException;
+use Twig\Environment;
 
 class MessageController extends BaseController
 {
-    public function __construct(
-        private readonly MessageServiceInterface $messageService,
-        private readonly UserServiceInterface $userService
-    ) {}
+    protected $twig;
+    protected $messageService;
+    protected $userService;
+
+    public function __construct(Environment $twig, MessageServiceInterface $messageService, UserServiceInterface $userService)
+    {
+        $this->twig = $twig;
+        $this->messageService = $messageService;
+        $this->userService = $userService;
+    }
 
     public function index(Request $request, Response $response): void
     {
-        $userId = $request->user->id;
-        $messages = $this->messageService->getMessagesByUserId($userId);
-        
-        $this->render($response, 'message/index', ['messages' => $messages]);
+        $user = $request->user;
+        $inbox = $this->messageService->getInboxMessages($user->id);
+        $sent = $this->messageService->getSentMessages($user->id);
+
+        $this->render($response, 'message/index', [
+            'inbox' => $inbox,
+            'sent' => $sent
+        ]);
     }
 
     public function compose(Request $request, Response $response): void
     {
-        $userId = $request->user->id;
-        $users = $this->userService->getAllExcept($userId);
-        
-        $this->render($response, 'message/compose', ['users' => $users]);
+        $users = $this->userService->getAllUsers();
+
+        $this->render($response, 'message/compose', [
+            'users' => $users
+        ]);
     }
 
     public function send(Request $request, Response $response): void

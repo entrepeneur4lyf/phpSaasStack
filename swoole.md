@@ -38,7 +38,7 @@
 - [x] Create helper functions for use in views (e.g., markdown filter)
 - [x] Add support for layouts and partials in the view system
 - [x] Implement a method to pre-compile all views for production use
-- [ ] Refactor existing views to use Twig with HTMX for websockets/SSE, AlpineJS and Shoelace with Webcomponents
+- [x] Refactor existing views to use Twig with HTMX for websockets/SSE, AlpineJS and Shoelace with Webcomponents
 
 ## 5. Session Handling
 - [x] Implement a custom SessionManager class compatible with Swoole
@@ -64,14 +64,14 @@
 - [x] Add support for multiple database connections (e.g., read/write splitting)
 
 ## 7. Error Handling
-- [ ] Create a SwooleErrorHandler class
-- [ ] Implement error and exception catching in the Swoole server
-- [ ] Create custom exception classes for different error types
-- [ ] Implement a logging mechanism for errors and exceptions
-- [ ] Create an error reporting system (e.g., email notifications for critical errors)
-- [ ] Implement a user-friendly error display for production
-- [ ] Add detailed error information for development environment
-- [ ] Create an error tracking system to aggregate similar errors
+- [x] Create a SwooleErrorHandler class
+- [x] Implement error and exception catching in the Swoole server
+- [x] Create custom exception classes for different error types
+- [x] Implement a logging mechanism for errors and exceptions
+- [x] Create an error reporting system (e.g., email notifications for critical errors)
+- [x] Implement a user-friendly error display for production
+- [x] Implement a detailed error information display for development environment
+- [x] Create an error tracking system to aggregate similar errors
 
 ## 8. Configuration
 - [ ] Implement a configuration caching system

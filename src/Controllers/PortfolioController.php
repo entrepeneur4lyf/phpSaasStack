@@ -1,143 +1,77 @@
 <?php
 
-declare(strict_types=1);
+namespace App\Controllers;
 
-namespace Src\Controllers;
-
-use Src\Interfaces\PortfolioServiceInterface;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
-use Src\Exceptions\ImageUploadException;
+use Twig\Environment;
+use App\Services\PortfolioService;
+use App\Services\AuthService;
 
 class PortfolioController extends BaseController
 {
-    public function __construct(
-        private readonly PortfolioServiceInterface $portfolioService
-    ) {}
+    protected $twig;
+    protected $portfolioService;
+    protected $authService;
 
-    public function manage(Request $request, Response $response): void
+    public function __construct(Environment $twig, PortfolioService $portfolioService, AuthService $authService)
     {
-        $user = $request->user;
-        $portfolioItems = $this->portfolioModel->getItemsByUserId($user->id);
-        
-        $this->render($response, 'portfolio/manage', ['portfolioItems' => $portfolioItems]);
+        $this->twig = $twig;
+        $this->portfolioService = $portfolioService;
+        $this->authService = $authService;
     }
 
-    public function addItem(Request $request, Response $response): void
+    public function index($userId = null)
     {
-        try {
-            $user = $request->user;
-            $data = $request->post;
+        if ($userId === null) {
+            $user = $this->authService->getUser();
+            $userId = $user->id;
+        }
 
-            $itemData = [
-                'title' => $data['title'],
-                'description' => $data['description'],
-                'image_url' => ''
-            ];
+        $portfolio = $this->portfolioService->getPortfolioByUserId($userId);
+        return $this->twig->render('portfolio/index.twig', ['portfolio' => $portfolio]);
+    }
 
-            if (isset($request->files['image'])) {
-                $itemData['image_url'] = $this->portfolioService->handleImageUpload($request->files['image']);
-            }
+    public function edit()
+    {
+        $user = $this->authService->getUser();
+        $portfolio = $this->portfolioService->getPortfolioByUserId($user->id);
+        return $this->twig->render('portfolio/edit.twig', ['portfolio' => $portfolio]);
+    }
 
-            $result = $this->portfolioService->addItem($user->id, $itemData);
+    public function update()
+    {
+        $user = $this->authService->getUser();
+        $data = $this->request->getPost();
+        $result = $this->portfolioService->updatePortfolio($user->id, $data);
 
-            if ($result) {
-                $this->jsonResponse($response, ['success' => true, 'item' => $itemData]);
-            } else {
-                $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to add portfolio item'], 400);
-            }
-        } catch (ImageUploadException $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => $e->getMessage()], 400);
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred'], 500);
+        if ($result) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Portfolio updated successfully']);
+        } else {
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to update portfolio']);
         }
     }
 
-    public function updateItem(Request $request, Response $response): void
+    public function addProject()
     {
-        try {
-            $data = $request->post;
-            $itemId = (int)$data['item_id'];
+        $user = $this->authService->getUser();
+        $data = $this->request->getPost();
+        $result = $this->portfolioService->addProject($user->id, $data);
 
-            $itemData = [
-                'title' => $data['title'],
-                'description' => $data['description'],
-                'image_url' => $data['image_url']
-            ];
-
-            if (isset($request->files['image'])) {
-                $itemData['image_url'] = $this->portfolioService->handleImageUpload($request->files['image']);
-            }
-
-            $result = $this->portfolioService->updateItem($itemId, $itemData);
-
-            if ($result) {
-                $this->jsonResponse($response, ['success' => true, 'item' => $itemData]);
-            } else {
-                $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to update portfolio item'], 400);
-            }
-        } catch (ImageUploadException $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => $e->getMessage()], 400);
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred'], 500);
+        if ($result) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Project added successfully']);
+        } else {
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to add project']);
         }
     }
 
-    public function deleteItem(Request $request, Response $response): void
+    public function removeProject($projectId)
     {
-        try {
-            $itemId = (int)$request->post['item_id'];
+        $user = $this->authService->getUser();
+        $result = $this->portfolioService->removeProject($user->id, $projectId);
 
-            $result = $this->portfolioService->deleteItem($itemId);
-
-            if ($result) {
-                $this->jsonResponse($response, ['success' => true, 'message' => 'Portfolio item deleted successfully']);
-            } else {
-                $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to delete portfolio item'], 400);
-            }
-        } catch (\Exception $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred'], 500);
+        if ($result) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Project removed successfully']);
+        } else {
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to remove project']);
         }
-    }
-
-    private function handleImageUpload(?array $file): string
-    {
-        if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
-            return '';
-        }
-
-        $uploadDir = __DIR__ . '/../../public/uploads/portfolio/';
-        $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $fileName = uniqid('portfolio_') . '.' . $fileExtension;
-        $uploadFile = $uploadDir . $fileName;
-
-        if (move_uploaded_file($file['tmp_name'], $uploadFile)) {
-            return '/uploads/portfolio/' . $fileName;
-        }
-
-        throw new \RuntimeException('Failed to upload image');
-    }
-
-    private function handleError(Response $response, string $message, int $statusCode): void
-    {
-        $response->status($statusCode);
-        $response->header('Content-Type', 'application/json');
-        $response->end(json_encode(['success' => false, 'message' => $message]));
-    }
-
-    private function render(Response $response, string $view, array $data = []): void
-    {
-        ob_start();
-        extract($data);
-        include __DIR__ . "/../Views/{$view}.php";
-        $content = ob_get_clean();
-        $response->end($content);
-    }
-
-    private function jsonResponse(Response $response, array $data, int $statusCode = 200): void
-    {
-        $response->status($statusCode);
-        $response->header('Content-Type', 'application/json');
-        $response->end(json_encode($data));
     }
 }
