@@ -7,6 +7,8 @@ use Symfony\Component\Console\Application;
 use Src\Commands\PublishScheduledPosts;
 use Src\Commands\ProcessAIRequests;
 use Src\Config\Dependencies;
+use Src\Commands\ReloadConfigCommand;
+use Src\Commands\ClearConfigCacheCommand;
 
 $container = Dependencies::getContainer();
 
@@ -15,6 +17,8 @@ $application = new Application();
 // Add commands
 $application->add($container->get(PublishScheduledPosts::class));
 $application->add($container->get(ProcessAIRequests::class));
+$application->add($container->get(ReloadConfigCommand::class));
+$application->add($container->get(ClearConfigCacheCommand::class));
 
 // Add more commands here as needed
 

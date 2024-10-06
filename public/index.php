@@ -19,9 +19,10 @@ use Src\Exceptions\HttpException;
 use Src\Config\ConfigurationManager;
 use \Rollbar\Rollbar;
 use \Rollbar\Payload\Level;
+use Dotenv\Dotenv;
 
 // Load environment variables
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
 $containerBuilder = new ContainerBuilder();
@@ -33,7 +34,7 @@ $configManager = $containerBuilder->get(ConfigurationManager::class);
 
 // Initialize Rollbar
 Rollbar::init([
-    'access_token' => $configManager->get('rollbar.access_token'),
+    'access_token' => $configManager->get('app.error_reporting.rollbar.access_token'),
     'environment' => $configManager->get('app.environment')
 ]);
 

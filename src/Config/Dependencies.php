@@ -20,6 +20,7 @@ use Src\Interfaces\PiAPIClientInterface;
 use Src\Repositories\CategoryRepository;
 use Src\Interfaces\UserServiceInterface;
 use Src\Interfaces\AuthServiceInterface;
+use Src\Interfaces\JWTServiceInterface;
 use Src\Repositories\ProductRepository;
 use Src\Controllers\ProfileController;
 use Src\Interfaces\AIServiceInterface;
@@ -103,16 +104,19 @@ return function (ContainerBuilder $containerBuilder, array $config) {
 
     // User and Auth Services
     $containerBuilder->register(UserServiceInterface::class, UserService::class);
+    $containerBuilder->register(JWTServiceInterface::class, JWTService::class)
+        ->setArguments([$config['jwt_secret'], $config['jwt_algorithm'] ?? 'HS256']);
+
     $containerBuilder->register(AuthServiceInterface::class, AuthService::class)
-        ->setArguments([new Reference(UserServiceInterface::class)]);
+        ->setArguments([
+            new Reference(UserServiceInterface::class),
+            new Reference(JWTServiceInterface::class)
+        ]);
 
     // Email Service
     $containerBuilder->register(EmailService::class);
 
     // JWT Service and Middleware
-    $containerBuilder->register(JWTServiceInterface::class, JWTService::class)
-        ->setArguments([$config['jwt_secret'], $config['jwt_algorithm'] ?? 'HS256']);
-
     $containerBuilder->register(JWTMiddleware::class)
         ->setArguments([new Reference(JWTServiceInterface::class)]);
 

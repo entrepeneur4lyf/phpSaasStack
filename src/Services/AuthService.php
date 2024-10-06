@@ -4,40 +4,51 @@ declare(strict_types=1);
 
 namespace Src\Services;
 
-use App\Interfaces\AuthServiceInterface;
-use App\Interfaces\UserServiceInterface;
-use App\Models\User;
-use App\Exceptions\AuthenticationException;
+use Src\Interfaces\AuthServiceInterface;
+use Src\Interfaces\UserServiceInterface;
+use Src\Interfaces\JWTServiceInterface;
+use Src\Models\User;
+use Src\Exceptions\AuthenticationException;
 
 class AuthService implements AuthServiceInterface
 {
     private ?User $currentUser = null;
 
     public function __construct(
-        private readonly UserServiceInterface $userService
+        private readonly UserServiceInterface $userService,
+        private readonly JWTServiceInterface $jwtService
     ) {}
 
-    public function login(string $email, string $password): ?User
+    public function login(string $email, string $password): ?string
     {
-        // Login logic
+        $user = $this->userService->getUserByEmail($email);
+
+        if ($user && password_verify($password, $user->getPassword())) {
+            $this->currentUser = $user;
+            return $this->jwtService->generateToken([
+                'user_id' => $user->getId(),
+                'email' => $user->getEmail()
+            ]);
+        }
+
+        throw new AuthenticationException('Invalid credentials');
     }
 
     public function logout(): void
     {
-        // Logout logic
+        // Since we're using JWT, we don't need to do anything server-side for logout
+        // The client should discard the token
+        $this->currentUser = null;
     }
 
     public function getCurrentUser(): ?User
     {
-        if ($this->currentUser === null && isset($_SESSION['user_id'])) {
-            $this->currentUser = $this->userService->getUserById($_SESSION['user_id']);
-        }
         return $this->currentUser;
     }
 
     public function isAuthenticated(): bool
     {
-        return $this->getCurrentUser() !== null;
+        return $this->currentUser !== null;
     }
 
     public function hasRole(string $role): bool
@@ -46,17 +57,20 @@ class AuthService implements AuthServiceInterface
         return $user !== null && $user->hasRole($role);
     }
 
-    private function startSession(User $user): void
+    public function validateToken(string $token): bool
     {
-        session_start();
-        $_SESSION['user_id'] = $user->getId();
-        // You might want to regenerate session ID for security
-        session_regenerate_id(true);
+        return $this->jwtService->validateToken($token);
     }
 
-    private function endSession(): void
+    public function getUserFromToken(string $token): ?User
     {
-        session_unset();
-        session_destroy();
+        if ($this->validateToken($token)) {
+            $payload = $this->jwtService->getPayload($token);
+            $userId = $payload['user_id'] ?? null;
+            if ($userId) {
+                return $this->userService->getUserById($userId);
+            }
+        }
+        return null;
     }
 }

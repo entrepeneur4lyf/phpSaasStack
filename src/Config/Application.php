@@ -6,10 +6,7 @@ return [
     'app' => [
         'env' => env('APP_ENV', 'development'),
         'debug' => [
-            'enabled' => env('APP_DEBUG', true),
-            'rollbar' => [
-                'access_token' => env('ROLLBAR_ACCESS_TOKEN'),
-            ],
+            'enabled' => env('APP_DEBUG', true)
         ],
         'key' => env('APP_KEY'),
         'url' => env('APP_URL', 'http://localhost'),
@@ -112,5 +109,11 @@ return [
             'packer' => \Hyperf\Codec\Packer\PhpSerializerPacker::class,
             'prefix' => env('CACHE_PREFIX', 'myapp_cache:'),
         ],
+    ],
+    'feature_flags' => [
+        'new_user_registration' => env('FEATURE_NEW_USER_REGISTRATION', true),
+        'advanced_search' => env('FEATURE_ADVANCED_SEARCH', false),
+        'chat_system' => env('FEATURE_CHAT_SYSTEM', false),
+        // Add more feature flags as needed
     ],
 ];
