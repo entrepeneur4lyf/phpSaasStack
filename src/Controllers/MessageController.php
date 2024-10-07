@@ -9,17 +9,19 @@ use Src\Interfaces\UserServiceInterface;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Src\Exceptions\ValidationException;
-use Twig\Environment;
+use Src\Core\TwigRenderer;
 
 class MessageController extends BaseController
 {
-    protected $twig;
-    protected $messageService;
-    protected $userService;
+    protected MessageServiceInterface $messageService;
+    protected UserServiceInterface $userService;
 
-    public function __construct(Environment $twig, MessageServiceInterface $messageService, UserServiceInterface $userService)
-    {
-        $this->twig = $twig;
+    public function __construct(
+        TwigRenderer $twigRenderer,
+        MessageServiceInterface $messageService,
+        UserServiceInterface $userService
+    ) {
+        parent::__construct($twigRenderer);
         $this->messageService = $messageService;
         $this->userService = $userService;
     }

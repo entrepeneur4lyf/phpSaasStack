@@ -1,0 +1,406 @@
+imports:
+    - { resource: generated_services.yaml }
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Src\:
+        resource: '../*'
+        exclude: '../{Config,Models,Migrations}'
+
+    # Explicitly configure some services
+    Src\Services\AuthService:
+        arguments:
+            $userService: '@Src\Interfaces\UserServiceInterface'
+            $jwtService: '@Src\Interfaces\JWTServiceInterface'
+        tags:
+            - { name: 'scope', value: 'request' }
+
+    Src\Services\JWTService:
+        arguments:
+            $secretKey: '%env(JWT_SECRET)%'
+            $algorithm: '%env(JWT_ALGORITHM)%'
+
+    Src\Services\OpenAIWrapper:
+        arguments:
+            $apiKey: '%env(OPENAI_API_KEY)%'
+
+    Src\Services\PiAPIClient:
+        factory: ['Src\Services\PiAPIClient', 'create']
+        arguments:
+            $apiKey: '%env(PIAPI_API_KEY)%'
+
+    Src\Services\RequestQueueService: ~
+
+    Src\Services\AIService:
+        arguments:
+            $openAIWrapper: '@Src\Interfaces\OpenAIWrapperInterface'
+            $requestQueueService: '@Src\Interfaces\RequestQueueServiceInterface'
+
+    Src\Services\ThemeService: ~
+    Src\Services\UserService: ~
+    Src\Services\DatabaseService: ~
+    Src\Services\ProductService: ~
+    Src\Services\ProfileService: ~
+    Src\Services\SellerService: ~
+    Src\Services\FileCacheService: ~
+    Src\Services\CategoryService: ~
+    Src\Services\OfferService: ~
+    Src\Services\PortfolioService: ~
+    Src\Services\CommentService: ~
+    Src\Services\PostService: ~
+    Src\Services\MessageService: ~
+    Src\Services\FollowService: ~
+    Src\Services\LicenseService: ~
+
+    Src\Services\EmailService:
+        arguments:
+            $mailer: '@Symfony\Component\Mailer\MailerInterface'
+            $config:
+                from_email: '%env(MAIL_FROM_ADDRESS)%'
+                template_path: '%kernel.project_dir%/src/Views/emails'
+
+    Src\Services\ModerationService:
+        arguments:
+            $reportModel: '@Src\Models\Report'
+            $moderationLogModel: '@Src\Models\ModerationLog'
+            $postService: '@Src\Interfaces\PostServiceInterface'
+            $commentService: '@Src\Interfaces\CommentServiceInterface'
+            $userService: '@Src\Interfaces\UserServiceInterface'
+
+    Src\Services\AssetService:
+        arguments:
+            $assetModel: '@Src\Models\Asset'
+            $fileDeliveryService: '@Src\Interfaces\FileDeliveryServiceInterface'
+
+    Src\Services\FileDeliveryService:
+        arguments:
+            $assetModel: '@Src\Models\Asset'
+            $downloadModel: '@Src\Models\Download'
+
+    Src\Services\OrderService:
+        arguments:
+            $orderModel: '@Src\Models\Order'
+            $licenseService: '@Src\Interfaces\LicenseServiceInterface'
+
+    Src\Middleware\JWTMiddleware:
+        arguments:
+            $jwtService: '@Src\Interfaces\JWTServiceInterface'
+
+    Src\Commands\PublishScheduledPosts:
+        arguments:
+            $postService: '@Src\Interfaces\PostServiceInterface'
+
+    Src\Commands\ProcessAIRequests:
+        arguments:
+            $aiService: '@Src\Interfaces\AIServiceInterface'
+            $requestQueueService: '@Src\Interfaces\RequestQueueServiceInterface'
+
+    Src\Core\CacheManager:
+        arguments:
+            $cache: '@Src\Cache\SwooleRedisCache'
+
+    Src\Cache\SwooleRedisCache:
+        arguments:
+            $container: '@service_container'
+            $config:
+                host: '%env(REDIS_HOST)%'
+                port: '%env(REDIS_PORT)%'
+                password: '%env(REDIS_PASSWORD)%'
+                database: '%env(REDIS_DATABASE)%'
+                prefix: 'cache:'
+                pool:
+                    min_connections: 1
+                    max_connections: 10
+                    connect_timeout: 10.0
+                    wait_timeout: 3.0
+                    heartbeat: -1
+
+    # Use CacheManager as the PSR-16 CacheInterface implementation
+    Psr\SimpleCache\CacheInterface: '@Src\Cache\CacheManager'
+
+    # Models
+    Src\Models\Portfolio: ~
+    Src\Models\Product: ~
+    Src\Models\Seller: ~
+    Src\Models\Offer: ~
+    Src\Models\Comment: ~
+    Src\Models\Post: ~
+    Src\Models\Message: ~
+    Src\Models\Follow: ~
+    Src\Models\Report: ~
+    Src\Models\ModerationLog: ~
+    Src\Models\License: ~
+    Src\Models\Asset: ~
+    Src\Models\Download: ~
+    Src\Models\Order: ~
+
+    # Controllers (autowired)
+    Src\Controllers\AIController:
+        autowire: true
+    Src\Controllers\UserController:
+        autowire: true
+    Src\Controllers\AuthController:
+        autowire: true
+    Src\Controllers\AssetController:
+        autowire: true
+    Src\Controllers\ProductController:
+        autowire: true
+    Src\Controllers\SellerDashboardController:
+        autowire: true
+    Src\Controllers\FileDeliveryController:
+        autowire: true
+    Src\Controllers\UserPanelController:
+        autowire: true
+    Src\Controllers\LicenseController:
+        autowire: true
+    Src\Controllers\PostController:
+        autowire: true
+    Src\Controllers\CommentController:
+        autowire: true
+    Src\Controllers\ProfileController:
+        autowire: true
+    Src\Controllers\PortfolioController:
+        autowire: true
+    Src\Controllers\MessageController:
+        autowire: true
+    Src\Controllers\FollowController:
+        autowire: true
+    Src\Controllers\ModerationController:
+        autowire: true
+    Src\Controllers\MarkdownController:
+        autowire: true
+    Src\Controllers\SellerController:
+        autowire: true
+    Src\Controllers\HomeController:
+        autowire: true
+
+    # Error Handler
+    Src\Core\ErrorHandler:
+        arguments:
+            $logger: '@Monolog\Logger'
+
+    # Monolog Logger
+    Monolog\Logger:
+        arguments:
+            $name: 'app'
+        calls:
+            - [pushHandler, ['@Monolog\Handler\StreamHandler']]
+
+    Monolog\Handler\StreamHandler:
+        arguments:
+            $stream: '%kernel.logs_dir%/app.log'
+            $level: 'DEBUG'
+
+    Src\Services\ServiceRefresher:
+        public: true
+
+    # Example of a transient service
+    Src\Services\TransientService:
+        tags:
+            - { name: 'scope', value: 'transient' }
+
+    # Example of a request-scoped service
+    Src\Services\RequestScopedService:
+        tags:
+            - { name: 'scope', value: 'request' }
+
+    Src\Core\TwigRenderer:
+        arguments:
+            $templatePath: '%kernel.project_dir%/src/Views'
+
+    Src\Controllers\BaseController:
+        autowire: true
+
+    # Updated services
+    Symfony\Component\Mailer\MailerInterface:
+        factory: ['Symfony\Component\Mailer\Mailer', 'create']
+        arguments:
+            - '%env(MAILER_DSN)%'
+
+    Src\Core\ErrorReporter:
+        arguments:
+            $logger: '@Psr\Log\LoggerInterface'
+            $mailer: '@Symfony\Component\Mailer\MailerInterface'
+            $config:
+                from_email: '%env(ERROR_REPORTER_FROM_EMAIL)%'
+                to_email: '%env(ERROR_REPORTER_TO_EMAIL)%'
+
+    Src\Controllers\ContactController:
+        arguments:
+            $twigRenderer: '@Src\Core\TwigRenderer'
+            $emailService: '@Src\Interfaces\EmailServiceInterface'
+
+    Src\Core\ErrorTracker:
+        arguments:
+            $cache: '@Src\Cache\SwooleRedisCache'
+            $ttl: '%env(ERROR_TRACKER_TTL)%'
+
+    Src\Interfaces\CacheInterface:
+        class: Src\Cache\SwooleRedisCache
+        arguments:
+            $container: '@service_container'
+            $config:
+                prefix: 'cache:'
+                pool: 'default'
+                ttl: 3600
+
+    Hyperf\Redis\RedisFactory:
+        class: Hyperf\Redis\RedisFactory
+        arguments: ['@service_container']
+
+    Src\Core\SessionManager:
+        arguments:
+            $cache: '@Src\Cache\SwooleRedisCache'
+            $cookieName: '%env(SESSION_COOKIE_NAME)%'
+            $lifetime: '%env(SESSION_LIFETIME)%'
+            $encryptionKey: '%env(SESSION_ENCRYPTION_KEY)%'
+
+    Src\Interfaces\CacheServiceInterface:
+        factory: ['Src\Factories\CacheFactory', 'create']
+        arguments:
+            $driver: '%env(CACHE_DRIVER)%'
+            $config:
+                host: '%env(CACHE_HOST)%'
+                port: '%env(CACHE_PORT)%'
+                password: '%env(CACHE_PASSWORD)%'
+                database: '%env(CACHE_DATABASE)%'
+                prefix: '%env(CACHE_PREFIX)%'
+                ttl: '%env(CACHE_TTL)%'
+                pool:
+                    min_connections: '%env(CACHE_POOL_MIN_CONNECTIONS)%'
+                    max_connections: '%env(CACHE_POOL_MAX_CONNECTIONS)%'
+                    connect_timeout: '%env(CACHE_POOL_CONNECT_TIMEOUT)%'
+                    wait_timeout: '%env(CACHE_POOL_WAIT_TIMEOUT)%'
+                    heartbeat: '%env(CACHE_POOL_HEARTBEAT)%'
+
+    Src\Services\ValidationService:
+        arguments:
+            $validator: '@Src\Utils\Validator'
+
+    Src\Services\SanitizationService: ~
+
+    Src\Middleware\ValidationSanitizationMiddleware:
+        arguments:
+            $validationService: '@Src\Services\ValidationService'
+            $sanitizationService: '@Src\Services\SanitizationService'
+
+    Src\Utils\Validator: ~
+
+    Src\Services\ComplexService:
+        factory: ['@Src\Core\ServiceFactory', 'create']
+        arguments:
+            $className: 'Src\Services\ComplexService'
+            $arguments:
+                customParam: 'someValue'
+
+    Src\Commands\GenerateDIConfigCommand:
+        tags: ['console.command']
+
+    # Autoconfigure commands
+    Src\Commands\:
+        resource: '../Commands'
+        tags: ['command']
+
+    Src\Services\TransientService:
+        tags:
+            - { name: 'scope', value: 'transient' }
+
+    Src\Services\RequestScopedService:
+        tags:
+            - { name: 'scope', value: 'request' }
+
+    Src\Core\TwigRenderer:
+        arguments:
+            $templatePath: '%kernel.project_dir%/src/Views'
+
+    Src\Controllers\BaseController:
+        autowire: true
+
+    # Updated services
+    Symfony\Component\Mailer\MailerInterface:
+        factory: ['Symfony\Component\Mailer\Mailer', 'create']
+        arguments:
+            - '%env(MAILER_DSN)%'
+
+    Src\Core\ErrorReporter:
+        arguments:
+            $logger: '@Psr\Log\LoggerInterface'
+            $mailer: '@Symfony\Component\Mailer\MailerInterface'
+            $config:
+                from_email: '%env(ERROR_REPORTER_FROM_EMAIL)%'
+                to_email: '%env(ERROR_REPORTER_TO_EMAIL)%'
+
+    Src\Controllers\ContactController:
+        arguments:
+            $twigRenderer: '@Src\Core\TwigRenderer'
+            $emailService: '@Src\Interfaces\EmailServiceInterface'
+
+    Src\Core\ErrorTracker:
+        arguments:
+            $cache: '@Src\Cache\SwooleRedisCache'
+            $ttl: '%env(ERROR_TRACKER_TTL)%'
+
+    Src\Interfaces\CacheInterface:
+        class: Src\Cache\SwooleRedisCache
+        arguments:
+            $container: '@service_container'
+            $config:
+                prefix: 'cache:'
+                pool: 'default'
+                ttl: 3600
+
+    Hyperf\Redis\RedisFactory:
+        class: Hyperf\Redis\RedisFactory
+        arguments: ['@service_container']
+
+    Src\Core\SessionManager:
+        arguments:
+            $cache: '@Src\Cache\SwooleRedisCache'
+            $cookieName: '%env(SESSION_COOKIE_NAME)%'
+            $lifetime: '%env(SESSION_LIFETIME)%'
+            $encryptionKey: '%env(SESSION_ENCRYPTION_KEY)%'
+
+    Src\Interfaces\CacheServiceInterface:
+        factory: ['Src\Factories\CacheFactory', 'create']
+        arguments:
+            $driver: '%env(CACHE_DRIVER)%'
+            $config:
+                host: '%env(CACHE_HOST)%'
+                port: '%env(CACHE_PORT)%'
+                password: '%env(CACHE_PASSWORD)%'
+                database: '%env(CACHE_DATABASE)%'
+                prefix: '%env(CACHE_PREFIX)%'
+                ttl: '%env(CACHE_TTL)%'
+                pool:
+                    min_connections: '%env(CACHE_POOL_MIN_CONNECTIONS)%'
+                    max_connections: '%env(CACHE_POOL_MAX_CONNECTIONS)%'
+                    connect_timeout: '%env(CACHE_POOL_CONNECT_TIMEOUT)%'
+                    wait_timeout: '%env(CACHE_POOL_WAIT_TIMEOUT)%'
+                    heartbeat: '%env(CACHE_POOL_HEARTBEAT)%'
+
+    Src\Services\ValidationService:
+        arguments:
+            $validator: '@Src\Utils\Validator'
+
+    Src\Services\SanitizationService: ~
+
+    Src\Middleware\ValidationSanitizationMiddleware:
+        arguments:
+            $validationService: '@Src\Services\ValidationService'
+            $sanitizationService: '@Src\Services\SanitizationService'
+
+    Src\Utils\Validator: ~
+
+    Src\Services\ComplexService:
+        factory: ['@Src\Core\ServiceFactory', 'create']
+        arguments:
+            $className: 'Src\Services\ComplexService'
+            $arguments:
+                customParam: 'someValue'
+
+    Src\Commands\GenerateDIConfigCommand:
+        tags: ['console.command']

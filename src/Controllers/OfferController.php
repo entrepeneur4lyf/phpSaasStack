@@ -1,117 +1,125 @@
 <?php
 
-namespace App\Controllers;
+namespace Src\Controllers;
 
-use Twig\Environment;
-use App\Services\OfferService;
-use App\Services\AuthService;
+use Src\Core\TwigRenderer;
+use Src\Services\OfferService;
+use Src\Services\AuthService;
+use Swoole\Http\Request;
+use Swoole\Http\Response;
 
 class OfferController extends BaseController
 {
-    protected $twig;
-    protected $offerService;
-    protected $authService;
+    protected OfferService $offerService;
+    protected AuthService $authService;
 
-    public function __construct(Environment $twig, OfferService $offerService, AuthService $authService)
+    public function __construct(TwigRenderer $twigRenderer, OfferService $offerService, AuthService $authService)
     {
-        $this->twig = $twig;
+        parent::__construct($twigRenderer);
         $this->offerService = $offerService;
         $this->authService = $authService;
     }
 
-    public function index()
+    public function index(Request $request, Response $response): void
     {
         $offers = $this->offerService->getAllOffers();
-        return $this->twig->render('offer/index.twig', ['offers' => $offers]);
+        $this->render($response, 'offer/index', ['offers' => $offers]);
     }
 
-    public function create()
+    public function create(Request $request, Response $response): void
     {
-        return $this->twig->render('offer/create.twig');
+        $this->render($response, 'offer/create');
     }
 
-    public function store()
+    public function store(Request $request, Response $response): void
     {
         $user = $this->authService->getUser();
-        $data = $this->request->getPost();
+        $data = $request->post;
         $data['user_id'] = $user->id;
 
         $result = $this->offerService->createOffer($data);
 
         if ($result) {
-            return $this->response->setJSON(['success' => true, 'message' => 'Offer created successfully']);
+            $this->jsonResponse($response, ['success' => true, 'message' => 'Offer created successfully']);
         } else {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to create offer']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to create offer'], 500);
         }
     }
 
-    public function view($id)
+    public function view(Request $request, Response $response, array $args): void
     {
-        $offer = $this->offerService->getOfferById($id);
+        $offer = $this->offerService->getOfferById($args['id']);
         if (!$offer) {
-            return $this->response->setStatusCode(404)->setBody('Offer not found');
+            $this->jsonResponse($response, ['error' => 'Offer not found'], 404);
+            return;
         }
-        return $this->twig->render('offer/view.twig', ['offer' => $offer]);
+        $this->render($response, 'offer/view', ['offer' => $offer]);
     }
 
-    public function edit($id)
+    public function edit(Request $request, Response $response, array $args): void
     {
         $user = $this->authService->getUser();
-        $offer = $this->offerService->getOfferById($id);
+        $offer = $this->offerService->getOfferById($args['id']);
 
         if (!$offer) {
-            return $this->response->setStatusCode(404)->setBody('Offer not found');
+            $this->jsonResponse($response, ['error' => 'Offer not found'], 404);
+            return;
         }
 
         if ($offer->user_id != $user->id && !$user->isAdmin()) {
-            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+            $this->jsonResponse($response, ['error' => 'Unauthorized'], 403);
+            return;
         }
 
-        return $this->twig->render('offer/edit.twig', ['offer' => $offer]);
+        $this->render($response, 'offer/edit', ['offer' => $offer]);
     }
 
-    public function update($id)
+    public function update(Request $request, Response $response, array $args): void
     {
         $user = $this->authService->getUser();
-        $offer = $this->offerService->getOfferById($id);
+        $offer = $this->offerService->getOfferById($args['id']);
 
         if (!$offer) {
-            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Offer not found']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Offer not found'], 404);
+            return;
         }
 
         if ($offer->user_id != $user->id && !$user->isAdmin()) {
-            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Unauthorized']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Unauthorized'], 403);
+            return;
         }
 
-        $data = $this->request->getPost();
-        $result = $this->offerService->updateOffer($id, $data);
+        $data = $request->post;
+        $result = $this->offerService->updateOffer($args['id'], $data);
 
         if ($result) {
-            return $this->response->setJSON(['success' => true, 'message' => 'Offer updated successfully']);
+            $this->jsonResponse($response, ['success' => true, 'message' => 'Offer updated successfully']);
         } else {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to update offer']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to update offer'], 500);
         }
     }
 
-    public function delete($id)
+    public function delete(Request $request, Response $response, array $args): void
     {
         $user = $this->authService->getUser();
-        $offer = $this->offerService->getOfferById($id);
+        $offer = $this->offerService->getOfferById($args['id']);
 
         if (!$offer) {
-            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Offer not found']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Offer not found'], 404);
+            return;
         }
 
         if ($offer->user_id != $user->id && !$user->isAdmin()) {
-            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Unauthorized']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Unauthorized'], 403);
+            return;
         }
 
-        $result = $this->offerService->deleteOffer($id);
+        $result = $this->offerService->deleteOffer($args['id']);
 
         if ($result) {
-            return $this->response->setJSON(['success' => true, 'message' => 'Offer deleted successfully']);
+            $this->jsonResponse($response, ['success' => true, 'message' => 'Offer deleted successfully']);
         } else {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to delete offer']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to delete offer'], 500);
         }
     }
 }

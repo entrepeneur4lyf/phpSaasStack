@@ -5,29 +5,30 @@ declare(strict_types=1);
 namespace Src\Core;
 
 use Symfony\Component\ErrorHandler\ErrorHandler;
-use Twig\Environment;
+use Src\Core\TwigRenderer;
 use Src\Interfaces\ErrorReporterInterface;
+use Swoole\Http\Response;
 
 class CustomErrorHandler extends ErrorHandler
 {
-    private Environment $twig;
+    private TwigRenderer $twigRenderer;
     private bool $debug;
     private ErrorReporterInterface $errorReporter;
 
     public function __construct(
-        Environment $twig,
+        TwigRenderer $twigRenderer,
         ErrorReporterInterface $errorReporter,
         bool $debug = false
     ) {
         parent::__construct();
-        $this->twig = $twig;
+        $this->twigRenderer = $twigRenderer;
         $this->debug = $debug;
         $this->errorReporter = $errorReporter;
     }
 
-    public function render(\Throwable $exception): string
+    public function handleException(\Throwable $exception, Response $response): void
     {
-        $this->errorReportingService->reportError($exception);
+        $this->errorReporter->reportError($exception);
 
         $statusCode = $this->getStatusCode($exception);
         $context = [
@@ -45,13 +46,9 @@ class CustomErrorHandler extends ErrorHandler
             $context['previous_exceptions'] = $this->getPreviousExceptions($exception);
         }
 
-        try {
-            $content = $this->twig->render($this->debug ? "errors/exception_full.twig" : "errors/{$statusCode}.twig", $context);
-        } catch (\Twig\Error\LoaderError $e) {
-            $content = $this->twig->render('errors/generic.twig', $context);
-        }
-
-        return $content;
+        $template = $this->debug ? "errors/exception_full" : "errors/{$statusCode}";
+        
+        $this->twigRenderer->render($response, $template, $context);
     }
 
     private function getStatusCode(\Throwable $exception): int

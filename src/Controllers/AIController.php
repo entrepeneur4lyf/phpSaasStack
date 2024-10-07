@@ -2,69 +2,70 @@
 
 declare(strict_types=1);
 
-namespace App\Controllers;
+namespace Src\Controllers;
 
-use Twig\Environment;
-use App\Services\AIService;
-use App\Services\AuthService;
+use Src\Core\TwigRenderer;
+use Src\Services\AIService;
+use Src\Services\AuthService;
+use Swoole\Http\Request;
+use Swoole\Http\Response;
 
 class AIController extends BaseController
 {
-    protected $twig;
-    protected $aiService;
-    protected $authService;
+    protected AIService $aiService;
+    protected AuthService $authService;
 
-    public function __construct(Environment $twig, AIService $aiService, AuthService $authService)
+    public function __construct(TwigRenderer $twigRenderer, AIService $aiService, AuthService $authService)
     {
-        $this->twig = $twig;
+        parent::__construct($twigRenderer);
         $this->aiService = $aiService;
         $this->authService = $authService;
     }
 
-    public function index()
+    public function index(Request $request, Response $response): void
     {
         $user = $this->authService->getUser();
-        return $this->twig->render('ai/interface.twig', ['user' => $user]);
+        $this->render($response, 'ai/interface', ['user' => $user]);
     }
 
-    public function generateContent()
+    public function generateContent(Request $request, Response $response): void
     {
         $user = $this->authService->getUser();
-        $prompt = $this->request->getPost('prompt');
+        $prompt = $request->post['prompt'] ?? '';
         
         $result = $this->aiService->generateContent($user->id, $prompt);
 
-        return $this->response->setJSON($result);
+        $this->jsonResponse($response, $result);
     }
 
-    public function getHistory()
+    public function getHistory(Request $request, Response $response): void
     {
         $user = $this->authService->getUser();
         $history = $this->aiService->getGenerationHistory($user->id);
 
-        return $this->response->setJSON($history);
+        $this->jsonResponse($response, $history);
     }
 
-    public function analyzeImage()
+    public function analyzeImage(Request $request, Response $response): void
     {
         $user = $this->authService->getUser();
-        $image = $this->request->getFile('image');
+        $image = $request->files['image'] ?? null;
 
-        if ($image->isValid() && !$image->hasMoved()) {
+        if ($image && $image['error'] === UPLOAD_ERR_OK) {
             $result = $this->aiService->analyzeImage($user->id, $image);
-            return $this->response->setJSON($result);
+            $this->jsonResponse($response, $result);
+        } else {
+            $this->jsonResponse($response, ['error' => 'Invalid image upload'], 400);
         }
-
-        return $this->response->setStatusCode(400)->setJSON(['error' => 'Invalid image upload']);
     }
 
-    public function chatbot()
+    public function chatbot(Request $request, Response $response): void
     {
         $user = $this->authService->getUser();
-        $message = $this->request->getPost('message');
+        $message = $request->post['message'] ?? '';
 
         $response = $this->aiService->chatbotResponse($user->id, $message);
 
-        return $this->response->setJSON($response);
+        $this->jsonResponse($response, $response);
     }
 }

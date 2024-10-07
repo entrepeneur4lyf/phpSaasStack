@@ -4,30 +4,20 @@ declare(strict_types=1);
 
 namespace Src\Core;
 
-use Swoole\Table;
+use Src\Cache\SwooleRedisCache;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
-use Swoole\Lock;
 
 class SessionManager
 {
-    private Table $sessionTable;
-    private Table $lockTable;
+    private SwooleRedisCache $cache;
     private string $cookieName;
     private int $lifetime;
     private string $encryptionKey;
 
-    public function __construct(int $tableSize = 1024, string $cookieName = 'PHPSESSID', int $lifetime = 3600, string $encryptionKey = '')
+    public function __construct(SwooleRedisCache $cache, string $cookieName = 'PHPSESSID', int $lifetime = 3600, string $encryptionKey = '')
     {
-        $this->sessionTable = new Table($tableSize);
-        $this->sessionTable->column('data', Table::TYPE_STRING, 1024);
-        $this->sessionTable->column('timestamp', Table::TYPE_INT);
-        $this->sessionTable->create();
-
-        $this->lockTable = new Table($tableSize);
-        $this->lockTable->column('lock', Table::TYPE_INT, 8);
-        $this->lockTable->create();
-
+        $this->cache = $cache;
         $this->cookieName = $cookieName;
         $this->lifetime = $lifetime;
         $this->encryptionKey = $encryptionKey ?: bin2hex(random_bytes(32));
@@ -38,46 +28,30 @@ class SessionManager
         $sessionId = $this->getSessionId($request);
         $this->setSessionCookie($response, $sessionId);
 
-        $this->lock($sessionId);
-        $sessionData = $this->retrieveSession($sessionId);
-        $this->unlock($sessionId);
-
-        return $sessionData;
+        return $this->retrieveSession($sessionId);
     }
 
     public function save(string $sessionId, array $data): void
     {
-        $this->lock($sessionId);
         $encryptedData = $this->encrypt(json_encode($data));
-        $this->sessionTable->set($sessionId, [
-            'data' => $encryptedData,
-            'timestamp' => time()
-        ]);
-        $this->unlock($sessionId);
+        $this->cache->set("session:{$sessionId}", $encryptedData, $this->lifetime);
     }
 
     public function destroy(string $sessionId, Response $response): void
     {
-        $this->lock($sessionId);
-        $this->sessionTable->del($sessionId);
-        $this->unlock($sessionId);
+        $this->cache->delete("session:{$sessionId}");
         $this->removeSessionCookie($response);
     }
 
     public function gc(): void
     {
-        $now = time();
-        foreach ($this->sessionTable as $sessionId => $row) {
-            if ($now - $row['timestamp'] > $this->lifetime) {
-                $this->sessionTable->del($sessionId);
-            }
-        }
+        // Redis automatically expires keys, so we don't need to implement garbage collection
     }
 
     private function getSessionId(Request $request): string
     {
         $sessionId = $request->cookie[$this->cookieName] ?? '';
-        if (empty($sessionId) || !$this->sessionTable->exist($sessionId)) {
+        if (empty($sessionId) || !$this->cache->has("session:{$sessionId}")) {
             $sessionId = $this->generateSessionId();
         }
         return $sessionId;
@@ -85,15 +59,11 @@ class SessionManager
 
     private function retrieveSession(string $sessionId): array
     {
-        if ($this->sessionTable->exist($sessionId)) {
-            $encryptedData = $this->sessionTable->get($sessionId, 'data');
-            $sessionData = json_decode($this->decrypt($encryptedData), true);
-            $this->sessionTable->set($sessionId, ['timestamp' => time()]);
-        } else {
-            $sessionData = [];
-            $this->save($sessionId, $sessionData);
+        $encryptedData = $this->cache->get("session:{$sessionId}");
+        if ($encryptedData !== null) {
+            return json_decode($this->decrypt($encryptedData), true) ?? [];
         }
-        return $sessionData;
+        return [];
     }
 
     private function setSessionCookie(Response $response, string $sessionId): void
@@ -140,28 +110,6 @@ class SessionManager
         $iv = substr($data, 0, 16);
         $encrypted = substr($data, 16);
         return openssl_decrypt($encrypted, 'AES-256-CBC', $this->encryptionKey, 0, $iv);
-    }
-
-    private function lock(string $sessionId): void
-    {
-        if (!$this->lockTable->exist($sessionId)) {
-            $this->lockTable->set($sessionId, ['lock' => 0]);
-        }
-        $lock = new Lock(SWOOLE_MUTEX);
-        $this->lockTable->set($sessionId, ['lock' => $lock->getLockId()]);
-        $lock->lock();
-    }
-
-    private function unlock(string $sessionId): void
-    {
-        if ($this->lockTable->exist($sessionId)) {
-            $lockId = $this->lockTable->get($sessionId, 'lock');
-            if ($lockId) {
-                $lock = new Lock(SWOOLE_MUTEX, $lockId);
-                $lock->unlock();
-            }
-            $this->lockTable->del($sessionId);
-        }
     }
 
     public function getCookieName(): string

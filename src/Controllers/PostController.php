@@ -1,117 +1,125 @@
 <?php
 
-namespace App\Controllers;
+namespace Src\Controllers;
 
-use Twig\Environment;
-use App\Services\PostService;
-use App\Services\AuthService;
+use Src\Core\TwigRenderer;
+use Src\Services\PostService;
+use Src\Services\AuthService;
+use Swoole\Http\Request;
+use Swoole\Http\Response;
 
 class PostController extends BaseController
 {
-    protected $twig;
-    protected $postService;
-    protected $authService;
+    protected PostService $postService;
+    protected AuthService $authService;
 
-    public function __construct(Environment $twig, PostService $postService, AuthService $authService)
+    public function __construct(TwigRenderer $twigRenderer, PostService $postService, AuthService $authService)
     {
-        $this->twig = $twig;
+        parent::__construct($twigRenderer);
         $this->postService = $postService;
         $this->authService = $authService;
     }
 
-    public function index()
+    public function index(Request $request, Response $response): void
     {
         $posts = $this->postService->getAllPosts();
-        return $this->twig->render('post/index.twig', ['posts' => $posts]);
+        $this->render($response, 'post/index', ['posts' => $posts]);
     }
 
-    public function create()
+    public function create(Request $request, Response $response): void
     {
-        return $this->twig->render('post/create.twig');
+        $this->render($response, 'post/create');
     }
 
-    public function store()
+    public function store(Request $request, Response $response): void
     {
         $user = $this->authService->getUser();
-        $data = $this->request->getPost();
+        $data = $request->post;
         $data['user_id'] = $user->id;
 
         $result = $this->postService->createPost($data);
 
         if ($result) {
-            return $this->response->setJSON(['success' => true, 'message' => 'Post created successfully']);
+            $this->jsonResponse($response, ['success' => true, 'message' => 'Post created successfully']);
         } else {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to create post']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to create post'], 500);
         }
     }
 
-    public function view($id)
+    public function view(Request $request, Response $response, array $args): void
     {
-        $post = $this->postService->getPostById($id);
+        $post = $this->postService->getPostById($args['id']);
         if (!$post) {
-            return $this->response->setStatusCode(404)->setBody('Post not found');
+            $this->jsonResponse($response, ['error' => 'Post not found'], 404);
+            return;
         }
-        return $this->twig->render('post/view.twig', ['post' => $post]);
+        $this->render($response, 'post/view', ['post' => $post]);
     }
 
-    public function edit($id)
+    public function edit(Request $request, Response $response, array $args): void
     {
         $user = $this->authService->getUser();
-        $post = $this->postService->getPostById($id);
+        $post = $this->postService->getPostById($args['id']);
 
         if (!$post) {
-            return $this->response->setStatusCode(404)->setBody('Post not found');
+            $this->jsonResponse($response, ['error' => 'Post not found'], 404);
+            return;
         }
 
         if ($post->user_id != $user->id && !$user->isAdmin()) {
-            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+            $this->jsonResponse($response, ['error' => 'Unauthorized'], 403);
+            return;
         }
 
-        return $this->twig->render('post/edit.twig', ['post' => $post]);
+        $this->render($response, 'post/edit', ['post' => $post]);
     }
 
-    public function update($id)
+    public function update(Request $request, Response $response, array $args): void
     {
         $user = $this->authService->getUser();
-        $post = $this->postService->getPostById($id);
+        $post = $this->postService->getPostById($args['id']);
 
         if (!$post) {
-            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Post not found']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Post not found'], 404);
+            return;
         }
 
         if ($post->user_id != $user->id && !$user->isAdmin()) {
-            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Unauthorized']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Unauthorized'], 403);
+            return;
         }
 
-        $data = $this->request->getPost();
-        $result = $this->postService->updatePost($id, $data);
+        $data = $request->post;
+        $result = $this->postService->updatePost($args['id'], $data);
 
         if ($result) {
-            return $this->response->setJSON(['success' => true, 'message' => 'Post updated successfully']);
+            $this->jsonResponse($response, ['success' => true, 'message' => 'Post updated successfully']);
         } else {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to update post']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to update post'], 500);
         }
     }
 
-    public function delete($id)
+    public function delete(Request $request, Response $response, array $args): void
     {
         $user = $this->authService->getUser();
-        $post = $this->postService->getPostById($id);
+        $post = $this->postService->getPostById($args['id']);
 
         if (!$post) {
-            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Post not found']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Post not found'], 404);
+            return;
         }
 
         if ($post->user_id != $user->id && !$user->isAdmin()) {
-            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Unauthorized']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Unauthorized'], 403);
+            return;
         }
 
-        $result = $this->postService->deletePost($id);
+        $result = $this->postService->deletePost($args['id']);
 
         if ($result) {
-            return $this->response->setJSON(['success' => true, 'message' => 'Post deleted successfully']);
+            $this->jsonResponse($response, ['success' => true, 'message' => 'Post deleted successfully']);
         } else {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to delete post']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to delete post'], 500);
         }
     }
 }

@@ -9,6 +9,7 @@ use Src\Commands\ProcessAIRequests;
 use Src\Config\Dependencies;
 use Src\Commands\ReloadConfigCommand;
 use Src\Commands\ClearConfigCacheCommand;
+use Src\Commands\RefreshServicesCommand;
 
 $container = Dependencies::getContainer();
 
@@ -19,6 +20,7 @@ $application->add($container->get(PublishScheduledPosts::class));
 $application->add($container->get(ProcessAIRequests::class));
 $application->add($container->get(ReloadConfigCommand::class));
 $application->add($container->get(ClearConfigCacheCommand::class));
+$application->add($container->get(RefreshServicesCommand::class));
 
 // Add more commands here as needed
 

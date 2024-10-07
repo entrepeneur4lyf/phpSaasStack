@@ -1,97 +1,101 @@
 <?php
 
-namespace App\Controllers;
+namespace Src\Controllers;
 
-use Twig\Environment;
-use App\Services\LicenseService;
-use App\Services\AuthService;
+use Src\Core\TwigRenderer;
+use Src\Services\LicenseService;
+use Src\Services\AuthService;
+use Swoole\Http\Request;
+use Swoole\Http\Response;
 
 class LicenseController extends BaseController
 {
-    protected $twig;
-    protected $licenseService;
-    protected $authService;
+    protected LicenseService $licenseService;
+    protected AuthService $authService;
 
-    public function __construct(Environment $twig, LicenseService $licenseService, AuthService $authService)
+    public function __construct(TwigRenderer $twigRenderer, LicenseService $licenseService, AuthService $authService)
     {
-        $this->twig = $twig;
+        parent::__construct($twigRenderer);
         $this->licenseService = $licenseService;
         $this->authService = $authService;
     }
 
-    public function index()
+    public function index(Request $request, Response $response): void
     {
         $user = $this->authService->getUser();
         $licenses = $this->licenseService->getLicensesByUser($user->id);
-        return $this->twig->render('license/index.twig', ['licenses' => $licenses]);
+        $this->render($response, 'license/index', ['licenses' => $licenses]);
     }
 
-    public function create()
+    public function create(Request $request, Response $response): void
     {
-        return $this->twig->render('license/create.twig');
+        $this->render($response, 'license/create');
     }
 
-    public function store()
+    public function store(Request $request, Response $response): void
     {
         $user = $this->authService->getUser();
-        $data = $this->request->getPost();
+        $data = $request->post;
         $data['user_id'] = $user->id;
 
         $result = $this->licenseService->createLicense($data);
 
         if ($result) {
-            return $this->response->setJSON(['success' => true, 'message' => 'License created successfully']);
+            $this->jsonResponse($response, ['success' => true, 'message' => 'License created successfully']);
         } else {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to create license']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to create license'], 500);
         }
     }
 
-    public function edit($id)
+    public function edit(Request $request, Response $response, array $args): void
     {
         $user = $this->authService->getUser();
-        $license = $this->licenseService->getLicenseById($id);
+        $license = $this->licenseService->getLicenseById($args['id']);
 
         if (!$license || $license->user_id !== $user->id) {
-            return $this->response->setStatusCode(404)->setBody('License not found');
+            $this->jsonResponse($response, ['error' => 'License not found'], 404);
+            return;
         }
 
-        return $this->twig->render('license/edit.twig', ['license' => $license]);
+        $this->render($response, 'license/edit', ['license' => $license]);
     }
 
-    public function update($id)
+    public function update(Request $request, Response $response, array $args): void
     {
         $user = $this->authService->getUser();
-        $license = $this->licenseService->getLicenseById($id);
+        $license = $this->licenseService->getLicenseById($args['id']);
 
         if (!$license || $license->user_id !== $user->id) {
-            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'License not found']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'License not found'], 404);
+            return;
         }
 
-        $data = $this->request->getPost();
-        $result = $this->licenseService->updateLicense($id, $data);
+        $data = $request->post;
+        $result = $this->licenseService->updateLicense($args['id'], $data);
 
         if ($result) {
-            return $this->response->setJSON(['success' => true, 'message' => 'License updated successfully']);
+            $this->jsonResponse($response, ['success' => true, 'message' => 'License updated successfully']);
         } else {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to update license']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to update license'], 500);
         }
     }
 
-    public function delete($id)
+    public function delete(Request $request, Response $response, array $args): void
     {
         $user = $this->authService->getUser();
-        $license = $this->licenseService->getLicenseById($id);
+        $license = $this->licenseService->getLicenseById($args['id']);
 
         if (!$license || $license->user_id !== $user->id) {
-            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'License not found']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'License not found'], 404);
+            return;
         }
 
-        $result = $this->licenseService->deleteLicense($id);
+        $result = $this->licenseService->deleteLicense($args['id']);
 
         if ($result) {
-            return $this->response->setJSON(['success' => true, 'message' => 'License deleted successfully']);
+            $this->jsonResponse($response, ['success' => true, 'message' => 'License deleted successfully']);
         } else {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to delete license']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to delete license'], 500);
         }
     }
 }

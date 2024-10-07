@@ -1,100 +1,107 @@
 <?php
 
-namespace App\Controllers;
+namespace Src\Controllers;
 
-use Twig\Environment;
-use App\Services\AdminService;
-use App\Services\AuthService;
+use Src\Core\TwigRenderer;
+use Src\Services\AdminService;
+use Src\Services\AuthService;
+use Swoole\Http\Request;
+use Swoole\Http\Response;
 
 class AdminController extends BaseController
 {
-    protected $twig;
-    protected $adminService;
-    protected $authService;
+    protected AdminService $adminService;
+    protected AuthService $authService;
 
-    public function __construct(Environment $twig, AdminService $adminService, AuthService $authService)
+    public function __construct(TwigRenderer $twigRenderer, AdminService $adminService, AuthService $authService)
     {
-        $this->twig = $twig;
+        parent::__construct($twigRenderer);
         $this->adminService = $adminService;
         $this->authService = $authService;
     }
 
-    public function dashboard()
+    public function dashboard(Request $request, Response $response): void
     {
         $user = $this->authService->getUser();
         if (!$user->isAdmin()) {
-            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+            $this->jsonResponse($response, ['error' => 'Unauthorized'], 403);
+            return;
         }
 
         $stats = $this->adminService->getDashboardStats();
-        return $this->twig->render('admin/dashboard.twig', ['stats' => $stats]);
+        $this->render($response, 'admin/dashboard', ['stats' => $stats]);
     }
 
-    public function users()
+    public function users(Request $request, Response $response): void
     {
         $user = $this->authService->getUser();
         if (!$user->isAdmin()) {
-            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+            $this->jsonResponse($response, ['error' => 'Unauthorized'], 403);
+            return;
         }
 
         $users = $this->adminService->getAllUsers();
-        return $this->twig->render('admin/users.twig', ['users' => $users]);
+        $this->render($response, 'admin/users', ['users' => $users]);
     }
 
-    public function editUser($id)
+    public function editUser(Request $request, Response $response, array $args): void
     {
         $user = $this->authService->getUser();
         if (!$user->isAdmin()) {
-            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+            $this->jsonResponse($response, ['error' => 'Unauthorized'], 403);
+            return;
         }
 
-        $editUser = $this->adminService->getUserById($id);
-        return $this->twig->render('admin/edit_user.twig', ['editUser' => $editUser]);
+        $editUser = $this->adminService->getUserById($args['id']);
+        $this->render($response, 'admin/edit_user', ['editUser' => $editUser]);
     }
 
-    public function updateUser($id)
+    public function updateUser(Request $request, Response $response, array $args): void
     {
         $user = $this->authService->getUser();
         if (!$user->isAdmin()) {
-            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Unauthorized']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Unauthorized'], 403);
+            return;
         }
 
-        $data = $this->request->getPost();
-        $result = $this->adminService->updateUser($id, $data);
+        $data = $request->post;
+        $result = $this->adminService->updateUser($args['id'], $data);
 
         if ($result) {
-            return $this->response->setJSON(['success' => true, 'message' => 'User updated successfully']);
+            $this->jsonResponse($response, ['success' => true, 'message' => 'User updated successfully']);
         } else {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to update user']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to update user'], 500);
         }
     }
 
-    public function messageCategories()
+    public function messageCategories(Request $request, Response $response): void
     {
         $user = $this->authService->getUser();
         if (!$user->isAdmin()) {
-            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+            $this->jsonResponse($response, ['error' => 'Unauthorized'], 403);
+            return;
         }
 
         $categories = $this->adminService->getMessageCategories();
-        return $this->twig->render('admin/message_categories.twig', ['categories' => $categories]);
+        $this->render($response, 'admin/message_categories', ['categories' => $categories]);
     }
 
-    public function updateMessageCategory()
+    public function updateMessageCategory(Request $request, Response $response): void
     {
         $user = $this->authService->getUser();
         if (!$user->isAdmin()) {
-            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Unauthorized']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Unauthorized'], 403);
+            return;
         }
 
-        $categoryId = $this->request->getPost('category_id');
-        $data = $this->request->getPost();
+        $categoryId = $request->post['category_id'];
+        $data = $request->post;
         $result = $this->adminService->updateMessageCategory($categoryId, $data);
 
         if ($result) {
-            return $this->response->setJSON(['success' => true, 'message' => 'Category updated successfully']);
+            $this->jsonResponse($response, ['success' => true, 'message' => 'Category updated successfully']);
         } else {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to update category']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to update category'], 500);
         }
     }
 }

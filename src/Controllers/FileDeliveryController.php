@@ -1,57 +1,82 @@
 <?php
 
-namespace App\Controllers;
+namespace Src\Controllers;
 
-use Twig\Environment;
-use App\Services\FileDeliveryService;
-use App\Services\AuthService;
+use Src\Core\TwigRenderer;
+use Src\Services\FileDeliveryService;
+use Src\Services\AuthService;
+use Swoole\Http\Request;
+use Swoole\Http\Response;
 
 class FileDeliveryController extends BaseController
 {
-    protected $twig;
-    protected $fileDeliveryService;
-    protected $authService;
+    protected FileDeliveryService $fileDeliveryService;
+    protected AuthService $authService;
 
-    public function __construct(Environment $twig, FileDeliveryService $fileDeliveryService, AuthService $authService)
+    public function __construct(TwigRenderer $twigRenderer, FileDeliveryService $fileDeliveryService, AuthService $authService)
     {
-        $this->twig = $twig;
+        parent::__construct($twigRenderer);
         $this->fileDeliveryService = $fileDeliveryService;
         $this->authService = $authService;
     }
 
-    public function download($fileId)
+    public function download(Request $request, Response $response, array $args): void
     {
         $user = $this->authService->getUser();
+        $fileId = $args['fileId'] ?? null;
         $file = $this->fileDeliveryService->getFileById($fileId);
 
         if (!$file) {
-            return $this->response->setStatusCode(404)->setBody('File not found');
+            $this->jsonResponse($response, ['error' => 'File not found'], 404);
+            return;
         }
 
         if (!$this->fileDeliveryService->canUserAccessFile($user->id, $fileId)) {
-            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+            $this->jsonResponse($response, ['error' => 'Unauthorized'], 403);
+            return;
         }
 
         $filePath = $this->fileDeliveryService->getFilePath($fileId);
-        return $this->response->download($filePath, null);
+        $response->header('Content-Type', mime_content_type($filePath));
+        $response->header('Content-Disposition', 'attachment; filename="' . basename($filePath) . '"');
+        $response->sendfile($filePath);
     }
 
-    public function streamVideo($videoId)
+    public function streamVideo(Request $request, Response $response, array $args): void
     {
         $user = $this->authService->getUser();
+        $videoId = $args['videoId'] ?? null;
         $video = $this->fileDeliveryService->getVideoById($videoId);
 
         if (!$video) {
-            return $this->response->setStatusCode(404)->setBody('Video not found');
+            $this->jsonResponse($response, ['error' => 'Video not found'], 404);
+            return;
         }
 
         if (!$this->fileDeliveryService->canUserAccessVideo($user->id, $videoId)) {
-            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+            $this->jsonResponse($response, ['error' => 'Unauthorized'], 403);
+            return;
         }
 
         $videoPath = $this->fileDeliveryService->getVideoPath($videoId);
-        return $this->response->setHeader('Content-Type', 'video/mp4')
-                              ->setHeader('Accept-Ranges', 'bytes')
-                              ->setBody(file_get_contents($videoPath));
+        $response->header('Content-Type', 'video/mp4');
+        $response->header('Accept-Ranges', 'bytes');
+        
+        // Implement range requests for video streaming
+        $fileSize = filesize($videoPath);
+        $range = $request->header['range'] ?? '';
+        if ($range) {
+            list($start, $end) = explode('-', substr($range, 6));
+            $start = intval($start);
+            $end = $end ? intval($end) : $fileSize - 1;
+            $length = $end - $start + 1;
+            $response->header('HTTP/1.1 206 Partial Content');
+            $response->header('Content-Range', "bytes $start-$end/$fileSize");
+            $response->header('Content-Length', $length);
+            $response->sendfile($videoPath, $start, $length);
+        } else {
+            $response->header('Content-Length', $fileSize);
+            $response->sendfile($videoPath);
+        }
     }
 }

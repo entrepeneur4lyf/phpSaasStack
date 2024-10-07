@@ -4,37 +4,21 @@ namespace Src\Core;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use Monolog\Handler\SwiftMailerHandler;
-use Swift_Mailer;
-use Swift_Message;
-use Swift_SmtpTransport;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Psr\Log\LoggerInterface;
 
 class ErrorReporter
 {
-    private Logger $logger;
-    private Swift_Mailer $mailer;
+    private LoggerInterface $logger;
+    private MailerInterface $mailer;
     private array $config;
 
-    public function __construct(array $config)
+    public function __construct(LoggerInterface $logger, MailerInterface $mailer, array $config)
     {
+        $this->logger = $logger;
+        $this->mailer = $mailer;
         $this->config = $config;
-        $this->initializeLogger();
-        $this->initializeMailer();
-    }
-
-    private function initializeLogger(): void
-    {
-        $this->logger = new Logger('error_reporter');
-        $this->logger->pushHandler(new StreamHandler(STORAGE_PATH . '/logs/error_reports.log', Logger::ERROR));
-    }
-
-    private function initializeMailer(): void
-    {
-        $transport = (new Swift_SmtpTransport($this->config['smtp_host'], $this->config['smtp_port']))
-            ->setUsername($this->config['smtp_username'])
-            ->setPassword($this->config['smtp_password']);
-
-        $this->mailer = new Swift_Mailer($transport);
     }
 
     public function reportError(\Throwable $error): void
@@ -55,12 +39,13 @@ class ErrorReporter
 
     private function sendErrorEmail(\Throwable $error): void
     {
-        $message = (new Swift_Message('Critical Error Report'))
-            ->setFrom([$this->config['from_email'] => $this->config['from_name']])
-            ->setTo($this->config['to_email'])
-            ->setBody($this->formatErrorEmail($error), 'text/html');
+        $email = (new Email())
+            ->from($this->config['from_email'])
+            ->to($this->config['to_email'])
+            ->subject('Critical Error Report')
+            ->html($this->formatErrorEmail($error));
 
-        $this->mailer->send($message);
+        $this->mailer->send($email);
     }
 
     private function formatErrorEmail(\Throwable $error): string

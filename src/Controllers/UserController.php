@@ -1,68 +1,107 @@
 <?php
 
-namespace App\Controllers;
+namespace Src\Controllers;
 
-use Twig\Environment;
-use App\Services\UserService;
-use App\Services\AuthService;
+use Src\Core\TwigRenderer;
+use Src\Services\UserService;
+use Src\Services\AuthService;
+use Swoole\Http\Request;
+use Swoole\Http\Response;
 
 class UserController extends BaseController
 {
-    protected $twig;
-    protected $userService;
-    protected $authService;
+    protected UserService $userService;
+    protected AuthService $authService;
 
-    public function __construct(Environment $twig, UserService $userService, AuthService $authService)
+    public function __construct(TwigRenderer $twigRenderer, UserService $userService, AuthService $authService)
     {
-        $this->twig = $twig;
+        parent::__construct($twigRenderer);
         $this->userService = $userService;
         $this->authService = $authService;
     }
 
-    public function index()
+    public function index(Request $request, Response $response): void
     {
         $users = $this->userService->getAllUsers();
-        return $this->twig->render('user/index.twig', ['users' => $users]);
+        $this->render($response, 'user/index', ['users' => $users]);
     }
 
-    public function profile($id)
+    public function profile(Request $request, Response $response, array $args): void
     {
-        $user = $this->userService->getUserById($id);
+        $user = $this->userService->getUserById($args['id']);
         if (!$user) {
-            return $this->response->setStatusCode(404)->setBody('User not found');
+            $this->jsonResponse($response, ['error' => 'User not found'], 404);
+            return;
         }
-        return $this->twig->render('user/profile.twig', ['user' => $user]);
+        $this->render($response, 'user/profile', ['user' => $user]);
     }
 
-    public function edit($id)
+    public function edit(Request $request, Response $response, array $args): void
     {
         $currentUser = $this->authService->getUser();
-        if ($currentUser->id != $id && !$currentUser->isAdmin()) {
-            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+        if ($currentUser->id != $args['id'] && !$currentUser->isAdmin()) {
+            $this->jsonResponse($response, ['error' => 'Unauthorized'], 403);
+            return;
         }
 
-        $user = $this->userService->getUserById($id);
+        $user = $this->userService->getUserById($args['id']);
         if (!$user) {
-            return $this->response->setStatusCode(404)->setBody('User not found');
+            $this->jsonResponse($response, ['error' => 'User not found'], 404);
+            return;
         }
 
-        return $this->twig->render('user/edit.twig', ['user' => $user]);
+        $this->render($response, 'user/edit', ['user' => $user]);
     }
 
-    public function update($id)
+    public function update(Request $request, Response $response, array $args): void
     {
         $currentUser = $this->authService->getUser();
-        if ($currentUser->id != $id && !$currentUser->isAdmin()) {
-            return $this->response->setStatusCode(403)->setBody('Unauthorized');
+        if ($currentUser->id != $args['id'] && !$currentUser->isAdmin()) {
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Unauthorized'], 403);
+            return;
         }
 
-        $data = $this->request->getPost();
-        $result = $this->userService->updateUser($id, $data);
+        $data = $request->post;
+        $result = $this->userService->updateUser($args['id'], $data);
 
         if ($result) {
-            return $this->response->setJSON(['success' => true, 'message' => 'User updated successfully']);
+            $this->jsonResponse($response, ['success' => true, 'message' => 'User updated successfully']);
         } else {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to update user']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to update user'], 500);
+        }
+    }
+
+    public function delete(Request $request, Response $response, array $args): void
+    {
+        $currentUser = $this->authService->getUser();
+        if (!$currentUser->isAdmin()) {
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Unauthorized'], 403);
+            return;
+        }
+
+        $result = $this->userService->deleteUser($args['id']);
+
+        if ($result) {
+            $this->jsonResponse($response, ['success' => true, 'message' => 'User deleted successfully']);
+        } else {
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to delete user'], 500);
+        }
+    }
+
+    public function create(Request $request, Response $response): void
+    {
+        $this->render($response, 'user/create');
+    }
+
+    public function store(Request $request, Response $response): void
+    {
+        $data = $request->post;
+        $result = $this->userService->createUser($data);
+
+        if ($result) {
+            $this->jsonResponse($response, ['success' => true, 'message' => 'User created successfully']);
+        } else {
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to create user'], 500);
         }
     }
 }

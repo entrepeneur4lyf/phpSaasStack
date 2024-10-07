@@ -1,60 +1,61 @@
 <?php
 
-namespace App\Controllers;
+namespace Src\Controllers;
 
-use Twig\Environment;
-use App\Services\MarkdownService;
-use App\Services\AuthService;
+use Src\Core\TwigRenderer;
+use Src\Services\MarkdownService;
+use Src\Services\AuthService;
+use Swoole\Http\Request;
+use Swoole\Http\Response;
 
 class MarkdownController extends BaseController
 {
-    protected $twig;
-    protected $markdownService;
-    protected $authService;
+    protected MarkdownService $markdownService;
+    protected AuthService $authService;
 
-    public function __construct(Environment $twig, MarkdownService $markdownService, AuthService $authService)
+    public function __construct(TwigRenderer $twigRenderer, MarkdownService $markdownService, AuthService $authService)
     {
-        $this->twig = $twig;
+        parent::__construct($twigRenderer);
         $this->markdownService = $markdownService;
         $this->authService = $authService;
     }
 
-    public function preview()
+    public function preview(Request $request, Response $response)
     {
-        $markdown = $this->request->getPost('markdown');
+        $markdown = $request->post['markdown'] ?? '';
         $html = $this->markdownService->convertToHtml($markdown);
-        return $this->response->setJSON(['html' => $html]);
+        $this->jsonResponse($response, ['html' => $html]);
     }
 
-    public function editor()
+    public function editor(Request $request, Response $response)
     {
-        return $this->twig->render('markdown/editor.twig');
+        $this->render($response, 'markdown/editor');
     }
 
-    public function save()
+    public function save(Request $request, Response $response)
     {
         $user = $this->authService->getUser();
-        $data = $this->request->getPost();
+        $data = $request->post;
         $data['user_id'] = $user->id;
 
         $result = $this->markdownService->saveDocument($data);
 
         if ($result) {
-            return $this->response->setJSON(['success' => true, 'message' => 'Document saved successfully']);
+            $this->jsonResponse($response, ['success' => true, 'message' => 'Document saved successfully']);
         } else {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to save document']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Failed to save document'], 500);
         }
     }
 
-    public function load($id)
+    public function load(Request $request, Response $response, $id)
     {
         $user = $this->authService->getUser();
         $document = $this->markdownService->getDocumentById($id);
 
         if (!$document || $document->user_id !== $user->id) {
-            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Document not found']);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'Document not found'], 404);
+        } else {
+            $this->jsonResponse($response, ['success' => true, 'document' => $document]);
         }
-
-        return $this->response->setJSON(['success' => true, 'document' => $document]);
     }
 }

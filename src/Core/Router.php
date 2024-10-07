@@ -19,7 +19,34 @@ class Router
         $this->container = $container;
     }
 
-    // ... (other methods remain the same)
+    public function get(string $path, string $handler): void
+    {
+        $this->addRoute('GET', $path, $handler);
+    }
+
+    public function post(string $path, string $handler): void
+    {
+        $this->addRoute('POST', $path, $handler);
+    }
+
+    public function put(string $path, string $handler): void
+    {
+        $this->addRoute('PUT', $path, $handler);
+    }
+
+    public function delete(string $path, string $handler): void
+    {
+        $this->addRoute('DELETE', $path, $handler);
+    }
+
+    private function addRoute(string $method, string $path, string $handler): void
+    {
+        $this->routes[] = [
+            'method' => strtolower($method),
+            'path' => $path,
+            'handler' => $handler,
+        ];
+    }
 
     public function addMiddleware(string $middleware): void
     {

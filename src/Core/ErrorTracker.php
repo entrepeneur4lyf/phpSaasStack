@@ -1,17 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Src\Core;
 
-use Redis;
+use Src\Cache\SwooleRedisCache;
+use Src\Interfaces\ErrorTrackerInterface;
+use Src\Cache\CacheManager;
 
-class ErrorTracker
+class ErrorTracker implements ErrorTrackerInterface
 {
-    private Redis $redis;
+    private SwooleRedisCache $cache;
     private int $ttl;
 
-    public function __construct(Redis $redis, int $ttl = 86400)
+    public function __construct(SwooleRedisCache $cache, int $ttl = 86400)
     {
-        $this->redis = $redis;
+        $this->cache = $cache;
         $this->ttl = $ttl;
     }
 
@@ -20,8 +24,8 @@ class ErrorTracker
         $errorHash = $this->getErrorHash($error);
         $errorKey = "error:{$errorHash}";
 
-        $this->redis->incr($errorKey);
-        $this->redis->expire($errorKey, $this->ttl);
+        $count = $this->cache->get($errorKey, 0);
+        $this->cache->set($errorKey, $count + 1, $this->ttl);
 
         $this->storeErrorDetails($errorHash, $error);
     }
@@ -41,19 +45,18 @@ class ErrorTracker
             'last_occurrence' => time(),
         ];
 
-        $this->redis->hMSet("error_details:{$errorHash}", $errorDetails);
-        $this->redis->expire("error_details:{$errorHash}", $this->ttl);
+        $this->cache->set("error_details:{$errorHash}", $errorDetails, $this->ttl);
     }
 
     public function getTopErrors(int $limit = 10): array
     {
         $errors = [];
-        $keys = $this->redis->keys('error:*');
+        $keys = $this->cache->getKeys('error:*');
 
         foreach ($keys as $key) {
-            $count = $this->redis->get($key);
+            $count = $this->cache->get($key);
             $errorHash = substr($key, 6);
-            $details = $this->redis->hGetAll("error_details:{$errorHash}");
+            $details = $this->cache->get("error_details:{$errorHash}");
             $errors[] = ['count' => $count, 'details' => $details];
         }
 

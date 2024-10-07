@@ -4,16 +4,20 @@ namespace Src\Controllers;
 
 use Swoole\Http\Request;
 use Swoole\Http\Response;
+use Src\Core\TwigRenderer;
 
 abstract class BaseController
 {
+    protected TwigRenderer $twigRenderer;
+
+    public function __construct(TwigRenderer $twigRenderer)
+    {
+        $this->twigRenderer = $twigRenderer;
+    }
+
     protected function render(Response $response, string $view, array $data = []): void
     {
-        ob_start();
-        extract($data);
-        include __DIR__ . "/../Views/{$view}.php";
-        $content = ob_get_clean();
-        $response->end($content);
+        $this->twigRenderer->render($response, $view . '.twig', $data);
     }
 
     protected function jsonResponse(Response $response, array $data, int $statusCode = 200): void

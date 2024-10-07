@@ -9,50 +9,112 @@ use Src\Interfaces\CacheServiceInterface;
 class FileCacheService implements CacheServiceInterface
 {
     private string $cacheDir;
+    private int $defaultTtl;
 
-    public function __construct(string $cacheDir = '../cache')
+    public function __construct(array $config)
     {
-        $this->cacheDir = $cacheDir;
+        $this->cacheDir = $config['cache_dir'] ?? sys_get_temp_dir() . '/app_cache';
+        $this->defaultTtl = $config['default_ttl'] ?? 3600;
+
         if (!is_dir($this->cacheDir)) {
             mkdir($this->cacheDir, 0777, true);
         }
     }
 
-    public function get(string $key): ?string
+    public function get($key, $default = null)
     {
-        $filename = $this->getCacheFilename($key);
-        if (file_exists($filename) && is_readable($filename)) {
-            $content = file_get_contents($filename);
-            $data = unserialize($content);
-            if ($data['expiry'] > time()) {
-                return $data['value'];
-            }
-            $this->delete($key);
+        $filename = $this->getFilename($key);
+        if (!file_exists($filename)) {
+            return $default;
         }
-        return null;
+
+        $data = unserialize(file_get_contents($filename));
+        if ($data['expiry'] !== 0 && $data['expiry'] < time()) {
+            $this->delete($key);
+            return $default;
+        }
+
+        return $data['value'];
     }
 
-    public function set(string $key, string $value, int $ttl = 3600): bool
+    public function set($key, $value, $ttl = null): bool
     {
-        $filename = $this->getCacheFilename($key);
-        $data = [
+        $filename = $this->getFilename($key);
+        $expiry = $ttl !== null ? time() + $ttl : ($this->defaultTtl > 0 ? time() + $this->defaultTtl : 0);
+        $data = serialize([
             'value' => $value,
-            'expiry' => time() + $ttl,
-        ];
-        return file_put_contents($filename, serialize($data)) !== false;
+            'expiry' => $expiry,
+        ]);
+
+        return file_put_contents($filename, $data) !== false;
     }
 
-    public function delete(string $key): bool
+    public function delete($key): bool
     {
-        $filename = $this->getCacheFilename($key);
+        $filename = $this->getFilename($key);
         if (file_exists($filename)) {
             return unlink($filename);
         }
         return true;
     }
 
-    private function getCacheFilename(string $key): string
+    public function clear(): bool
     {
-        return $this->cacheDir . '/' . md5($key) . '.cache';
+        $files = glob($this->cacheDir . '/*');
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+        return true;
+    }
+
+    public function getMultiple($keys, $default = null): iterable
+    {
+        $result = [];
+        foreach ($keys as $key) {
+            $result[$key] = $this->get($key, $default);
+        }
+        return $result;
+    }
+
+    public function setMultiple($values, $ttl = null): bool
+    {
+        $success = true;
+        foreach ($values as $key => $value) {
+            if (!$this->set($key, $value, $ttl)) {
+                $success = false;
+            }
+        }
+        return $success;
+    }
+
+    public function deleteMultiple($keys): bool
+    {
+        $success = true;
+        foreach ($keys as $key) {
+            if (!$this->delete($key)) {
+                $success = false;
+            }
+        }
+        return $success;
+    }
+
+    public function has($key): bool
+    {
+        return $this->get($key, $this) !== $this;
+    }
+
+    public function getKeys(string $pattern): array
+    {
+        $files = glob($this->cacheDir . '/' . str_replace(['*', '?'], ['*', '?'], $pattern));
+        return array_map(function ($file) {
+            return basename($file);
+        }, $files);
+    }
+
+    private function getFilename(string $key): string
+    {
+        return $this->cacheDir . '/' . md5($key);
     }
 }

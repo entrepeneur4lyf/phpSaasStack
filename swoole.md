@@ -84,23 +84,11 @@
 - [x] Implement feature flags system for easy feature toggling
 
 ## 9. Dependency Injection
-- [ ] Optimize the dependency injection container for long-running processes
-- [ ] Implement lazy loading of services
-- [ ] Create a method to refresh stateful services without server restart
-- [ ] Implement scoped services (e.g., request-scoped, singleton)
-- [ ] Add support for factories in the DI container
-- [ ] Implement automatic dependency resolution based on type-hinting
-- [ ] Create a command to generate dependency injection configuration
-- [ ] Add support for tagged services and autoconfiguration
-
-## 10. Chat Functionality
-- [ ] Implement chat rooms using Swoole Tables or Redis
-- [ ] Create methods for joining and leaving chat rooms
-- [ ] Implement real-time message broadcasting to room participants
-- [ ] Add support for private messaging between users
-- [ ] Implement message persistence using the database
-- [ ] Create an API for retrieving chat history
-- [ ] Implement typing indicators and read receipts
-- [ ] Add support for multimedia messages (e.g., images, files)
-- [ ] Implement message encryption for enhanced security
-- [ ] Create a message queueing system for offline users
+- [x] Optimize the dependency injection container for long-running processes
+- [x] Implement lazy loading of services
+- [x] Create a method to refresh stateful services without server restart
+- [x] Implement scoped services (e.g., request-scoped, singleton)
+- [x] Add support for factories in the DI container
+- [x] Implement automatic dependency resolution based on type-hinting
+- [x] Create a command to generate dependency injection configuration
+- [x] Add support for tagged services and autoconfiguration
