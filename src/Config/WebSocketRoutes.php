@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Src\Core\WebSocketRouteCollection;
 use Src\Controllers\WebSocketController;
+use Src\Services\NotificationService;
 
 return function (WebSocketRouteCollection $routes) {
     $routes->addRoute('open', [WebSocketController::class, 'onOpen']);
@@ -21,4 +22,9 @@ return function (WebSocketRouteCollection $routes) {
 
     // Add a catch-all route for unhandled events
     $routes->addRoute('default', [WebSocketController::class, 'onUnhandledEvent']);
+
+    // Add notification handlers
+    $routes->addNotificationHandler('newMessage', [NotificationService::class, 'handleNewMessage']);
+    $routes->addNotificationHandler('newOrder', [NotificationService::class, 'handleNewOrder']);
+    $routes->addNotificationHandler('productUpdate', [NotificationService::class, 'handleProductUpdate']);
 };

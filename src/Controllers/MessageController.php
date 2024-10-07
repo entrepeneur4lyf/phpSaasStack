@@ -61,6 +61,18 @@ class MessageController extends BaseController
 
             $messageId = $this->messageService->sendMessage($messageData);
 
+            // Send real-time notification
+            $this->webSocketController->sendNotification(
+                $request->wsServer,
+                $data['recipient_id'],
+                'newMessage',
+                [
+                    'messageId' => $messageId,
+                    'sender' => $request->user->name,
+                    'subject' => $data['subject']
+                ]
+            );
+
             $this->jsonResponse($response, ['success' => true, 'message' => 'Message sent successfully', 'message_id' => $messageId]);
         } catch (ValidationException $e) {
             $this->jsonResponse($response, ['success' => false, 'message' => $e->getMessage()], 400);
