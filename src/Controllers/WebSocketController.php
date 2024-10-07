@@ -58,13 +58,6 @@ class WebSocketController extends AbstractWebSocketController
         $this->webSocketService->sendPrivateMessage($userId, $message);
     }
 }
-<?php
-
-declare(strict_types=1);
-
-namespace Src\Controllers;
-
-use Src\Core\WebSocketRouteCollection;
 use Swoole\WebSocket\Server;
 use Swoole\WebSocket\Frame;
 use Psr\Log\LoggerInterface;
