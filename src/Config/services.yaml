@@ -167,6 +167,18 @@ services:
         autowire: true
     Src\Controllers\MessageController:
         autowire: true
+
+    Src\Services\MessageService:
+        arguments:
+            $db: '@Src\Interfaces\DatabaseServiceInterface'
+
+    Src\Interfaces\MessageServiceInterface:
+        alias: Src\Services\MessageService
+
+    Src\Interfaces\DatabaseServiceInterface:
+        class: Src\Services\DatabaseService
+        arguments:
+            $config: '%database%'
     Src\Controllers\FollowController:
         autowire: true
     Src\Controllers\ModerationController:
