@@ -2,6 +2,11 @@
 
 namespace Src\Controllers;
 
+use League\CommonMark\CommonMarkConverter;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension;
+use League\CommonMark\MarkdownConverter;
 use Src\Core\TwigRenderer;
 use Src\Services\PostService;
 use Src\Services\AuthService;
@@ -12,12 +17,23 @@ class PostController extends BaseController
 {
     protected PostService $postService;
     protected AuthService $authService;
+    private MarkdownConverter $markdownConverter;
 
     public function __construct(TwigRenderer $twigRenderer, PostService $postService, AuthService $authService)
     {
         parent::__construct($twigRenderer);
         $this->postService = $postService;
         $this->authService = $authService;
+
+        // Initialize the Markdown converter with security-focused configuration
+        $environment = new Environment([
+            'html_input' => 'strip',
+            'allow_unsafe_links' => false,
+            'max_nesting_level' => 10,
+        ]);
+        $environment->addExtension(new CommonMarkCoreExtension());
+        $environment->addExtension(new DisallowedRawHtmlExtension());
+        $this->markdownConverter = new MarkdownConverter($environment);
     }
 
     public function index(Request $request, Response $response): void
@@ -51,9 +67,23 @@ class PostController extends BaseController
 
     private function sanitizeMarkdown(string $markdown): string
     {
-        // Implement Markdown sanitization here
-        // This is a placeholder and should be replaced with actual sanitization logic
-        return htmlspecialchars($markdown, ENT_QUOTES, 'UTF-8');
+        // Convert Markdown to HTML
+        $html = $this->markdownConverter->convert($markdown);
+
+        // Additional sanitization for extra security
+        $config = \HTMLPurifier_Config::createDefault();
+        $config->set('HTML.Allowed', 'p,b,i,strong,em,a[href|title],ul,ol,li,code,pre,h1,h2,h3,h4,h5,h6,blockquote,img[src|alt|title]');
+        $config->set('AutoFormat.AutoParagraph', true);
+        $config->set('AutoFormat.RemoveEmpty', true);
+
+        $purifier = new \HTMLPurifier($config);
+        $sanitizedHtml = $purifier->purify($html);
+
+        // Convert the sanitized HTML back to Markdown
+        $htmlToMarkdown = new \League\HTMLToMarkdown\HtmlConverter();
+        $sanitizedMarkdown = $htmlToMarkdown->convert($sanitizedHtml);
+
+        return $sanitizedMarkdown;
     }
 
     public function edit(Request $request, Response $response, array $args): void
@@ -65,6 +95,10 @@ class PostController extends BaseController
         }
 
         if ($request->getMethod() === 'POST') {
+            $data = $request->post;
+            
+            // Sanitize the Markdown content
+            $data['content'] = $this->sanitizeMarkdown($data['content']);
             $data = $request->post;
             $result = $this->postService->updatePost($args['id'], $data);
 
