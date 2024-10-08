@@ -59,3 +59,17 @@ function searchResults() {
 {% if results|length == 0 %}
     <p>No results found for "{{ query }}"</p>
 {% endif %}
+{% for post in results %}
+    <sl-card class="post-card">
+        <h2 slot="header"><a href="/posts/view/{{ post.id }}">{{ post.title }}</a></h2>
+        <p>{{ post.excerpt }}</p>
+        <div slot="footer">
+            <sl-button href="/posts/edit/{{ post.id }}">Edit</sl-button>
+            <sl-button href="/posts/schedule/{{ post.id }}">Schedule</sl-button>
+        </div>
+    </sl-card>
+{% endfor %}
+
+{% if results|length == 0 %}
+    <p>No results found for "{{ query }}"</p>
+{% endif %}
