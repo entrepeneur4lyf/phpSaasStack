@@ -52,7 +52,6 @@ services:
     Src\Services\PortfolioService: ~
     Src\Services\CommentService: ~
     Src\Services\PostService: ~
-    Src\Services\MessageService: ~
     Src\Services\FollowService: ~
     Src\Services\LicenseService: ~
 
