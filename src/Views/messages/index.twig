@@ -1,9 +1,7 @@
 {% extends "layouts/default.twig" %}
 
 {% block content %}
-<div x-data="messageSystem()" class="messages-container"
-     hx-ext="ws" 
-     ws-connect="/messages/ws">
+<div x-data="messageSystem()" class="messages-container">
     <h2>Messages</h2>
     
     <sl-tab-group>
@@ -15,7 +13,8 @@
             <div class="message-list" 
                  hx-get="/messages/inbox" 
                  hx-trigger="load, newMessage from:body"
-                 hx-swap="innerHTML">
+                 hx-swap="innerHTML"
+                 ws-send="newMessage">
                 <!-- Message list will be loaded here -->
             </div>
         </sl-tab-panel>
@@ -33,15 +32,49 @@
         </sl-tab-panel>
 
         <sl-tab-panel name="compose">
-            <sl-form @submit.prevent="sendMessage">
+            <sl-form x-data="formHandler('/messages/send')" @submit.prevent="submitForm">
                 <sl-input name="recipient" label="To" required></sl-input>
                 <sl-input name="subject" label="Subject" required></sl-input>
                 <sl-textarea name="content" label="Message" required></sl-textarea>
-                <sl-button type="submit" variant="primary">Send Message</sl-button>
+                <sl-button type="submit" :disabled="loading" aria-label="Send message">
+                    <sl-spinner x-show="loading"></sl-spinner>
+                    Send Message
+                </sl-button>
             </sl-form>
         </sl-tab-panel>
     </sl-tab-group>
 </div>
+
+<script>
+function formHandler(action) {
+    return {
+        loading: false,
+        async submitForm(event) {
+            this.loading = true;
+            const form = event.target;
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(action, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                if (result.success) {
+                    Alpine.store('app').addNotification('Message sent successfully');
+                    form.reset();
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                Alpine.store('app').addNotification(`Error: ${error.message}`);
+            } finally {
+                this.loading = false;
+            }
+        }
+    }
+}
+</script>
 
 <script>
 function messageSystem() {

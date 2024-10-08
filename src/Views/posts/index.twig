@@ -6,7 +6,10 @@
 
     <sl-button @click="showCreatePostModal = true">Create New Post</sl-button>
 
-    <div class="posts-list">
+    <div class="posts-list"
+         hx-get="/posts/load-more"
+         hx-trigger="revealed"
+         hx-swap="afterend">
         <template x-for="post in posts" :key="post.id">
             <sl-card class="post-card">
                 <h2 slot="header" x-text="post.title"></h2>
@@ -17,8 +20,8 @@
                     <span x-text="'Comments: ' + post.comments_count"></span>
                 </div>
                 <div slot="footer">
-                    <sl-button @click="editPost(post)">Edit</sl-button>
-                    <sl-button @click="deletePost(post.id)" variant="danger">Delete</sl-button>
+                    <sl-button @click="editPost(post)" aria-label="Edit post">Edit</sl-button>
+                    <sl-button @click="deletePost(post.id)" variant="danger" aria-label="Delete post">Delete</sl-button>
                 </div>
             </sl-card>
         </template>
