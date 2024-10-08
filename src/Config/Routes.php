@@ -217,6 +217,8 @@ return function (RouteCollection $routes) {
     $routes->get('/messages/compose', ['Src\Controllers\MessageController', 'compose']);
     $routes->post('/messages/send', ['Src\Controllers\MessageController', 'send']);
     $routes->get('/messages/view/{id:\d+}', ['Src\Controllers\MessageController', 'view']);
+    $routes->get('/messages/search', ['Src\Controllers\MessageController', 'search']);
+    $routes->get('/messages/attachment/{id}', ['Src\Controllers\MessageController', 'downloadAttachment']);
 
     // Follow routes
     $routes->post('/follow', ['Src\Controllers\ProfileController', 'follow']);
