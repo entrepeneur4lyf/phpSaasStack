@@ -10,20 +10,24 @@ use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Src\Exceptions\ValidationException;
 use Src\Core\TwigRenderer;
+use Src\Utils\FileUploadHandler;
 
 class MessageController extends BaseController
 {
     protected MessageServiceInterface $messageService;
     protected UserServiceInterface $userService;
+    protected FileUploadHandler $fileUploadHandler;
 
     public function __construct(
         TwigRenderer $twigRenderer,
         MessageServiceInterface $messageService,
-        UserServiceInterface $userService
+        UserServiceInterface $userService,
+        FileUploadHandler $fileUploadHandler
     ) {
         parent::__construct($twigRenderer);
         $this->messageService = $messageService;
         $this->userService = $userService;
+        $this->fileUploadHandler = $fileUploadHandler;
     }
 
     public function index(Request $request, Response $response): void
@@ -56,8 +60,19 @@ class MessageController extends BaseController
                 'sender_id' => $senderId,
                 'recipient_id' => $data['recipient_id'],
                 'subject' => $data['subject'],
-                'content' => $data['content']
+                'content' => $data['content'],
+                'parent_id' => $data['parent_id'] ?? null // For message threading
             ];
+
+            // Handle file attachments
+            $attachments = [];
+            if (isset($request->files['attachments'])) {
+                foreach ($request->files['attachments'] as $file) {
+                    $attachmentPath = $this->fileUploadHandler->handleUpload($file);
+                    $attachments[] = $attachmentPath;
+                }
+            }
+            $messageData['attachments'] = $attachments;
 
             $messageId = $this->messageService->sendMessage($messageData);
 
@@ -97,7 +112,10 @@ class MessageController extends BaseController
                 $this->messageService->markAsRead($messageId);
             }
 
-            $this->render($response, 'message/view', ['message' => $message]);
+            // Get threaded messages
+            $thread = $this->messageService->getMessageThread($messageId);
+
+            $this->render($response, 'message/view', ['message' => $message, 'thread' => $thread]);
         } catch (\Exception $e) {
             $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred while retrieving the message'], 500);
         }
@@ -127,28 +145,40 @@ class MessageController extends BaseController
         }
     }
 
-    public function conversation(Request $request, Response $response, array $args): void
+    public function search(Request $request, Response $response): void
     {
         try {
             $userId = $request->user->id;
-            $otherUserId = (int) $args['userId'];
-            $conversation = $this->messageService->getConversation($userId, $otherUserId);
+            $query = $request->get['q'] ?? '';
+            $page = (int) ($request->get['page'] ?? 1);
+            $limit = (int) ($request->get['limit'] ?? 20);
 
-            $this->render($response, 'message/conversation', ['conversation' => $conversation, 'otherUserId' => $otherUserId]);
+            $results = $this->messageService->searchMessages($userId, $query, $page, $limit);
+
+            $this->jsonResponse($response, ['success' => true, 'results' => $results]);
         } catch (\Exception $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred while retrieving the conversation'], 500);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred while searching messages'], 500);
         }
     }
 
-    public function unreadCount(Request $request, Response $response): void
+    public function downloadAttachment(Request $request, Response $response, array $args): void
     {
         try {
+            $attachmentId = (int) $args['id'];
             $userId = $request->user->id;
-            $count = $this->messageService->getUnreadCount($userId);
 
-            $this->jsonResponse($response, ['success' => true, 'unread_count' => $count]);
+            $attachmentPath = $this->messageService->getAttachmentPath($attachmentId, $userId);
+
+            if (!$attachmentPath) {
+                $this->jsonResponse($response, ['error' => 'Attachment not found'], 404);
+                return;
+            }
+
+            $response->header('Content-Type', mime_content_type($attachmentPath));
+            $response->header('Content-Disposition', 'attachment; filename="' . basename($attachmentPath) . '"');
+            $response->sendfile($attachmentPath);
         } catch (\Exception $e) {
-            $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred while retrieving unread count'], 500);
+            $this->jsonResponse($response, ['success' => false, 'message' => 'An error occurred while downloading the attachment'], 500);
         }
     }
 }
