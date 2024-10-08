@@ -64,7 +64,7 @@ class SessionManager
     private function isValidSession(string $sessionId): bool
     {
         $sessionFile = $this->getSessionFilePath($sessionId);
-        return file_exists($sessionFile) && 
+        return file_exists($sessionFile) &&
                (time() - filemtime($sessionFile) < self::SESSION_LIFETIME) &&
                $this->verifySessionIntegrity($sessionId);
     }
@@ -121,11 +121,11 @@ class SessionManager
     {
         $encryptedSessionId = $this->encrypt($sessionId);
         $response->cookie(
-            $this->sessionName, 
-            $encryptedSessionId, 
-            time() + self::SESSION_LIFETIME, 
-            '/', 
-            '', 
+            $this->sessionName,
+            $encryptedSessionId,
+            time() + self::SESSION_LIFETIME,
+            '/',
+            '',
             true, // Secure flag
             true  // HttpOnly flag
         );
