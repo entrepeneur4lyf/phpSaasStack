@@ -12,7 +12,8 @@ class MessageService implements MessageServiceInterface
 {
     public function __construct(
         private readonly Message $messageModel
-    ) {}
+    ) {
+    }
 
     public function getMessagesByUserId(int $userId): array
     {
