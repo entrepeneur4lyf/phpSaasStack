@@ -1,0 +1,62 @@
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div x-data="postEditor()" class="post-editor">
+    <h1>Create New Post</h1>
+    
+    <sl-form @submit.prevent="savePost">
+        <sl-input name="title" label="Title" x-model="post.title" required></sl-input>
+        
+        <div id="editor"></div>
+        
+        <sl-input type="datetime-local" name="scheduled_at" label="Schedule Post" x-model="post.scheduled_at"></sl-input>
+        
+        <sl-button type="submit" variant="primary">Create Post</sl-button>
+    </sl-form>
+</div>
+
+<script src="https://cdn.tiny.cloud/1/your-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+function postEditor() {
+    return {
+        post: { title: '', content: '', scheduled_at: '' },
+        editor: null,
+        
+        init() {
+            tinymce.init({
+                selector: '#editor',
+                plugins: 'link image code',
+                toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | link image | code',
+                height: 300,
+                setup: (editor) => {
+                    this.editor = editor;
+                    editor.on('init', () => {
+                        editor.setContent(this.post.content || '');
+                    });
+                }
+            });
+        },
+        
+        savePost() {
+            this.post.content = this.editor.getContent();
+            
+            fetch('/posts/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(this.post)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/posts';
+                } else {
+                    alert('Failed to save post: ' + data.message);
+                }
+            });
+        }
+    }
+}
+</script>
+{% endblock %}

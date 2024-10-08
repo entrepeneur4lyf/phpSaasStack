@@ -166,3 +166,49 @@ function posts() {
 }
 </script>
 {% endblock %}
+{% extends "layouts/default.twig" %}
+
+{% block content %}
+<div class="posts-container">
+    <h1>Posts</h1>
+
+    <form hx-get="/posts/search" hx-target="#search-results" hx-trigger="submit">
+        <sl-input name="q" placeholder="Search posts..."></sl-input>
+        <sl-button type="submit">Search</sl-button>
+    </form>
+
+    <div id="search-results"></div>
+
+    <sl-button href="/posts/create">Create New Post</sl-button>
+
+    <div class="post-list">
+        {% for post in posts %}
+            <sl-card class="post-card">
+                <h2 slot="header"><a href="/posts/view/{{ post.id }}">{{ post.title }}</a></h2>
+                <p>{{ post.excerpt }}</p>
+                <div slot="footer">
+                    <sl-button href="/posts/edit/{{ post.id }}">Edit</sl-button>
+                    <sl-button href="/posts/schedule/{{ post.id }}">Schedule</sl-button>
+                    <sl-button variant="danger" @click="deletePost({{ post.id }})">Delete</sl-button>
+                </div>
+            </sl-card>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function deletePost(postId) {
+    if (confirm('Are you sure you want to delete this post?')) {
+        fetch(`/posts/delete/${postId}`, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to delete post: ' + data.message);
+                }
+            });
+    }
+}
+</script>
+{% endblock %}

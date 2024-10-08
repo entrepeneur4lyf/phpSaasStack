@@ -48,4 +48,14 @@ function searchResults() {
     }
 }
 </script>
-{% endblock %}
+{% endblock %}{% for post in results %}
+    <sl-card>
+        <h3 slot="header">{{ post.title }}</h3>
+        <p>{{ post.excerpt }}</p>
+        <sl-button slot="footer" href="/posts/view/{{ post.id }}">Read More</sl-button>
+    </sl-card>
+{% endfor %}
+
+{% if results|length == 0 %}
+    <p>No results found for "{{ query }}"</p>
+{% endif %}
