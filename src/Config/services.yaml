@@ -174,10 +174,23 @@ services:
     Src\Interfaces\MessageServiceInterface:
         alias: Src\Services\MessageService
 
-    Src\Interfaces\DatabaseServiceInterface:
-        class: Src\Services\DatabaseService
+    Src\Database\CoroutineMySQLPool:
+        arguments:
+            $config: '@Swoole\Database\MysqlConfig'
+            $size: '%env(DATABASE_POOL_SIZE)%'
+
+    Swoole\Database\MysqlConfig:
+        factory: ['Src\Factories\MysqlConfigFactory', 'create']
         arguments:
             $config: '%database%'
+
+    Src\Database\Database:
+        arguments:
+            $configs: '%database%'
+            $logger: '@Psr\Log\LoggerInterface'
+
+    Src\Interfaces\DatabaseServiceInterface:
+        alias: Src\Database\Database
     Src\Controllers\FollowController:
         autowire: true
     Src\Controllers\ModerationController:
