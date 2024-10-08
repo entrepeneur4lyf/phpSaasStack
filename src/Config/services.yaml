@@ -54,6 +54,7 @@ services:
     Src\Services\PostService: ~
     Src\Services\FollowService: ~
     Src\Services\LicenseService: ~
+    Src\Services\AdminService: ~
 
     Src\Services\EmailService:
         arguments:
@@ -166,6 +167,20 @@ services:
         autowire: true
     Src\Controllers\MessageController:
         autowire: true
+    Src\Controllers\FollowController:
+        autowire: true
+    Src\Controllers\ModerationController:
+        autowire: true
+    Src\Controllers\MarkdownController:
+        autowire: true
+    Src\Controllers\SellerController:
+        autowire: true
+    Src\Controllers\HomeController:
+        autowire: true
+    Src\Controllers\AdminController:
+        autowire: true
+    Src\Controllers\OfferController:
+        autowire: true
 
     Src\Services\MessageService:
         arguments:
@@ -191,16 +206,6 @@ services:
 
     Src\Interfaces\DatabaseServiceInterface:
         alias: Src\Database\Database
-    Src\Controllers\FollowController:
-        autowire: true
-    Src\Controllers\ModerationController:
-        autowire: true
-    Src\Controllers\MarkdownController:
-        autowire: true
-    Src\Controllers\SellerController:
-        autowire: true
-    Src\Controllers\HomeController:
-        autowire: true
 
     # Error Handler
     Src\Core\ErrorHandler:
