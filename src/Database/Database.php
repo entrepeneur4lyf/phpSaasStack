@@ -136,7 +136,7 @@ class Database
             throw new DatabaseException("No transaction in progress");
         }
         $this->transactionConnection->commit();
-        $this->pool->put($this->transactionConnection);
+        $this->pools[$this->transactionConnection->getConnectionName()]->put($this->transactionConnection);
         $this->transactionConnection = null;
     }
 
@@ -146,7 +146,7 @@ class Database
             throw new DatabaseException("No transaction in progress");
         }
         $this->transactionConnection->rollback();
-        $this->pool->put($this->transactionConnection);
+        $this->pools[$this->transactionConnection->getConnectionName()]->put($this->transactionConnection);
         $this->transactionConnection = null;
     }
 
