@@ -1,7 +1,9 @@
 {% extends "layouts/default.twig" %}
 
 {% block content %}
-<div x-data="messageSystem()" class="messages-container">
+<div x-data="messageSystem()" class="messages-container"
+     hx-ext="ws" 
+     ws-connect="/messages/ws">
     <h2>Messages</h2>
     
     <sl-tab-group>
@@ -10,14 +12,11 @@
         <sl-tab slot="nav" panel="compose">Compose</sl-tab>
 
         <sl-tab-panel name="inbox">
-            <div class="message-list">
-                <template x-for="message in inbox" :key="message.id">
-                    <sl-card class="message-card" @click="viewMessage(message.id)">
-                        <strong x-text="message.subject"></strong>
-                        <p x-text="'From: ' + message.sender_name"></p>
-                        <p x-text="formatDate(message.created_at)"></p>
-                    </sl-card>
-                </template>
+            <div class="message-list" 
+                 hx-get="/messages/inbox" 
+                 hx-trigger="load, newMessage from:body"
+                 hx-swap="innerHTML">
+                <!-- Message list will be loaded here -->
             </div>
         </sl-tab-panel>
 

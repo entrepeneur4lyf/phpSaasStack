@@ -1,11 +1,11 @@
 {% for message in messages %}
     <sl-card class="message-card">
-        <strong slot="header" x-text="message.subject"></strong>
+        <strong slot="header">{{ message.subject }}</strong>
         <div>
-            <p>From: <span x-text="message.sender_name"></span></p>
-            <p>Date: <span x-text="formatDate(message.created_at)"></span></p>
+            <p>From: {{ message.sender_name }}</p>
+            <p>Date: {{ message.created_at|date("F j, Y, g:i a") }}</p>
         </div>
-        <sl-button slot="footer" @click="viewMessage(message.id)">
+        <sl-button slot="footer" hx-get="/messages/view/{{ message.id }}" hx-target="#message-content">
             View Message
         </sl-button>
     </sl-card>

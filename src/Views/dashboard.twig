@@ -16,10 +16,19 @@
             <h2>Site Overview</h2>
             <sl-card>
                 <div class="dashboard-stats">
-                    <div>Total Products: <span x-text="stats.totalProducts"></span></div>
-                    <div>Total Orders: <span x-text="stats.totalOrders"></span></div>
-                    <div>Total Users: <span x-text="stats.totalUsers"></span></div>
-                    <div>Revenue: $<span x-text="stats.revenue.toFixed(2)"></span></div>
+                    <sl-progress-ring 
+                        :value="(stats.totalProducts / stats.maxProducts) * 100"
+                        :label="'Products: ' + stats.totalProducts">
+                    </sl-progress-ring>
+                    <sl-progress-ring 
+                        :value="(stats.totalOrders / stats.maxOrders) * 100"
+                        :label="'Orders: ' + stats.totalOrders">
+                    </sl-progress-ring>
+                    <sl-progress-ring 
+                        :value="(stats.totalUsers / stats.maxUsers) * 100"
+                        :label="'Users: ' + stats.totalUsers">
+                    </sl-progress-ring>
+                    <sl-format-number type="currency" currency="USD" x-text="stats.revenue"></sl-format-number>
                 </div>
             </sl-card>
         </sl-tab-panel>
