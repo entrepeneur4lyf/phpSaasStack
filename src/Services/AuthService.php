@@ -17,7 +17,8 @@ class AuthService implements AuthServiceInterface
     public function __construct(
         private readonly UserServiceInterface $userService,
         private readonly JWTServiceInterface $jwtService
-    ) {}
+    ) {
+    }
 
     public function login(string $email, string $password): ?string
     {

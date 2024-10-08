@@ -15,7 +15,8 @@ class FileDeliveryService implements FileDeliveryServiceInterface
     public function __construct(
         private readonly Asset $assetModel,
         private readonly Download $downloadModel
-    ) {}
+    ) {
+    }
 
     public function generateDownloadUrl(int $assetId, int $userId): string
     {

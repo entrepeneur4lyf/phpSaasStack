@@ -24,15 +24,15 @@ class CorsMiddleware
             $response->header('Access-Control-Allow-Origin', $origin);
             $response->header('Access-Control-Allow-Methods', implode(', ', $this->corsConfig['allowed_methods']));
             $response->header('Access-Control-Allow-Headers', implode(', ', $this->corsConfig['allowed_headers']));
-            
+
             if (!empty($this->corsConfig['exposed_headers'])) {
                 $response->header('Access-Control-Expose-Headers', implode(', ', $this->corsConfig['exposed_headers']));
             }
-            
+
             if ($this->corsConfig['max_age'] > 0) {
                 $response->header('Access-Control-Max-Age', (string)$this->corsConfig['max_age']);
             }
-            
+
             if ($this->corsConfig['supports_credentials']) {
                 $response->header('Access-Control-Allow-Credentials', 'true');
             }

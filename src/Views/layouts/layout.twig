@@ -6,10 +6,23 @@
     <title>{{ title|default('SaaS AI Inference Service') }}</title>
     <link rel="stylesheet" href="/css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0/dist/shoelace.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0/dist/themes/{{ theme_service.getTheme() }}.css">
+    <script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('app', {
+            user: {{ user|json_encode|raw }},
+            notifications: [],
+            addNotification(message) {
+                this.notifications.push(message);
+            }
+        })
+    })
+    </script>
 </head>
-<body>
+<body hx-ext="ws" ws-connect="/ws">
     {% include 'partials/header.twig' %}
 
     <main class="container">
@@ -17,5 +30,25 @@
     </main>
 
     {% include 'partials/footer.twig' %}
+    
+    <div x-data x-show="$store.app.notifications.length > 0">
+        <template x-for="notification in $store.app.notifications" :key="notification">
+            <sl-alert variant="primary" x-text="notification"></sl-alert>
+        </template>
+    </div>
+
+    <sl-dropdown x-data="{ theme: 'light' }">
+        <sl-button slot="trigger" caret>Theme</sl-button>
+        <sl-menu>
+            <sl-menu-item @click="theme = 'light'; document.body.setAttribute('data-theme', 'light')">Light</sl-menu-item>
+            <sl-menu-item @click="theme = 'dark'; document.body.setAttribute('data-theme', 'dark')">Dark</sl-menu-item>
+        </sl-menu>
+    </sl-dropdown>
+
+    <script>
+    window.addEventListener('error', (event) => {
+        Alpine.store('app').addNotification(`Error: ${event.message}`);
+    });
+    </script>
 </body>
 </html>

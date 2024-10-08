@@ -61,7 +61,7 @@ class FileDeliveryController extends BaseController
         $videoPath = $this->fileDeliveryService->getVideoPath($videoId);
         $response->header('Content-Type', 'video/mp4');
         $response->header('Accept-Ranges', 'bytes');
-        
+
         // Implement range requests for video streaming
         $fileSize = filesize($videoPath);
         $range = $request->header['range'] ?? '';

@@ -13,7 +13,8 @@ class ProductService implements ProductServiceInterface
     public function __construct(
         private readonly Product $productModel,
         private readonly LicenseServiceInterface $licenseService
-    ) {}
+    ) {
+    }
 
     public function getProducts(int $page = 1, int $limit = 20): array
     {
@@ -28,22 +29,22 @@ class ProductService implements ProductServiceInterface
     public function createProduct(array $productData): int
     {
         $productId = $this->productModel->create($productData);
-        
+
         if (isset($productData['license_type'])) {
             $this->licenseService->createLicenseType($productId, $productData['license_type']);
         }
-        
+
         return $productId;
     }
 
     public function updateProduct(int $productId, array $productData): bool
     {
         $result = $this->productModel->update($productId, $productData);
-        
+
         if ($result && isset($productData['license_type'])) {
             $this->licenseService->updateLicenseType($productId, $productData['license_type']);
         }
-        
+
         return $result;
     }
 
@@ -78,7 +79,7 @@ class ProductService implements ProductServiceInterface
     public function getProductAssets(int $productId): array
     {
         $assetIds = $this->productModel->getAssetIds($productId);
-        return array_map(fn($id) => $this->assetService->getAssetById($id), $assetIds);
+        return array_map(fn ($id) => $this->assetService->getAssetById($id), $assetIds);
     }
 
     public function getProductLicenseInfo(int $productId): array

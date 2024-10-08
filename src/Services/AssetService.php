@@ -27,7 +27,7 @@ class AssetService implements AssetServiceInterface
         $this->validateFileUpload($fileData);
         $filePath = $this->moveUploadedFile($fileData);
         $metadata = $this->getFileMetadata($filePath);
-        
+
         $assetData = [
             'user_id' => $userId,
             'file_name' => $fileData['name'],
@@ -87,7 +87,7 @@ class AssetService implements AssetServiceInterface
 
         try {
             $image = $this->imageManager->make($asset['file_path']);
-            
+
             $image->crop(
                 (int)$cropData['width'],
                 (int)$cropData['height'],

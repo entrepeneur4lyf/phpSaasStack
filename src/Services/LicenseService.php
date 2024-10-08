@@ -12,7 +12,8 @@ class LicenseService implements LicenseServiceInterface
 {
     public function __construct(
         private readonly License $licenseModel
-    ) {}
+    ) {
+    }
 
     public function createLicense(array $licenseData): int
     {

@@ -63,3 +63,4 @@ node_modules/
 /public/uploads/
 /public/assets/
 /config/*.local.php
+.aider*

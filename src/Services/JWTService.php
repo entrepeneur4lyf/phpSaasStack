@@ -13,7 +13,8 @@ class JWTService implements JWTServiceInterface
     public function __construct(
         private readonly string $secretKey,
         private readonly string $algorithm = 'HS256'
-    ) {}
+    ) {
+    }
 
     public function validateToken(string $token): bool
     {

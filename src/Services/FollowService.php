@@ -12,7 +12,8 @@ class FollowService implements FollowServiceInterface
 {
     public function __construct(
         private readonly Follow $followModel
-    ) {}
+    ) {
+    }
 
     public function follow(int $followerId, int $followedId): bool
     {

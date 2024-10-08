@@ -47,7 +47,7 @@ class CustomErrorHandler extends ErrorHandler
         }
 
         $template = $this->debug ? "errors/exception_full" : "errors/{$statusCode}";
-        
+
         $this->twigRenderer->render($response, $template, $context);
     }
 

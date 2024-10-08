@@ -46,7 +46,7 @@ class Validator
                     $this->addError($field, "{$field} must be a valid email address");
                 }
                 break;
-            // Add more validation rules as needed
+                // Add more validation rules as needed
         }
     }
 

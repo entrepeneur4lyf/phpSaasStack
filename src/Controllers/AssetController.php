@@ -15,7 +15,8 @@ class AssetController extends BaseController
 {
     public function __construct(
         private readonly AssetServiceInterface $assetService
-    ) {}
+    ) {
+    }
 
     public function upload(Request $request, Response $response): void
     {
@@ -34,7 +35,7 @@ class AssetController extends BaseController
         try {
             $assetId = (int) $args['id'];
             $userId = $request->user->id; // Assuming user is authenticated
-            
+
             $downloadUrl = $this->assetService->getAssetDownloadUrl($assetId, $userId);
             $this->jsonResponse($response, ['success' => true, 'download_url' => $downloadUrl]);
         } catch (AccessDeniedException $e) {
@@ -51,7 +52,7 @@ class AssetController extends BaseController
         try {
             $assetId = (int) $args['id'];
             $userId = $request->user->id; // Assuming user is authenticated
-            
+
             if (!$this->assetService->validateAssetAccess($assetId, $userId)) {
                 throw new AccessDeniedException('Access denied');
             }

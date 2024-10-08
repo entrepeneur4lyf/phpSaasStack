@@ -12,7 +12,8 @@ class PortfolioService implements PortfolioServiceInterface
 {
     public function __construct(
         private readonly Portfolio $portfolioModel
-    ) {}
+    ) {
+    }
 
     public function getItemsByUserId(int $userId): array
     {

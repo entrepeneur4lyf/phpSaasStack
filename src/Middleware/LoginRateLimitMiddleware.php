@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Src\Middleware;
@@ -20,10 +21,10 @@ class LoginRateLimitMiddleware
     {
         $ip = $request->server['remote_addr'];
         $username = $request->post['username'] ?? '';
-        
+
         // Rate limit by IP and username combination
         $key = "login:{$ip}:{$username}";
-        
+
         if (!$this->rateLimiter->attempt($key)) {
             $response->status(429);
             $response->end(json_encode(['error' => 'Too many login attempts. Please try again later.']));

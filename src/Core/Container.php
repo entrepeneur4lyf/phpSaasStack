@@ -164,11 +164,6 @@ class Container implements ContainerInterface
         return $this->instances[$id];
     }
 
-    public function has($id): bool
-    {
-        return isset($this->definitions[$id]) || isset($this->instances[$id]);
-    }
-
     public function set($id, $concrete): void
     {
         $this->definitions[$id] = $concrete;
@@ -206,12 +201,12 @@ class Container implements ContainerInterface
     public function autoconfigure(string $serviceId): void
     {
         $reflection = new \ReflectionClass($serviceId);
-        
+
         // Example: Automatically tag services implementing specific interfaces
         if ($reflection->implementsInterface(\Src\Interfaces\CommandInterface::class)) {
             $this->tag('command', $serviceId);
         }
-        
+
         // Add more autoconfiguration rules as needed
     }
 }

@@ -13,7 +13,8 @@ class CommentService implements CommentServiceInterface
     public function __construct(
         private readonly Comment $commentModel,
         private readonly ModerationServiceInterface $moderationService
-    ) {}
+    ) {
+    }
 
     public function getThreadedComments(int $postId): array
     {
@@ -42,25 +43,25 @@ class CommentService implements CommentServiceInterface
     public function create(array $data): bool
     {
         $commentId = $this->commentModel->create($data);
-        
+
         if ($commentId) {
             // Submit the comment for moderation
             $this->moderationService->submitForModeration('comment', $commentId);
             return true;
         }
-        
+
         return false;
     }
 
     public function update(int $id, array $data): bool
     {
         $result = $this->commentModel->update($id, $data);
-        
+
         if ($result) {
             // Re-submit the updated comment for moderation
             $this->moderationService->submitForModeration('comment', $id);
         }
-        
+
         return $result;
     }
 

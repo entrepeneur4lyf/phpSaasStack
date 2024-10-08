@@ -11,7 +11,9 @@ class RouteCollection
     private static ?self $instance = null;
     private array $routes = [];
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     public static function getInstance(): self
     {
@@ -54,7 +56,9 @@ class RouteCollection
     }
 
     // Prevent cloning of the instance
-    private function __clone() {}
+    private function __clone()
+    {
+    }
 
     // Prevent unserializing of the instance
     public function __wakeup()

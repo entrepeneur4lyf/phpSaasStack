@@ -10,7 +10,8 @@ final class ThemeService implements ThemeServiceInterface
 {
     public function __construct(
         private readonly string $defaultTheme = 'dark'
-    ) {}
+    ) {
+    }
 
     public function getTheme(): string
     {

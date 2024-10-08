@@ -59,7 +59,7 @@ class QueryLogger
 
     public function getSlowQueries(): array
     {
-        return array_filter($this->queries, fn($query) => $query['duration'] > $this->slowQueryThreshold);
+        return array_filter($this->queries, fn ($query) => $query['duration'] > $this->slowQueryThreshold);
     }
 
     public function getCacheHitRate(): float
@@ -68,7 +68,7 @@ class QueryLogger
         if ($count === 0) {
             return 0;
         }
-        $cacheHits = count(array_filter($this->queries, fn($query) => $query['cacheHit']));
+        $cacheHits = count(array_filter($this->queries, fn ($query) => $query['cacheHit']));
         return $cacheHits / $count;
     }
 }

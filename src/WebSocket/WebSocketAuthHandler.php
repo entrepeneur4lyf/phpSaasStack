@@ -8,7 +8,9 @@ use Src\Interfaces\JWTServiceInterface;
 
 class WebSocketAuthHandler
 {
-    public function __construct(private JWTServiceInterface $jwtService) {}
+    public function __construct(private JWTServiceInterface $jwtService)
+    {
+    }
 
     public function authenticate($server, $request)
     {

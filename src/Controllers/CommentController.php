@@ -13,7 +13,8 @@ class CommentController extends BaseController
 {
     public function __construct(
         private readonly CommentServiceInterface $commentService
-    ) {}
+    ) {
+    }
 
     public function create(Request $request, Response $response): void
     {

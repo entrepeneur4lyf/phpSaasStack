@@ -14,7 +14,8 @@ class UserService implements UserServiceInterface
     public function __construct(
         private readonly User $userModel,
         private readonly AuthService $authService
-    ) {}
+    ) {
+    }
 
     public function createUser(array $userData): array
     {

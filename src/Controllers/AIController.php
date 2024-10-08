@@ -32,7 +32,7 @@ class AIController extends BaseController
     {
         $user = $this->authService->getUser();
         $prompt = $request->post['prompt'] ?? '';
-        
+
         $result = $this->aiService->generateContent($user->id, $prompt);
 
         $this->jsonResponse($response, $result);

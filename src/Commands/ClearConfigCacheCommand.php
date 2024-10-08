@@ -30,7 +30,7 @@ class ClearConfigCacheCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $cacheFile = $this->cacheDir . '/config.php';
-        
+
         if (file_exists($cacheFile)) {
             unlink($cacheFile);
             $output->writeln('Configuration cache cleared successfully.');

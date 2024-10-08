@@ -11,7 +11,8 @@ class OfferService implements OfferServiceInterface
 {
     public function __construct(
         private readonly Offer $offerModel
-    ) {}
+    ) {
+    }
 
     public function getOfferById(int $offerId): ?array
     {

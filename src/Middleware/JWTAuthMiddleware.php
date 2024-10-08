@@ -10,7 +10,9 @@ use Swoole\Http\Response;
 
 class JWTAuthMiddleware
 {
-    public function __construct(private readonly JWTServiceInterface $jwtService) {}
+    public function __construct(private readonly JWTServiceInterface $jwtService)
+    {
+    }
 
     public function __invoke(Request $request, Response $response, callable $next): void
     {

@@ -79,7 +79,7 @@ class GenerateDIConfigCommand extends Command
 
         foreach ($services as $service) {
             $serviceConfig = ['class' => $service];
-            
+
             // Add tags based on implemented interfaces
             $reflection = new \ReflectionClass($service);
             if ($reflection->implementsInterface(\Src\Interfaces\CommandInterface::class)) {

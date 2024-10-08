@@ -13,7 +13,8 @@ class FollowController extends BaseController
 {
     public function __construct(
         private readonly FollowServiceInterface $followService
-    ) {}
+    ) {
+    }
 
     public function follow(Request $request, Response $response, array $args): void
     {

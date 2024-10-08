@@ -12,7 +12,8 @@ class ModerationService implements ModerationServiceInterface
 {
     public function __construct(
         private readonly Moderation $moderationModel
-    ) {}
+    ) {
+    }
 
     public function moderateContent(string $content, string $contentType): array
     {

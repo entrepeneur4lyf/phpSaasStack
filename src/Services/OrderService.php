@@ -13,17 +13,18 @@ class OrderService implements OrderServiceInterface
     public function __construct(
         private readonly Order $orderModel,
         private readonly LicenseServiceInterface $licenseService
-    ) {}
+    ) {
+    }
 
     public function createOrder(array $orderData): int
     {
         $orderId = $this->orderModel->create($orderData);
-        
+
         // Generate licenses for each product in the order
         foreach ($orderData['items'] as $item) {
             $this->licenseService->generateLicense($item['product_id'], $orderData['user_id']);
         }
-        
+
         return $orderId;
     }
 
@@ -46,11 +47,11 @@ class OrderService implements OrderServiceInterface
     {
         $order = $this->orderModel->getById($orderId);
         $licenses = [];
-        
+
         foreach ($order['items'] as $item) {
             $licenses[] = $this->licenseService->getLicenseByProductAndUser($item['product_id'], $order['user_id']);
         }
-        
+
         return $licenses;
     }
 }

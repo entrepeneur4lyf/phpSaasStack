@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Src\Middleware;
@@ -19,7 +20,7 @@ class RateLimitMiddleware
     public function handle(Request $request, Response $response, callable $next): void
     {
         $ip = $request->server['remote_addr'];
-        
+
         if (!$this->rateLimiter->attempt($ip)) {
             $response->status(429);
             $response->end(json_encode(['error' => 'Too many requests. Please try again later.']));

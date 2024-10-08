@@ -13,7 +13,8 @@ class SellerService implements SellerServiceInterface
     public function __construct(
         private readonly Seller $sellerModel,
         private readonly AssetServiceInterface $assetService
-    ) {}
+    ) {
+    }
 
     public function getProductById(int $productId): ?array
     {
@@ -61,6 +62,6 @@ class SellerService implements SellerServiceInterface
     public function getSellerAssets(int $sellerId): array
     {
         $assetIds = $this->sellerModel->getAssetIds($sellerId);
-        return array_map(fn($id) => $this->assetService->getAssetById($id), $assetIds);
+        return array_map(fn ($id) => $this->assetService->getAssetById($id), $assetIds);
     }
 }

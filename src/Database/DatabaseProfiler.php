@@ -16,7 +16,8 @@ class DatabaseProfiler
     public function __construct(
         private LoggerInterface $logger,
         private float $slowQueryThreshold = 1.0
-    ) {}
+    ) {
+    }
 
     public function startQuery(string $sql, array $params): float
     {
@@ -82,7 +83,7 @@ class DatabaseProfiler
 
     public function getSlowQueries(): array
     {
-        return array_filter($this->queries, fn($query) => $query['duration'] > $this->slowQueryThreshold);
+        return array_filter($this->queries, fn ($query) => $query['duration'] > $this->slowQueryThreshold);
     }
 
     public function getCacheHitRate(): float
