@@ -13,7 +13,8 @@ class PostService implements PostServiceInterface
     public function __construct(
         private readonly Post $postModel,
         private readonly ModerationServiceInterface $moderationService
-    ) {}
+    ) {
+    }
 
     public function getPosts(int $page = 1, int $limit = 20): array
     {
@@ -28,22 +29,22 @@ class PostService implements PostServiceInterface
     public function createPost(array $postData): int
     {
         $postId = $this->postModel->create($postData);
-        
+
         // Submit the post for moderation
         $this->moderationService->submitForModeration('post', $postId);
-        
+
         return $postId;
     }
 
     public function updatePost(int $postId, array $postData): bool
     {
         $result = $this->postModel->update($postId, $postData);
-        
+
         if ($result) {
             // Re-submit the updated post for moderation
             $this->moderationService->submitForModeration('post', $postId);
         }
-        
+
         return $result;
     }
 
