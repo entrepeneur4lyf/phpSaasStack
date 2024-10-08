@@ -9,17 +9,24 @@ use Swoole\Http\Response;
 use Src\Core\TwigRenderer;
 use Src\Services\PostService;
 use Psr\Log\LoggerInterface;
+use Src\Services\ProductService;
 
 class HomeController extends BaseController
 {
     private PostService $postService;
     private LoggerInterface $logger;
+    private ProductService $productService;
 
-    public function __construct(TwigRenderer $twigRenderer, PostService $postService, LoggerInterface $logger)
-    {
+    public function __construct(
+        TwigRenderer $twigRenderer,
+        PostService $postService,
+        LoggerInterface $logger,
+        ProductService $productService
+    ) {
         parent::__construct($twigRenderer);
         $this->postService = $postService;
         $this->logger = $logger;
+        $this->productService = $productService;
     }
 
     public function index(Request $request, Response $response): void
