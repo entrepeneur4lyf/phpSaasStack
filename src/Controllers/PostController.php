@@ -31,8 +31,11 @@ class PostController extends BaseController
     {
         if ($request->getMethod() === 'POST') {
             $user = $this->authService->getUser();
-            $data = $request->post;
+            $data = json_decode($request->getContent(), true);
             $data['user_id'] = $user->id;
+
+            // Sanitize the Markdown content
+            $data['content'] = $this->sanitizeMarkdown($data['content']);
 
             $result = $this->postService->createPost($data);
 
@@ -44,6 +47,13 @@ class PostController extends BaseController
         } else {
             $this->render($response, 'posts/create');
         }
+    }
+
+    private function sanitizeMarkdown(string $markdown): string
+    {
+        // Implement Markdown sanitization here
+        // This is a placeholder and should be replaced with actual sanitization logic
+        return htmlspecialchars($markdown, ENT_QUOTES, 'UTF-8');
     }
 
     public function edit(Request $request, Response $response, array $args): void

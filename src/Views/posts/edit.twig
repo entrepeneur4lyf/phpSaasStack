@@ -15,7 +15,8 @@
     </sl-form>
 </div>
 
-<script src="https://cdn.tiny.cloud/1/your-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="https://cdn.jsdelivr.net/npm/tiny-markdown-editor/dist/tiny-mde.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tiny-markdown-editor/dist/tiny-mde.min.css">
 <script>
 function postEditor() {
     return {
@@ -23,17 +24,9 @@ function postEditor() {
         editor: null,
         
         init() {
-            tinymce.init({
-                selector: '#editor',
-                plugins: 'link image code',
-                toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | link image | code',
-                height: 300,
-                setup: (editor) => {
-                    this.editor = editor;
-                    editor.on('init', () => {
-                        editor.setContent(this.post.content || '');
-                    });
-                }
+            this.editor = new TinyMDE.Editor({
+                element: 'editor',
+                content: this.post.content || ''
             });
         },
         
