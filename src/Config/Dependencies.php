@@ -53,6 +53,15 @@ class Dependencies
         }
     }
 
+    public static function refreshService(string $serviceId): void
+    {
+        $container = self::getContainer();
+        if ($container->has($serviceId)) {
+            $container->set($serviceId, null);
+            $container->get($serviceId);
+        }
+    }
+
     public static function getRequestScopedService(string $serviceId)
     {
         if (!isset(self::$requestScopedServices[$serviceId])) {
